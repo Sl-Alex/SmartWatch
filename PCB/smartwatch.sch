@@ -1097,12 +1097,6 @@ Text Label 2500 1250 2    60   ~ 0
 MEM_SCK
 Text Label 750  850  0    60   ~ 0
 MEM_CS
-Text Label 6900 3350 2    60   ~ 0
-MEM_WP
-Text Label 750  1250 0    60   ~ 0
-MEM_WP
-Wire Wire Line
-	6900 3350 6400 3350
 Wire Wire Line
 	6900 3550 6400 3550
 Wire Wire Line
@@ -1649,4 +1643,6 @@ F 3 "" H 7700 3550 60  0000 C CNN
 $EndComp
 Wire Wire Line
 	8300 4850 8300 4750
+Text Label 750  1250 0    60   ~ 0
+3V3
 $EndSCHEMATC
