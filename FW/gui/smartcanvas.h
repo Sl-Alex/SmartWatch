@@ -6,6 +6,13 @@
 class SmartCanvas
 {
 public:
+    typedef enum {
+        DIR_LEFT,
+        DIR_RIGHT,
+        DIR_UP,
+        DIR_DOWN
+    } ScrollDirection;
+
     struct StorageHeader {
         int width;
         int height;
@@ -39,6 +46,7 @@ public:
     void drawHLine(int x1, int x2, int y, char value);
     void drawVLine(int x, int y1, int y2, char value);
     void drawRect(int x1, int y1, int x2, int y2, char value);
+    void scrollArea(int x1, int y1, int x2, int y2, int pixels, ScrollDirection dir, bool clear);
 
     char * pData;
 };

@@ -8,7 +8,6 @@
 inline static int calcSize(int width, int height)
 {
 #if (BPP == 8)
-    #error "Wrong BPP"
     return width * height;
 #elif (BPP == 1)
 #ifdef PACK_VERT
@@ -63,7 +62,6 @@ void SmartCanvas::setPix(int x, int y, char value)
     pData[y * width + x] = value;
 #elif (BPP == 1)
 #ifdef PACK_VERT
-#warning "Not tested yet"
     if (value)
     {
         pData[(y/8)*width+x] |=   0x01 << (y % 8);
@@ -94,7 +92,6 @@ char SmartCanvas::getPix(int x, int y)
     return pData[y * width + x];
 #elif (BPP == 1)
 #ifdef PACK_VERT
-#warning "Not tested yet"
     return (pData[(y/8)*width+x] >> (y % 8)) & 0x01;
 #else
 #warning "Not tested yet"
@@ -207,4 +204,85 @@ void SmartCanvas::drawRect(int x1, int y1, int x2, int y2, char value)
     drawHLine(x1, x2, y2, value);
     drawVLine(x1, y1, y2, value);
     drawVLine(x2, y1, y2, value);
+}
+
+void SmartCanvas::scrollArea(int x1, int y1, int x2, int y2, int pixels, ScrollDirection dir, bool clear)
+{
+    int _x1, _y1;
+    int _x2, _y2;
+    switch( dir )
+    {
+        case DIR_LEFT:
+            _x1 = x1;
+            _x2 = x2 - pixels;
+            _y1 = y1;
+            _y2 = y2;
+            if (_x2 < _x1)
+            {
+                // Fill x1 to x2 with blank
+            }
+            else
+            {
+                for (int x = _x1; x <= _x2; x++)
+                {
+                    for (int y = _y1; y <= _y2; y++)
+                    setPix(x, y, getPix(x + pixels, y));
+                }
+            }
+            break;
+        case DIR_RIGHT:
+            _x1 = x1 + pixels;
+            _x2 = x2;
+            _y1 = y1;
+            _y2 = y2;
+            if (_x2 < _x1)
+            {
+                // Fill x1 to x2 with blank
+            }
+            else
+            {
+                for (int x = _x2; x >= _x1; x--)
+                {
+                    for (int y = _y1; y <= _y2; y++)
+                    setPix(x, y, getPix(x - pixels, y));
+                }
+            }
+            break;
+        case DIR_UP:
+            _x1 = x1;
+            _x2 = x2;
+            _y1 = y1;
+            _y2 = y2 - pixels;
+            if (_y2 < _y1)
+            {
+                // Fill y1 to y2 with blank
+            }
+            else
+            {
+                for (int y = _y1; y <= _y2; y++)
+                {
+                    for (int x = _x1; x <= _x2; x++)
+                    setPix(x, y, getPix(x, y + pixels));
+                }
+            }
+            break;
+        case DIR_DOWN:
+            _x1 = x1;
+            _x2 = x2;
+            _y1 = y1 + pixels;
+            _y2 = y2;
+            if (_y2 < _y1)
+            {
+                // Fill x1 to x2 with blank
+            }
+            else
+            {
+                for (int y = _y2; y >= _y1; y--)
+                {
+                    for (int x = _x1; x <= _x2; x++)
+                    setPix(x, y, getPix(x, y - pixels));
+                }
+            }
+            break;
+    }
 }

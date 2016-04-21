@@ -1,8 +1,34 @@
 #include "smartstorage.h"
 #include <cstring>
+#include "stm32f10x_spi.h"
+#include "stm32f10x_gpio.h"
 
 extern const char image_data_font[1536];
 extern const char menu[13][128];
+
+static const int SPI_PIN_MOSI   = GPIO_Pin_15;
+static const int SPI_PIN_MISO   = GPIO_Pin_14;
+static const int SPI_PIN_SCK    = GPIO_Pin_13;
+static const int SPI_PIN_NSS    = GPIO_Pin_12;
+
+static const unsigned char FLASH_DUMMY_BYTE = 0xA5;
+
+
+static const unsigned char FLASH_CMD_WRITE_ENABLE           =   0x06;
+static const unsigned char FLASH_CMD_WRITE_DISABLE          =   0x04;
+static const unsigned char FLASH_CMD_READ_IDENTIFICATION    =   0x9F;
+static const unsigned char FLASH_CMD_READ_STATUS_REGISTER   =   0x05;
+static const unsigned char FLASH_CMD_WRITE_STATUS_REGISTER  =   0x01;
+static const unsigned char FLASH_CMD_READ_DATA_BYTES        =   0x03;
+static const unsigned char FLASH_CMD_READ_DATA_BYTES_HS     =   0x0B;
+static const unsigned char FLASH_CMD_PAGE_PROGRAM           =   0x02;
+static const unsigned char FLASH_CMD_SECTOR_ERASE           =   0xD8;
+static const unsigned char FLASH_CMD_BULK_ERASE             =   0xC7;
+static const unsigned char FLASH_CMD_POWERDOWN              =   0xB9;
+static const unsigned char FLASH_CMD_WAKE                   =   0xAB;
+
+/*!< Write In Progress (WIP) flag */
+static const unsigned char FLASH_FLAG_WIP   = 0x01;
 
 // Number of elements in a storage, -1 means failure
 int SmartStorage::nElements;
@@ -13,6 +39,7 @@ unsigned int SmartStorage::headerCrc;
 
 int SmartStorage::init()
 {
+    initHw();
     // Cleanup
     nElements = -1;
     if (pHeader) delete[] pHeader;
@@ -227,3 +254,138 @@ int SmartStorage::loadData(int idx, int offset, int cnt, char * pData)
     return pHeader[idx].size;
 }
 
+void SmartStorage::initHw(void)
+{
+    GPIO_InitTypeDef GPIO_InitStructure;
+    SPI_InitTypeDef  SPI_InitStructure;
+
+    /*!< sFLASH_SPI_CS_GPIO, sFLASH_SPI_MOSI_GPIO, sFLASH_SPI_MISO_GPIO
+    and sFLASH_SPI_SCK_GPIO Periph clock enable */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+
+    /*!< sFLASH_SPI Periph clock enable */
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+
+    /*!< Configure sFLASH_SPI pins: MOSI/SCK */
+    GPIO_InitStructure.GPIO_Pin = SPI_PIN_MOSI | SPI_PIN_SCK;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+    /*!< Configure sFLASH_SPI pins: MISO */
+    GPIO_InitStructure.GPIO_Pin = SPI_PIN_MISO;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+    /*!< Configure sFLASH_CS_PIN pin: sFLASH Card CS pin */
+    GPIO_InitStructure.GPIO_Pin = SPI_PIN_NSS;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+    /*!< Deselect the FLASH: Chip Select high */
+    GPIOB->BSRR = SPI_PIN_NSS;
+
+    /*!< SPI configuration */
+    SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+    SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+    SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
+    SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
+    SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
+    SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+    SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4;
+
+    SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+    SPI_InitStructure.SPI_CRCPolynomial = 7;
+    SPI_Init(SPI2, &SPI_InitStructure);
+
+    /*!< Enable the sFLASH_SPI  */
+    SPI_Cmd(SPI2, ENABLE);
+
+    readId();
+}
+
+
+unsigned int SmartStorage::readId(void)
+{
+    uint32_t Temp = 0, Temp0 = 0, Temp1 = 0, Temp2 = 0;
+
+    /*!< Select the FLASH: Chip Select low */
+    GPIOB->BRR = SPI_PIN_NSS;
+
+    /*!< Send "RDID " instruction */
+    sendByte(FLASH_CMD_READ_IDENTIFICATION);
+
+    /*!< Read a byte from the FLASH */
+    Temp0 = sendByte(FLASH_DUMMY_BYTE);
+
+    /*!< Read a byte from the FLASH */
+    Temp1 = sendByte(FLASH_DUMMY_BYTE);
+
+    /*!< Read a byte from the FLASH */
+    Temp2 = sendByte(FLASH_DUMMY_BYTE);
+
+    /*!< Deselect the FLASH: Chip Select high */
+    GPIOB->BSRR = SPI_PIN_NSS;
+
+    Temp = (Temp0 << 16) | (Temp1 << 8) | Temp2;
+
+    return Temp;
+}
+
+unsigned char SmartStorage::sendByte(unsigned char byte)
+{
+  /*!< Loop while DR register in not emplty */
+  while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET);
+
+  /*!< Send byte through the SPI peripheral */
+  SPI_I2S_SendData(SPI2, byte);
+
+  /*!< Wait to receive a byte */
+  while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET);
+
+  /*!< Return the byte read from the SPI bus */
+  return SPI_I2S_ReceiveData(SPI2);
+}
+
+bool SmartStorage::isWriteInProgress(void)
+{
+    unsigned char res;
+    GPIOB->BRR = SPI_PIN_NSS;
+
+    /*!< Send "Read Status Register" instruction */
+    sendByte(FLASH_CMD_READ_STATUS_REGISTER);
+
+    /*!< Send a dummy byte to generate the clock needed by the FLASH
+    and put the value of the status register in FLASH_Status variable */
+    res = ((sendByte(FLASH_DUMMY_BYTE) & FLASH_FLAG_WIP) != 0);
+
+    /*!< Deselect the FLASH: Chip Select high */
+    GPIOB->BSRR = SPI_PIN_NSS;
+}
+
+void SmartStorage::readData(unsigned char * pData, unsigned int flashAddr, unsigned int count)
+{
+    /*!< Select the FLASH: Chip Select low */
+    GPIOB->BRR = SPI_PIN_NSS;
+
+    /*!< Send "Read from Memory " instruction */
+    sendByte(FLASH_CMD_READ_DATA_BYTES);
+
+    /*!< Send flashAddr high nibble address byte to read from */
+    sendByte((flashAddr & 0xFF0000) >> 16);
+    /*!< Send flashAddr medium nibble address byte to read from */
+    sendByte((flashAddr& 0xFF00) >> 8);
+    /*!< Send flashAddr low nibble address byte to read from */
+    sendByte(flashAddr & 0xFF);
+
+    while (count--) /*!< while there is data to be read */
+    {
+        /*!< Read a byte from the FLASH */
+        *pData = sendByte(FLASH_DUMMY_BYTE);
+        /*!< Point to the next location where the byte read will be saved */
+        pData++;
+    }
+
+    /*!< Deselect the FLASH: Chip Select high */
+    GPIOB->BSRR = SPI_PIN_NSS;
+}

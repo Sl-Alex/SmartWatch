@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <EmBitz_project_file>
-	<EmBitzVersion release="0.42" revision="0" />
+	<EmBitzVersion release="0.40" revision="0" />
 	<FileVersion major="1" minor="0" />
 	<Project>
 		<Option title="smartwatch" />
@@ -97,6 +97,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="gui\smartcanvas.h" />
+		<Unit filename="gui\smartdisplay.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="gui\smartfont.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -210,9 +213,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src\sh1106.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src\smartdisplay.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src\startup_stm32f10x_md.S">

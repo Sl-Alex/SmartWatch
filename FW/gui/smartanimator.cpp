@@ -32,6 +32,7 @@ bool SmartAnimator::tick()
     switch (mDir)
     {
         case ANIM_DIR_LEFT:
+            // Scroll canvas
             if (mType == ANIM_TYPE_SHIFT)
             {
                 int limit;
@@ -41,30 +42,18 @@ bool SmartAnimator::tick()
                 else
                     limit = mX + mLimit;
 
-                for (int x = mX - limit; x < mX - mTick; x++)
-                {
-                    for (int y = 0; y < mH; y++)
-                    {
-                        pCanvas->setPix(x, mY + y, pCanvas->getPix(x + mXOff + 1, mY + mYOff + y));
-                    }
-                }
+                pCanvas->scrollArea(mX - limit,mY,mX - mTick,mY+mH-1,1,SmartCanvas::DIR_LEFT,false);
             }
-            for(int x = 0; x < mTick + 1; x++)
+            // Draw a part of the image
+            pCanvas->drawCanvas(mX - mTick, mY, mXOff, mYOff, mTick  +1, mH, pImage);
+            // Draw line in case of visual slide
+            if ((mType == ANIM_TYPE_VIS_SLIDE) && (mTick != mW - 1))
             {
-                if ((mType == ANIM_TYPE_VIS_SLIDE) && (x == 0) && (mTick != mW - 1))
-                {
-                    for(int y = 0; y < mH; y++)
-                    {
-                        pCanvas->setPix(mX - mTick, mY + y, 255);
-                    }
-                }
-                else for(int y = 0; y < mH; y++)
-                {
-                    pCanvas->setPix(mX - mTick + x, mY + y, pImage->getPix(x + mXOff,y + mYOff));
-                }
+                pCanvas->drawVLine(mX - mTick,mY, mY + mH - 1, 255);
             }
             break;
         case ANIM_DIR_RIGHT:
+            // Scroll canvas
             if (mType == ANIM_TYPE_SHIFT)
             {
                 int limit;
@@ -74,30 +63,18 @@ bool SmartAnimator::tick()
                 else
                     limit = mX + mLimit;
 
-                for (int x = mX + limit; x > mX + mTick - 1; x--)
-                {
-                    for (int y = 0; y < mH; y++)
-                    {
-                        pCanvas->setPix(x + 1, mY + y, pCanvas->getPix(x + mXOff, mY + mYOff + y));
-                    }
-                }
+                pCanvas->scrollArea(mX + mTick,mY,mX + limit,mY+mH-1,1,SmartCanvas::DIR_RIGHT,false);
             }
-            for(int x = 0; x < mTick + 1; x++)
+            // Draw a part of the image
+            pCanvas->drawCanvas(mX, mY, mW + mXOff - mTick - 1, mYOff, mTick  + 1, mH, pImage);
+            // Draw line in case of visual slide
+            if ((mType == ANIM_TYPE_VIS_SLIDE) && (mTick != mW - 1))
             {
-                if ((mType == ANIM_TYPE_VIS_SLIDE) && (x == mTick) && (mTick != mW - 1))
-                {
-                    for(int y = 0; y < mH; y++)
-                    {
-                        pCanvas->setPix(mX + mTick, mY + y, 255);
-                    }
-                }
-                else for(int y = 0; y < mH; y++)
-                {
-                    pCanvas->setPix(mX + x, mY + y, pImage->getPix(mW + x + mXOff - mTick - 1,y + mYOff));
-                }
+                pCanvas->drawVLine(mX + mTick, mY, mY + mH - 1, 255);
             }
             break;
         case ANIM_DIR_UP:
+            // Scroll canvas
             if (mType == ANIM_TYPE_SHIFT)
             {
                 int limit;
@@ -107,30 +84,18 @@ bool SmartAnimator::tick()
                 else
                     limit = mY + mLimit;
 
-                for (int y = mY - limit; y < mY - mTick; y++)
-                {
-                    for (int x = 0; x < mW; x++)
-                    {
-                        pCanvas->setPix(mX + x, y, pCanvas->getPix(mX + mXOff + x, y + mYOff + 1));
-                    }
-                }
+                pCanvas->scrollArea(mX,mY - limit,mX+mW-1,mY - mTick,1,SmartCanvas::DIR_UP,false);
             }
-            for(int y = 0; y < mTick + 1; y++)
+            // Draw a part of the image
+            pCanvas->drawCanvas(mX, mY - mTick, mXOff, mYOff, mW, mTick  +1, pImage);
+            // Draw line in case of visual slide
+            if ((mType == ANIM_TYPE_VIS_SLIDE) && (mTick != mH - 1))
             {
-                if ((mType == ANIM_TYPE_VIS_SLIDE) && (y == 0) && (mTick != mH - 1))
-                {
-                    for(int x = 0; x < mW; x++)
-                    {
-                        pCanvas->setPix(mX + x, mY - mTick, 255);
-                    }
-                }
-                else for(int x = 0; x < mW; x++)
-                {
-                    pCanvas->setPix(mX + x, mY - mTick + y, pImage->getPix(x + mXOff,y + mYOff));
-                }
+                pCanvas->drawHLine(mX, mX + mW - 1, mY - mTick, 255);
             }
             break;
         case ANIM_DIR_DOWN:
+            // Scroll canvas
             if (mType == ANIM_TYPE_SHIFT)
             {
                 int limit;
@@ -140,27 +105,14 @@ bool SmartAnimator::tick()
                 else
                     limit = mY + mLimit;
 
-                for (int y = mY + limit; y > mY + mTick - 1; y--)
-                {
-                    for (int x = 0; x < mW; x++)
-                    {
-                        pCanvas->setPix(mX + x, y + 1, pCanvas->getPix(mX + mXOff + x, y + mYOff));
-                    }
-                }
+                pCanvas->scrollArea(mX,mY + mTick,mX+mW-1,mY + limit,1,SmartCanvas::DIR_DOWN,false);
             }
-            for(int y = 0; y < mTick + 1; y++)
+            // Draw a part of the image
+            pCanvas->drawCanvas(mX, mY, mXOff, mH + mYOff - mTick - 1, mW, mTick  + 1, pImage);
+            // Draw line in case of visual slide
+            if ((mType == ANIM_TYPE_VIS_SLIDE) && (mTick != mH - 1))
             {
-                if ((mType == ANIM_TYPE_VIS_SLIDE) && (y == mTick) && (mTick != mH - 1))
-                {
-                    for(int x = 0; x < mW; x++)
-                    {
-                        pCanvas->setPix(mX + x, mY + mTick, 255);
-                    }
-                }
-                else for(int x = 0; x < mW; x++)
-                {
-                    pCanvas->setPix(mX + x, mY + y, pImage->getPix(x + mXOff,mH + mYOff + y - mTick - 1));
-                }
+                pCanvas->drawHLine(mX, mX + mW - 1, mY + mTick, 255);
             }
             break;
     }

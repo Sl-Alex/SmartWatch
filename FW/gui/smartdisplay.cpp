@@ -4,6 +4,7 @@
 #include "smartstorage.h"
 #include "smartanimator.h"
 #include "sh1106.h"
+#include "stdio.h"
 
 static SmartCanvas * pCanvas;
 static SmartCanvas * pTextCanvas;
@@ -27,7 +28,11 @@ void SmartDisplay_init(void)
     pTextCanvas->init(6*12,8);
     pTextCanvas->clear();
     SmartFont::loadFont();
-    SmartFont::drawText(pTextCanvas,0,0,"Hello C++ :)");
+    char str[20];
+    sprintf(str, "0x%X", SmartStorage::readId());
+    SmartFont::drawText(pCanvas,10,54,str);
+    char hello[] = "Hello C++ :)";
+    SmartFont::drawText(pTextCanvas,0,0,hello);
     pAnimator = new SmartAnimator();
     pAnimator->setCanvas(pCanvas);
     pAnimator->setImage(pTextCanvas);
