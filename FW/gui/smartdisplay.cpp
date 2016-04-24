@@ -14,8 +14,8 @@ static SmartCanvas * pImage;
 SmartAnimator * pAnimator;
 SmartAnimator * pAnimator2;
 int imageIndex = 0;
-#define IMG_OFFSET  3
-#define IMG_CNT     13
+#define IMG_OFFSET  1
+#define IMG_CNT     7
 
 void SmartDisplay_init(void)
 {
@@ -25,7 +25,7 @@ void SmartDisplay_init(void)
     pCanvas->init(128,64);
     pCanvas->clear();
     pTextCanvas = new SmartCanvas();
-    pTextCanvas->init(6*12,8);
+    pTextCanvas->init(6*20,8);
     pTextCanvas->clear();
     SmartFont::loadFont();
     char str[20];

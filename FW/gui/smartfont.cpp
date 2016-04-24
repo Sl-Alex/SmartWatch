@@ -7,7 +7,7 @@ int SmartFont::symbolWidth = -1;
 bool SmartFont::loadFont(void)
 {
     symbolWidth = -1;
-    if (getInstance()->init(2) == false) return false;
+    if (getInstance()->init(0) == false) return false;
     if (pInstance->width % 256)
         return false;
     if (pInstance->width < 256)
