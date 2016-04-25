@@ -92,20 +92,12 @@ int SmartStorage::init()
     nElements = -1;
     if (pHeader) delete[] pHeader;
 
-    //readFlash(address = 0,size = sizeof(nElements),&nElements);
-    //nElements = ext_flash[1];
-    ///readData(&nElements, 1, 1);
-    nElements = ext_flash[1];
+    readData(&nElements, 1, sizeof(nElements));
 
     if (nElements > 100) { nElements = -1; return nElements; }
 
     pHeader = new StorageHeader[nElements];
     readData((unsigned char *)pHeader, 2, nElements * sizeof(StorageHeader));
-    /*for (int i = 0; i < nElements; i++)
-    {
-        pHeader[i].size = *((int *)(&ext_flash[2 + i * sizeof(StorageHeader)]));
-        pHeader[i].address = *((int *)(&ext_flash[2 + i * sizeof(StorageHeader) + sizeof(int)]));
-    }*/
 
     if (!checkCrc())
     {
@@ -148,19 +140,10 @@ int SmartStorage::loadData(int idx, int offset, int cnt, char * pData)
     char data = 0;
 
     if (offset == 0){
-//        *((unsigned int *)&pData[0]) = *((unsigned int *)&ext_flash[pHeader[idx].address]);
-//        *((unsigned int *)&pData[sizeof(int)]) = *((unsigned int *)&ext_flash[pHeader[idx].address+sizeof(int)]);
-//        *((unsigned int *)&pData[2*sizeof(int)]) = *((unsigned int *)&ext_flash[pHeader[idx].address+2*sizeof(int)]);
         readData((unsigned char *)pData,pHeader[idx].address,3*sizeof(int));
         return 3*sizeof(int);
     }
-    //readData((unsigned char *)pData, pHeader[idx].address + offset, cnt);
-    //return cnt;
-    for (int i = 0; i < cnt; i++)
-    {
-//        pData[i] = ext_flash[pHeader[idx].address + 3 * sizeof(int) + i];
-        readData((unsigned char *)pData,pHeader[idx].address + 3 * sizeof(int),cnt);
-    }
+    readData((unsigned char *)pData,pHeader[idx].address + 3 * sizeof(int),cnt);
     return pHeader[idx].size;
 }
 
