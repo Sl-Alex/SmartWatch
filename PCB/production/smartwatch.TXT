@@ -1,5 +1,5 @@
 M48
-;DRILL file {KiCad (2016-04-26 BZR 6712, Git b92ad6f)-product} date 03/05/2016 22:18:13
+;DRILL file {KiCad (2016-04-05 BZR 6665, Git e1b308b)-product} date 04.05.2016 13:47:15
 ;FORMAT={-:-/ absolute / metric / decimal}
 FMAT,2
 METRIC,TZ
@@ -46,7 +46,6 @@ X193.9Y-90.2
 X193.9Y-91.2
 X194.109Y-94.009
 X194.237Y-95.847
-X194.818Y-90.17
 X194.928Y-96.424
 X195.9Y-101.6
 X195.95Y-84.75
