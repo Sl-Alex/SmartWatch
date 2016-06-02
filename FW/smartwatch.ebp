@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <EmBitz_project_file>
-	<EmBitzVersion release="0.40" revision="0" />
+	<EmBitzVersion release="0.42" revision="0" />
 	<FileVersion major="1" minor="0" />
 	<Project>
 		<Option title="smartwatch" />
@@ -15,12 +15,15 @@
 				<Option compiler="armgcc_eb" />
 				<Option projectDeviceOptionsRelation="0" />
 				<Compiler>
-					<Add option="-g3" />
-					<Add option="-O0" />
 					<Add option="-Wall" />
 					<Add option="-fdata-sections" />
 					<Add option="-ffunction-sections" />
+					<Add option="-O0" />
+					<Add option="-g3" />
 				</Compiler>
+				<Cpp>
+					<Add option="-g3" />
+				</Cpp>
 				<Assembler>
 					<Add option="-Wa,--gdwarf-2" />
 				</Assembler>
@@ -89,6 +92,10 @@
 		<Unit filename="gui\font.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="gui\sm_texture.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="gui\sm_texture.h" />
 		<Unit filename="gui\smartanimator.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -104,6 +111,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="gui\smartfont.h" />
+		<Unit filename="gui\smartimage.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="gui\smartimage.h" />
 		<Unit filename="gui\smartstorage.cpp">
 			<Option compilerVar="CC" />
 		</Unit>

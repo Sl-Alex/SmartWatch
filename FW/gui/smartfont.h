@@ -1,9 +1,9 @@
 #ifndef SMARTFONT_H
 #define SMARTFONT_H
 
-#include "smartcanvas.h"
+#include "smartimage.h"
 
-class SmartFont: SmartCanvas
+class SmartFont: SmartImage
 {
 public:
     static bool loadFont(void);

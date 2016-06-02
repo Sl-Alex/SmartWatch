@@ -41,7 +41,7 @@ void SmartDisplay_init(void)
     pAnimator->setSpeed(1);
     pAnimator->setShiftLimit(6*12);
     pAnimator->start(100, 4, 0, 0, 6*12, 8);
-    pImage = new SmartCanvas();
+    pImage = new SmartImage();
     pImage->init(IMG_OFFSET + imageIndex);
 
     pAnimator2 = new SmartAnimator();

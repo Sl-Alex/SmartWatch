@@ -1,52 +1,71 @@
-#include "smartcanvas.h"
+#include "smartimage.h"
 #include "smartstorage.h"
 
 #define abs(a) ((a)>0?(a):(-(a)))
 
 #define swap_int(a, b) { int t = a; a = b; b = t; }
 
-void SmartCanvas::setPix(int x, int y, char value)
+bool SmartImage::init(int imageIndex)
 {
-    if ((x < 0) || (x >= getWidth())) return;
-    if ((y < 0) || (y >= getHeight())) return;
+    StorageHeader header;
+
+    if (SmartStorage::getSize(imageIndex) < 0)
+        return false;
+    if (SmartStorage::loadData(imageIndex,0,sizeof(StorageHeader),(char *)&header) < 0)
+        return false;
+
+    if (header.size != calcSize(header.width,header.height)) return false;
+
+    SmTexture::init(header.width, header.height);
+
+    if (SmartStorage::loadData(imageIndex,sizeof(StorageHeader),size,pData) < 1)
+        return false;
+
+    return true;
+}
+
+void SmartImage::setPix(int x, int y, char value)
+{
+    if ((x < 0) || (x >= width)) return;
+    if ((y < 0) || (y >= height)) return;
 #if (BPP == 8)
-    getPData()[y * getWidth() + x] = value;
+    pData[y * width + x] = value;
 #elif (BPP == 1)
 #ifdef PACK_VERT
     if (value)
     {
-        getPData()[(y/8)*getWidth()+x] |=   0x01 << (y % 8);
+        pData[(y/8)*width+x] |=   0x01 << (y % 8);
     }
     else
     {
-        getPData()[(y/8)*getWidth()+x] &=~ (0x01 << (y % 8));
+        pData[(y/8)*width+x] &=~ (0x01 << (y % 8));
     }
 #else
 #warning "Not tested yet"
     if (value)
     {
-        getPData()[y*getWidth()+x/8] |=  0x01 << (x % 8);
+        pData[y*width+x/8] |=  0x01 << (x % 8);
     }
     else
     {
-        getPData()[y*getWidth()+x/8] &= (0x01 << (x % 8));
+        pData[y*width+x/8] &= (0x01 << (x % 8));
     }
 #endif
 #endif
 }
 
-char SmartCanvas::getPix(int x, int y)
+char SmartImage::getPix(int x, int y)
 {
-    if ((x < 0) || (x >= getWidth())) return 0;
-    if ((y < 0) || (y >= getHeight())) return 0;
+    if ((x < 0) || (x >= width)) return 0;
+    if ((y < 0) || (y >= height)) return 0;
 #if (BPP == 8)
-    return getPData()[y * getWidth() + x];
+    return pData[y * width + x];
 #elif (BPP == 1)
 #ifdef PACK_VERT
-    return (getPData()[(y/8)*getWidth()+x] >> (y % 8)) & 0x01;
+    return (pData[(y/8)*width+x] >> (y % 8)) & 0x01;
 #else
 #warning "Not tested yet"
-    return (getPData()[y*getWidth()+x/8] >> (x % 8)) & 0x01;
+    return (pData[y*width+x/8] >> (x % 8)) & 0x01;
 #endif
 #endif
 }
@@ -60,8 +79,8 @@ void SmartCanvas::drawCanvas(int x, int y, int xOff, int yOff, int w, int h, Sma
 
     if (x < 0) x_left = -x;
     if (y < 0) y_top = -y;
-    if ((x + x_right) > getWidth()) x_right = getWidth() - x;
-    if ((y + y_bottom) > getHeight()) y_bottom = getHeight() - y;
+    if ((x + x_right) > width) x_right = width - x;
+    if ((y + y_bottom) > height) y_bottom = height - y;
 
     for (int _y = y_top; _y < y_bottom; _y++)
     {
