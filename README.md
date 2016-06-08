@@ -12,9 +12,9 @@ This project aims to create an open-source smartwatch with the following functio
 - 3D models for all parts are in my [KiCAD_libs](https://github.com/Sl-Alex/KiCAD_libs) repository, case will be available a later, so the whole project can be easily reproduced.
 
 # Hardware
-Both schematic and PCB were created with KiCAD. KiCAD project is located in the [PCB](./PCB) subfolder. Project uses components from my [KiCAD_libs](https://github.com/Sl-Alex/KiCAD_libs) repository.
-Status: Finished. PCB is assembled, all HW features are tested and work as expected. Minor updates (component values and comments) will follow.
+Both schematic and PCB were created with KiCAD. KiCAD project is located in the [PCB](./PCB) subfolder. Project uses components from my [KiCAD_libs](https://github.com/Sl-Alex/KiCAD_libs) repository.<br />
+**Status**: Finished. PCB is assembled, all HW features are tested and work as expected. Minor updates (component values and comments) will follow.
 
 # Software
-Project created in [EmBitz](http://www.emblocks.org/web/)
-Status: Basic HW classes implementation (GPIO, SW/HW SPI and so on). SPL will be completely thrown away.
+Project created in [EmBitz](http://www.emblocks.org/web/)<br />
+**Status**: Basic HW classes implementation (GPIO, SW/HW SPI and so on). SPL will be completely thrown away.
