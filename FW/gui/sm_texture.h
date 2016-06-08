@@ -22,6 +22,7 @@ public:
 
     inline int getWidth(void) { return mWidth; }
     inline int getHeight(void) { return mHeight; }
+    inline int getSize(void) { return mSize; }
 
     static int calcSize(int width, int height);
 

@@ -18,7 +18,7 @@ bool SmartImage::init(int imageIndex)
 
     SmTexture::init(header.width, header.height);
 
-    if (SmartStorage::loadData(imageIndex,sizeof(StorageHeader),size,pData) < 1)
+    if (SmartStorage::loadData(imageIndex,sizeof(StorageHeader),getSize(),getPData()) < 1)
         return false;
 
     return true;
@@ -26,29 +26,29 @@ bool SmartImage::init(int imageIndex)
 
 void SmartImage::setPix(int x, int y, char value)
 {
-    if ((x < 0) || (x >= width)) return;
-    if ((y < 0) || (y >= height)) return;
+    if ((x < 0) || (x >= getWidth())) return;
+    if ((y < 0) || (y >= getHeight())) return;
 #if (BPP == 8)
-    pData[y * width + x] = value;
+    pData[y * getWidth() + x] = value;
 #elif (BPP == 1)
 #ifdef PACK_VERT
     if (value)
     {
-        pData[(y/8)*width+x] |=   0x01 << (y % 8);
+        getPData()[(y/8)*getWidth()+x] |=   0x01 << (y % 8);
     }
     else
     {
-        pData[(y/8)*width+x] &=~ (0x01 << (y % 8));
+        getPData()[(y/8)*getWidth()+x] &=~ (0x01 << (y % 8));
     }
 #else
 #warning "Not tested yet"
     if (value)
     {
-        pData[y*width+x/8] |=  0x01 << (x % 8);
+        getPData()[y*getWidth()+x/8] |=  0x01 << (x % 8);
     }
     else
     {
-        pData[y*width+x/8] &= (0x01 << (x % 8));
+        getPData()[y*getWidth()+x/8] &= (0x01 << (x % 8));
     }
 #endif
 #endif
@@ -56,21 +56,21 @@ void SmartImage::setPix(int x, int y, char value)
 
 char SmartImage::getPix(int x, int y)
 {
-    if ((x < 0) || (x >= width)) return 0;
-    if ((y < 0) || (y >= height)) return 0;
+    if ((x < 0) || (x >= getWidth())) return 0;
+    if ((y < 0) || (y >= getHeight())) return 0;
 #if (BPP == 8)
-    return pData[y * width + x];
+    return getPData()[y * getWidth() + x];
 #elif (BPP == 1)
 #ifdef PACK_VERT
-    return (pData[(y/8)*width+x] >> (y % 8)) & 0x01;
+    return (getPData()[(y/8)*getWidth()+x] >> (y % 8)) & 0x01;
 #else
 #warning "Not tested yet"
-    return (pData[y*width+x/8] >> (x % 8)) & 0x01;
+    return (getPData()[y*getWidth()+x/8] >> (x % 8)) & 0x01;
 #endif
 #endif
 }
 
-void SmartCanvas::drawCanvas(int x, int y, int xOff, int yOff, int w, int h, SmartCanvas * source)
+void SmartImage::drawCanvas(int x, int y, int xOff, int yOff, int w, int h, SmartCanvas * source)
 {
     int x_left = 0;
     int x_right = w;
@@ -79,8 +79,8 @@ void SmartCanvas::drawCanvas(int x, int y, int xOff, int yOff, int w, int h, Sma
 
     if (x < 0) x_left = -x;
     if (y < 0) y_top = -y;
-    if ((x + x_right) > width) x_right = width - x;
-    if ((y + y_bottom) > height) y_bottom = height - y;
+    if ((x + x_right) > getWidth()) x_right = getWidth() - x;
+    if ((y + y_bottom) > getHeight()) y_bottom = getHeight() - y;
 
     for (int _y = y_top; _y < y_bottom; _y++)
     {
@@ -91,7 +91,7 @@ void SmartCanvas::drawCanvas(int x, int y, int xOff, int yOff, int w, int h, Sma
     }
 }
 
-void SmartCanvas::drawLine(int x1, int y1, int x2, int y2, char value)
+void SmartImage::drawLine(int x1, int y1, int x2, int y2, char value)
 {
     if (x1 == x2)
     {
@@ -148,7 +148,7 @@ void SmartCanvas::drawLine(int x1, int y1, int x2, int y2, char value)
     }
 }
 
-void SmartCanvas::drawHLine(int x1, int x2, int y, char value)
+void SmartImage::drawHLine(int x1, int x2, int y, char value)
 {
     if (x1 > x2)
         swap_int(x1,x2);
@@ -158,7 +158,7 @@ void SmartCanvas::drawHLine(int x1, int x2, int y, char value)
     }
 }
 
-void SmartCanvas::drawVLine(int x, int y1, int y2, char value)
+void SmartImage::drawVLine(int x, int y1, int y2, char value)
 {
     if (y1 > y2)
         swap_int(y1,y2);
@@ -168,7 +168,7 @@ void SmartCanvas::drawVLine(int x, int y1, int y2, char value)
     }
 }
 
-void SmartCanvas::drawRect(int x1, int y1, int x2, int y2, char value)
+void SmartImage::drawRect(int x1, int y1, int x2, int y2, char value)
 {
     drawHLine(x1, x2, y1, value);
     drawHLine(x1, x2, y2, value);
@@ -176,7 +176,7 @@ void SmartCanvas::drawRect(int x1, int y1, int x2, int y2, char value)
     drawVLine(x2, y1, y2, value);
 }
 
-void SmartCanvas::scrollArea(int x1, int y1, int x2, int y2, int pixels, ScrollDirection dir, bool clear)
+void SmartImage::scrollArea(int x1, int y1, int x2, int y2, int pixels, ScrollDirection dir, bool clear)
 {
     int _x1, _y1;
     int _x2, _y2;

@@ -3,6 +3,7 @@
 
 #include "string.h"
 #include "sm_texture.h"
+#include "smartcanvas.h"
 
 class SmartImage: public SmTexture
 {
@@ -24,10 +25,12 @@ public:
 
     void setPix(int x, int y, char value);
     char getPix(int x, int y);
+    inline int getWidth(void) { return SmTexture::getWidth(); }
+    inline int getHeight(void) { return SmTexture::getWidth(); }
 //    void drawCanvas(int x, int y, SmartCanvas * source);
     void drawCanvas(int x, int y, int xOff, int yOff, int w, int h, SmartCanvas * source);
     inline void drawCanvas(int x, int y, SmartCanvas * source)
-        {drawCanvas(x, y, 0, 0, source->getWidth(), source->getHeight(), source);}
+        {/*drawCanvas(x, y, 0, 0, source->getWidth(), source->getHeight(), source);*/}
     void drawLine(int x1, int x2, int y1, int y2, char value);
     void drawHLine(int x1, int x2, int y, char value);
     void drawVLine(int x, int y1, int y2, char value);
