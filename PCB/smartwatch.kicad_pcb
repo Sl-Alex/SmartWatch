@@ -1,4 +1,4 @@
-(kicad_pcb (version 4) (host pcbnew "(2016-04-26 BZR 6712, Git b92ad6f)-product")
+(kicad_pcb (version 4) (host pcbnew "(2016-06-02 BZR 6871, Git 368bd14)-product")
 
   (general
     (links 193)
@@ -880,7 +880,7 @@
     (fp_text reference R5 (at 0.7 0.7 270) (layer F.SilkS) hide
       (effects (font (size 0.5 0.5) (thickness 0.125)))
     )
-    (fp_text value resistor (at 0.6 1.7 270) (layer F.Fab) hide
+    (fp_text value 10k (at 0.6 1.7 270) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (pad 1 smd rect (at 0 0 270) (size 0.5 0.5) (layers F.Cu F.Paste F.Mask)
@@ -940,7 +940,7 @@
     (fp_text reference C5 (at 0.7 0.7) (layer F.SilkS) hide
       (effects (font (size 0.5 0.5) (thickness 0.125)))
     )
-    (fp_text value capacitor (at 0.6 1.7) (layer F.Fab) hide
+    (fp_text value 0.1 (at 0.6 1.7) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (pad 1 smd rect (at 0 0) (size 0.5 0.5) (layers F.Cu F.Paste F.Mask)
@@ -960,7 +960,7 @@
     (fp_text reference R8 (at 0.7 0.7 270) (layer F.SilkS) hide
       (effects (font (size 0.5 0.5) (thickness 0.125)))
     )
-    (fp_text value resistor (at 0.6 1.7 270) (layer F.Fab) hide
+    (fp_text value 10k (at 0.6 1.7 270) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (pad 1 smd rect (at 0 0 270) (size 0.5 0.5) (layers F.Cu F.Paste F.Mask)
@@ -980,7 +980,7 @@
     (fp_text reference R9 (at 0.7 0.7) (layer F.SilkS) hide
       (effects (font (size 0.5 0.5) (thickness 0.125)))
     )
-    (fp_text value resistor (at 0.6 1.7) (layer F.Fab) hide
+    (fp_text value 10k (at 0.6 1.7) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (pad 1 smd rect (at 0 0) (size 0.5 0.5) (layers F.Cu F.Paste F.Mask)
@@ -1176,7 +1176,7 @@
     (fp_text reference C9 (at 0.7 0.7 90) (layer F.SilkS) hide
       (effects (font (size 0.5 0.5) (thickness 0.125)))
     )
-    (fp_text value capacitor (at 0.6 1.7 90) (layer F.Fab) hide
+    (fp_text value 0.1 (at 0.6 1.7 90) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (pad 1 smd rect (at 0 0 90) (size 0.5 0.5) (layers F.Cu F.Paste F.Mask)
@@ -1196,7 +1196,7 @@
     (fp_text reference C10 (at 0.7 0.7 90) (layer F.SilkS) hide
       (effects (font (size 0.5 0.5) (thickness 0.125)))
     )
-    (fp_text value capacitor (at 0.6 1.7 90) (layer F.Fab) hide
+    (fp_text value 0.1 (at 0.6 1.7 90) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (pad 1 smd rect (at 0 0 90) (size 0.5 0.5) (layers F.Cu F.Paste F.Mask)
@@ -1216,7 +1216,7 @@
     (fp_text reference C12 (at 0.7 0.7 180) (layer F.SilkS) hide
       (effects (font (size 0.5 0.5) (thickness 0.125)))
     )
-    (fp_text value capacitor (at 0.6 1.7 180) (layer F.Fab) hide
+    (fp_text value 0.1 (at 0.6 1.7 180) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (pad 1 smd rect (at 0 0 180) (size 0.5 0.5) (layers F.Cu F.Paste F.Mask)
@@ -1236,7 +1236,7 @@
     (fp_text reference C13 (at 0.7 0.7 90) (layer F.SilkS) hide
       (effects (font (size 0.5 0.5) (thickness 0.125)))
     )
-    (fp_text value capacitor (at 0.6 1.7 90) (layer F.Fab) hide
+    (fp_text value 0.1 (at 0.6 1.7 90) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (pad 1 smd rect (at 0 0 90) (size 0.5 0.5) (layers F.Cu F.Paste F.Mask)
@@ -1370,7 +1370,7 @@
     (fp_text reference C14 (at 0.7 0.7) (layer F.SilkS) hide
       (effects (font (size 0.5 0.5) (thickness 0.125)))
     )
-    (fp_text value capacitor (at 0.6 1.7) (layer F.Fab) hide
+    (fp_text value 0.1 (at 0.6 1.7) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (pad 1 smd rect (at 0 0) (size 0.5 0.5) (layers F.Cu F.Paste F.Mask)
@@ -1390,7 +1390,7 @@
     (fp_text reference R10 (at -1.108334 0.55 90) (layer F.SilkS) hide
       (effects (font (size 0.5 0.5) (thickness 0.125)))
     )
-    (fp_text value resistor (at 0.6 1.7 90) (layer F.Fab) hide
+    (fp_text value 1k (at 0.6 1.7 90) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (pad 1 smd rect (at 0 0 90) (size 0.5 0.5) (layers F.Cu F.Paste F.Mask)
@@ -1587,7 +1587,7 @@
     (fp_text reference C11 (at 0.8 0.85 180) (layer F.SilkS) hide
       (effects (font (size 0.5 0.5) (thickness 0.125)))
     )
-    (fp_text value capacitor (at 0.6 1.7 180) (layer F.Fab) hide
+    (fp_text value 22u (at 0.6 1.7 180) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (pad 1 smd rect (at 0 0 180) (size 0.6 0.8) (layers F.Cu F.Paste F.Mask)
@@ -1627,7 +1627,7 @@
     (fp_text reference C20 (at -0.453714 1.598705) (layer F.SilkS) hide
       (effects (font (size 0.5 0.5) (thickness 0.125)))
     )
-    (fp_text value capacitor (at 0.6 1.7) (layer F.Fab) hide
+    (fp_text value 0.1 (at 0.6 1.7) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (pad 1 smd rect (at 0 0) (size 0.5 0.5) (layers F.Cu F.Paste F.Mask)
