@@ -6,11 +6,8 @@
 #include "sh1106.h"
 #include "stdio.h"
 
-typedef SmHwSpiSw<SM_HW_SPI_MODE0,SM_HW_SPI_CFG_OUT,SM_HW_SPI_WIDTH_8> DispSpiType;
-
 SmDisplay::SmDisplay()
 {
-    mSpi = new DispSpiType();
 }
 
 void SmDisplay::init(int width, int height)
@@ -18,10 +15,9 @@ void SmDisplay::init(int width, int height)
     LcdInit();
 }
 
-void SmDisplay::setPins(SmHwGpioPin * cs, SmHwGpioPin * clk, SmHwGpioPin * dat, SmHwGpioPin * dc)
+void SmDisplay::setInterface(SmHwAbstractSpi * spi, SmHwGpioPin * dc)
 {
-    ((DispSpiType *)mSpi)->init(clk,0,dat);
-    mSpi->setSsPins(cs, 1);
+    mSpi = spi;
     mDcPin = dc;
 }
 
