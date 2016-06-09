@@ -124,6 +124,7 @@
 		<Unit filename="halpp\inc\sm_hw_abstract_gpio.h" />
 		<Unit filename="halpp\inc\sm_hw_abstract_spi.h" />
 		<Unit filename="halpp\inc\sm_hw_gpio.h" />
+		<Unit filename="halpp\inc\sm_hw_spi_hw.h" />
 		<Unit filename="halpp\inc\sm_hw_spi_sw.h" />
 		<Unit filename="inc\sh1106.h" />
 		<Unit filename="inc\smartdisplay.h" />
