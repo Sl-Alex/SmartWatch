@@ -16,6 +16,7 @@
 #include "sm_hw_gpio.h"
 #include "sm_hw_spi_sw.h"
 #include "sm_hw_spi_hw.h"
+#include "sm_hw_rcc.h"
 
 // Display SPI interface
 typedef SmHwSpiSw<SM_HW_SPI_MODE0,SM_HW_SPI_CFG_OUT,SM_HW_SPI_WIDTH_8> DisplaySpi;
@@ -25,22 +26,25 @@ int main(void)
 {
     // Initialize display memory
     SmDisplay * display = new SmDisplay();
-    display->init(128,64);
 
     // Initialize display interface
     DisplaySpi * spi = new DisplaySpi();
+    SmHwRcc::RccClockEnable(RCC_PERIPH_GPIOA);
     spi->setSsPins(new SmHwGpio<GPIOA_BASE,1>(), 1);
     spi->init(new SmHwGpio<GPIOA_BASE,3>(),     /// SCK
               0,                                /// MISO - not used in SM_HW_SPI_CFG_OUT configuration
               new SmHwGpio<GPIOA_BASE,2>());    /// MOSI
 
     // Initialize SPI flash
+    SmHwRcc::RccClockEnable(RCC_PERIPH_SPI2);
+    SmHwRcc::RccClockEnable(RCC_PERIPH_GPIOB);
     MemorySpi * spiMem = new MemorySpi();
     spiMem->setSsPins(new SmHwGpio<GPIOB_BASE,12>(), 1);
     spiMem->init(SM_HW_SPI_MODE3, SM_HW_SPI_WIDTH_8);
 
     // Apply display interface
-    display->setInterface(spi, new SmHwGpio<GPIOA_BASE,0>());
+    /// @todo Check power pin
+    display->init(128,64,spi,new SmHwGpio<GPIOA_BASE,0>(), new SmHwGpio<GPIOA_BASE,1>());
 
     // Do something
     display->setPix(20,20,1);
