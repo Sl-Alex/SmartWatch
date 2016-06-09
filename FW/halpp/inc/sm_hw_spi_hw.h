@@ -42,6 +42,10 @@ void SmHwSpiHw<SPI_BASE, CFG>::init(SpiMode mode, SpiWidth width)
 #define SPI_Mode_Select      ((uint16_t)0xF7FF)
 #define I2S_Mode_Select      ((uint16_t)0x0800)
 	((SPI_TypeDef *)SPI_BASE)->I2SCFGR &= SPI_Mode_Select;
+
+	/* Enable SPI */
+#define CR1_SPE_Set          ((uint16_t)0x0040)
+	((SPI_TypeDef *)SPI_BASE)->CR1 |= CR1_SPE_Set;
 }
 
 template<uint32_t SPI_BASE, SpiConfig CFG>
