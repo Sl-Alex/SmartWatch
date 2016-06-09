@@ -2,7 +2,7 @@
 #define SM_HW_SPI_SW_H_INCLUDED
 
 #include "sm_hw_abstract_spi.h"
-#include "sm_hw_gpio.h"
+#include "sm_hw_abstract_gpio.h"
 
 template<SpiMode MODE, SpiConfig CFG, SpiWidth WIDTH>
 class SmHwSpiSw: public SmHwAbstractSpi
@@ -13,18 +13,18 @@ public:
 		mPinMiso(0),
 		mPinMosi(0)
     {}
-	virtual void init(SmHwGpioPin *pSck, SmHwGpioPin *pMiso, SmHwGpioPin *pMosi);
+	virtual void init(SmHwAbstractGpio *pSck, SmHwAbstractGpio *pMiso, SmHwAbstractGpio *pMosi);
 	virtual void setSs(int ss);
 	virtual void resetSs(int ss);
 	virtual void transfer(void * in, void * out, int size);
 private:
-	SmHwGpioPin *mPinSck;
-	SmHwGpioPin *mPinMiso;
-	SmHwGpioPin *mPinMosi;
+	SmHwAbstractGpio *mPinSck;
+	SmHwAbstractGpio *mPinMiso;
+	SmHwAbstractGpio *mPinMosi;
 };
 
 template<SpiMode MODE, SpiConfig CFG, SpiWidth WIDTH>
-void SmHwSpiSw<MODE, CFG, WIDTH>::init(SmHwGpioPin *pSck, SmHwGpioPin *pMiso, SmHwGpioPin *pMosi)
+void SmHwSpiSw<MODE, CFG, WIDTH>::init(SmHwAbstractGpio *pSck, SmHwAbstractGpio *pMiso, SmHwAbstractGpio *pMosi)
 {
 	mPinSck = pSck;
 	mPinMiso = pMiso;

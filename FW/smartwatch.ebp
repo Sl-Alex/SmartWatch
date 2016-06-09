@@ -121,12 +121,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="gui\smartstorage.h" />
+		<Unit filename="halpp\inc\sm_hw_abstract_gpio.h" />
 		<Unit filename="halpp\inc\sm_hw_abstract_spi.h" />
 		<Unit filename="halpp\inc\sm_hw_gpio.h" />
 		<Unit filename="halpp\inc\sm_hw_spi_sw.h" />
-		<Unit filename="halpp\src\sm_hw_gpio.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="inc\sh1106.h" />
 		<Unit filename="inc\smartdisplay.h" />
 		<Unit filename="inc\stm32f10x.h" />

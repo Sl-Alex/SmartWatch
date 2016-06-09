@@ -2,6 +2,7 @@
 #define SM_HW_ABSTRACT_SPI_H_INCLUDED
 
 #include <stdint.h>
+#include "sm_hw_abstract_gpio.h"
 
 enum SpiConfig {
     SM_HW_SPI_CFG_FULL_DUPLEX,
@@ -29,7 +30,7 @@ public:
 	virtual void setWidth(SpiWidth width){};
 	virtual void transfer(void * in, void * out, int size) = 0;
 	virtual ~SmHwAbstractSpi() {};
-	virtual void setSsPins(SmHwGpioPin *pSs , int ssCount)
+	virtual void setSsPins(SmHwAbstractGpio *pSs , int ssCount)
 	{
 	    mSsPins = pSs;
 	    mSsCount = ssCount;
@@ -55,7 +56,7 @@ public:
 	    mSsPins[ss].resetPin();
 	}
 private:
-    SmHwGpioPin *mSsPins;
+    SmHwAbstractGpio *mSsPins;
     int mSsCount;
 };
 

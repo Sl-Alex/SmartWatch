@@ -15,7 +15,7 @@ void SmDisplay::init(int width, int height)
     LcdInit();
 }
 
-void SmDisplay::setInterface(SmHwAbstractSpi * spi, SmHwGpioPin * dc)
+void SmDisplay::setInterface(SmHwAbstractSpi * spi, SmHwAbstractGpio * dc)
 {
     mSpi = spi;
     mDcPin = dc;

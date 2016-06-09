@@ -27,13 +27,13 @@ int main(void)
 
     // Initialize display interface
     DisplaySpi * spi = new DisplaySpi();
-    spi->setSsPins(new SmHwGpioPin(GPIOA,1), 1);
-    spi->init(new SmHwGpioPin(GPIOA,3),     /// SCK
+    spi->setSsPins(new SmHwGpio<GPIOA_BASE,1>(), 1);
+    spi->init(new SmHwGpio<GPIOA_BASE,3>(),     /// SCK
               0,                            /// MISO - not used in SM_HW_SPI_CFG_OUT configuration
-              new SmHwGpioPin(GPIOA,2));    /// MOSI
+              new SmHwGpio<GPIOA_BASE,2>());    /// MOSI
 
     // Apply display interface
-    display->setInterface(spi, new SmHwGpioPin(GPIOA,0));
+    display->setInterface(spi, new SmHwGpio<GPIOA_BASE,0>());
 
     // Do something
     display->setPix(20,20,1);
