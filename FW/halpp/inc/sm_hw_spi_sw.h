@@ -61,10 +61,10 @@ void SmHwSpiSw<MODE, CFG, WIDTH>::transfer(void * in, void * out, int size)
             }
             if (CFG == SM_HW_SPI_CFG_FULL_DUPLEX)
             {
-                *pOut = data;
-                pOut++;
+                *pIn = data;
+                pIn++;
             }
-            size--;
+            pOut++;
         }
     }
     if (WIDTH == SM_HW_SPI_WIDTH_16)

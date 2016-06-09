@@ -7,12 +7,18 @@
 #include "stdio.h"
 
 SmDisplay::SmDisplay()
+    :texture(0)
 {
 }
 
 void SmDisplay::init(int width, int height, SmHwAbstractSpi * spi, SmHwAbstractGpio * dc, SmHwAbstractGpio * power)
 {
 //    LcdInit();
+    if (texture)
+        delete texture;
+
+    texture = new SmTexture();
+    texture->init(width, height);
     mSpi = spi;
     mDcPin = dc;
     mPowerPin = power;
