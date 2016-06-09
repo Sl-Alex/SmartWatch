@@ -17,4 +17,10 @@ Both schematic and PCB were created with KiCAD. KiCAD project is located in the 
 
 # Software
 Project created in [EmBitz](http://www.emblocks.org/web/)<br />
-**Status**: Basic HW classes implementation (GPIO, SW/HW SPI and so on). SPL will be completely thrown away.
+**Status**: In progress, can be compiled but does not work yet. Next step - reimplement sh1106 driver in SmDisplay class.<br />
+
+# ToDo list
+- [X] Implement GPIO class
+- [X] Implement SPI class
+- [ ] Implement I2C class
+- [ ] Finish HW documentation (component values)
