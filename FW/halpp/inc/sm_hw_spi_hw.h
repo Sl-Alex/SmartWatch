@@ -9,8 +9,8 @@ class SmHwSpiHw: public SmHwAbstractSpi
 {
 public:
 	virtual void init(SpiMode mode, SpiWidth width);
-	virtual void setSs(int ss);
-	virtual void resetSs(int ss);
+//	virtual void setSs(int ss) {SmHwAbstractSpi}
+//	virtual void resetSs(int ss);
 	virtual void transfer(void * in, void * out, int size);
 };
 
@@ -32,7 +32,7 @@ void SmHwSpiHw<SPI_BASE, CFG>::init(SpiMode mode, SpiWidth width)
 	/* Set BR bits according to SPI_BaudRatePrescaler value */
 	/* Set CPOL bit according to SPI_CPOL value */
 	/* Set CPHA bit according to SPI_CPHA value */
-	tmpreg |= (uint16_t)((uint32_t)CFG | SPI_HW_SPI_MSMODE_MASTER |
+	tmpreg |= (CFG | SPI_HW_SPI_MSMODE_MASTER |
 	width | mode | SPI_HW_SPI_NSS_MODE_SOFT);
 
 	/* Write to SPIx CR1 */
@@ -51,11 +51,12 @@ void SmHwSpiHw<SPI_BASE, CFG>::init(SpiMode mode, SpiWidth width)
 template<uint32_t SPI_BASE, SpiConfig CFG>
 void SmHwSpiHw<SPI_BASE, CFG>::transfer(void * in, void * out, int size)
 {
-	uint8_t * pOut = (uint8_t *)in;
-	uint8_t * pIn  = (uint8_t *)out;
+	uint8_t * pOut = (uint8_t *)out;
+	uint8_t * pIn  = (uint8_t *)in;
 	while (size--)
 	{
 		uint8_t data = *pOut;
+
 		/*!< Loop while DR register in not emplty */
 #define SPI_I2S_FLAG_TXE                ((uint16_t)0x0002)
 		while ((((SPI_TypeDef *)SPI_BASE)->SR & SPI_I2S_FLAG_TXE) == 0);
@@ -70,14 +71,13 @@ void SmHwSpiHw<SPI_BASE, CFG>::transfer(void * in, void * out, int size)
 		data = ((SPI_TypeDef *)SPI_BASE)->DR;
 		if (CFG == SM_HW_SPI_CFG_FULL_DUPLEX)
 		{
-			*pOut = data;
-			pOut++;
+			*pIn = data;
+			pIn++;
 		}
-
-		size--;
+		pOut++;
 	}
 }
-
+/*
 template<uint32_t SPI_BASE, SpiConfig CFG>
 void SmHwSpiHw<SPI_BASE, CFG>::setSs(int ss)
 {
@@ -89,5 +89,6 @@ void SmHwSpiHw<SPI_BASE, CFG>::resetSs(int ss)
 {
     SmHwAbstractSpi::resetSs(ss);
 }
+*/
 
 #endif /* SM_HW_SPI_HW_H_INCLUDED */

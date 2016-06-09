@@ -35,12 +35,45 @@ int main(void)
               0,                                /// MISO - not used in SM_HW_SPI_CFG_OUT configuration
               new SmHwGpio<GPIOA_BASE,2>());    /// MOSI
 
-    // Initialize SPI flash
+    // Enable flash SPI/GPIO clocking
     SmHwRcc::RccClockEnable(RCC_PERIPH_SPI2);
     SmHwRcc::RccClockEnable(RCC_PERIPH_GPIOB);
     MemorySpi * spiMem = new MemorySpi();
+
+    // Initialize flash SPI pins
+    {
+        SmHwGpio<GPIOB_BASE,15> spiMosi;
+        SmHwGpio<GPIOB_BASE,14> spiMiso;
+        SmHwGpio<GPIOB_BASE,13> spiSck;
+        spiMosi.setModeSpeed(SM_HW_GPIO_MODE_AF_PP,SM_HW_GPIO_SPEED_50M);
+        spiMiso.setModeSpeed(SM_HW_GPIO_MODE_IN_FLOAT,SM_HW_GPIO_SPEED_50M);
+        spiSck.setModeSpeed(SM_HW_GPIO_MODE_AF_PP,SM_HW_GPIO_SPEED_50M);
+    }
+    // Initialize flash SPI HW
     spiMem->setSsPins(new SmHwGpio<GPIOB_BASE,12>(), 1);
     spiMem->init(SM_HW_SPI_MODE3, SM_HW_SPI_WIDTH_8);
+
+    /// @todo Just a test
+    /*!< Select the FLASH: Chip Select low */
+    spiMem->resetSs();
+
+    /*!< Send "RDID " instruction */
+    uint8_t dataOut;
+    uint32_t Temp[3] = {0, 0, 0};
+    dataOut = 0x9F;
+    spiMem->transfer(&Temp[0], &dataOut, 1);
+    /*!< Read a byte from the FLASH */
+    spiMem->transfer(&Temp[0], &Temp[0], 1);
+    /*!< Read a byte from the FLASH */
+    spiMem->transfer(&Temp[1], &Temp[0], 1);
+    /*!< Read a byte from the FLASH */
+    spiMem->transfer(&Temp[2], &Temp[0], 1);
+
+    /*!< Deselect the FLASH: Chip Select high */
+    spiMem->setSs();
+
+    uint32_t Result = 0;
+    Result = (Temp[0] << 16) | (Temp[1] << 8) | Temp[2];
 
     // Apply display interface
     /// @todo Check power pin

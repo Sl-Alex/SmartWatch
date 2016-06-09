@@ -29,6 +29,12 @@ void SmHwSpiSw<MODE, CFG, WIDTH>::init(SmHwAbstractGpio *pSck, SmHwAbstractGpio 
 	mPinSck = pSck;
 	mPinMiso = pMiso;
 	mPinMosi = pMosi;
+	if (mPinMiso)
+        mPinMiso->setModeSpeed(SM_HW_GPIO_MODE_IN_FLOAT,SM_HW_GPIO_SPEED_50M);
+	if (mPinMosi)
+        mPinMosi->setModeSpeed(SM_HW_GPIO_MODE_OUT_PP,SM_HW_GPIO_SPEED_50M);
+	if (mPinSck)
+        mPinSck->setModeSpeed(SM_HW_GPIO_MODE_OUT_PP,SM_HW_GPIO_SPEED_50M);
 }
 
 template<SpiMode MODE, SpiConfig CFG, SpiWidth WIDTH>
