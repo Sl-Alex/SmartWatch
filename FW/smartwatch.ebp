@@ -127,6 +127,10 @@
 		<Unit filename="halpp\inc\sm_hw_rcc.h" />
 		<Unit filename="halpp\inc\sm_hw_spi_hw.h" />
 		<Unit filename="halpp\inc\sm_hw_spi_sw.h" />
+		<Unit filename="halpp\inc\sm_hw_sys_timer.h" />
+		<Unit filename="halpp\src\sm_hw_sys_timer.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="inc\sh1106.h" />
 		<Unit filename="inc\smartdisplay.h" />
 		<Unit filename="inc\stm32f10x.h" />
@@ -242,7 +246,7 @@
 		<Extensions>
 			<code_completion />
 			<debugger>
-				<target_debugging_settings target="Release" active_interface="ST-link">
+				<target_debugging_settings target="Debug" active_interface="ST-link">
 					<debug_interface interface_id="ST-link" ip_address="localhost" ip_port="4242" path="${EMBITZ}\share\contrib" executable="STLinkGDB.exe" description="" dont_start_server="false" backoff_time="1000" options="2" reg_filter="0" active_family="STMicroelectronics">
 						<family_options family_id="STMicroelectronics">
 							<option opt_id="ID_JTAG_SWD" opt_value="swd" />
@@ -259,7 +263,7 @@
 						</family_options>
 					</debug_interface>
 				</target_debugging_settings>
-				<target_debugging_settings target="Debug" active_interface="ST-link">
+				<target_debugging_settings target="Release" active_interface="ST-link">
 					<debug_interface interface_id="ST-link" ip_address="localhost" ip_port="4242" path="${EMBITZ}\share\contrib" executable="STLinkGDB.exe" description="" dont_start_server="false" backoff_time="1000" options="2" reg_filter="0" active_family="STMicroelectronics">
 						<family_options family_id="STMicroelectronics">
 							<option opt_id="ID_JTAG_SWD" opt_value="swd" />
