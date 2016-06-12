@@ -16,5 +16,5 @@ Both schematic and PCB were created with KiCAD. KiCAD project is located in the 
 **Status**: Finished. PCB is assembled, all HW features are tested and work as expected.
 
 # Software
-Project created in [EmBitz](http://www.emblocks.org/web/)<br />
+Project is created in [EmBitz](http://www.emblocks.org/web/)<br />
 **Status**: In progress, can be compiled but does not work yet. See issues list for details.<br />
