@@ -13,14 +13,8 @@ This project aims to create an open-source smartwatch with the following functio
 
 # Hardware
 Both schematic and PCB were created with KiCAD. KiCAD project is located in the [PCB](./PCB) subfolder. Project uses components from my [KiCAD_libs](https://github.com/Sl-Alex/KiCAD_libs) repository.<br />
-**Status**: Finished. PCB is assembled, all HW features are tested and work as expected. Minor updates (component values and comments) will follow.
+**Status**: Finished. PCB is assembled, all HW features are tested and work as expected.
 
 # Software
 Project created in [EmBitz](http://www.emblocks.org/web/)<br />
-**Status**: In progress, can be compiled but does not work yet. Next step - reimplement sh1106 driver in SmDisplay class.<br />
-
-# ToDo list
-- [X] Implement GPIO class
-- [X] Implement SPI class
-- [ ] Implement I2C class
-- [ ] Finish HW documentation (component values)
+**Status**: In progress, can be compiled but does not work yet. See issues list for details.<br />
