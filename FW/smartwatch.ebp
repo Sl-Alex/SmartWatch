@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <EmBitz_project_file>
-	<EmBitzVersion release="0.40" revision="0" />
+	<EmBitzVersion release="0.42" revision="0" />
 	<FileVersion major="1" minor="0" />
 	<Project>
 		<Option title="smartwatch" />
@@ -133,8 +133,12 @@
 		<Unit filename="hal\src\sm_hal_sys_timer.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="hw\inc\sm_hw_battery.h" />
 		<Unit filename="hw\inc\sm_hw_button.h" />
 		<Unit filename="hw\inc\sm_hw_motor.h" />
+		<Unit filename="hw\src\sm_hw_battery.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="hw\src\sm_hw_button.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -146,7 +150,6 @@
 		<Unit filename="inc\system_stm32f10x.h" />
 		<Unit filename="readme.txt" />
 		<Unit filename="SPL\inc\misc.h" />
-		<Unit filename="SPL\inc\stm32f10x_adc.h" />
 		<Unit filename="SPL\inc\stm32f10x_bkp.h" />
 		<Unit filename="SPL\inc\stm32f10x_can.h" />
 		<Unit filename="SPL\inc\stm32f10x_cec.h" />
@@ -157,7 +160,6 @@
 		<Unit filename="SPL\inc\stm32f10x_exti.h" />
 		<Unit filename="SPL\inc\stm32f10x_flash.h" />
 		<Unit filename="SPL\inc\stm32f10x_fsmc.h" />
-		<Unit filename="SPL\inc\stm32f10x_gpio.h" />
 		<Unit filename="SPL\inc\stm32f10x_i2c.h" />
 		<Unit filename="SPL\inc\stm32f10x_iwdg.h" />
 		<Unit filename="SPL\inc\stm32f10x_pwr.h" />
@@ -168,9 +170,6 @@
 		<Unit filename="SPL\inc\stm32f10x_usart.h" />
 		<Unit filename="SPL\inc\stm32f10x_wwdg.h" />
 		<Unit filename="SPL\src\misc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="SPL\src\stm32f10x_adc.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="SPL\src\stm32f10x_bkp.c">

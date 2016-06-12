@@ -20,6 +20,7 @@
 
 #include "sm_hw_button.h"
 #include "sm_hw_motor.h"
+#include "sm_hw_battery.h"
 
 // Display SPI interface
 typedef SmHalSpiSw<SM_HAL_SPI_MODE0, SM_HAL_SPI_CFG_OUT, SM_HAL_SPI_WIDTH_8> DisplaySpi;
@@ -33,11 +34,14 @@ int main(void)
     SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOB);
     SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOC);
     SmHalRcc::RccClockEnable(RCC_PERIPH_AFIO);
+    SmHalRcc::RccClockEnable(RCC_PERIPH_ADC1);
 
     // Disable JTAG, SWD remains enabled
     AFIO->MAPR|=AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
 
     SmHalSysTimer::initSubscribersPool(10);
+
+    SmHwBattery::init();
 
     // Initialize display memory
     SmDisplay * display = new SmDisplay();
@@ -51,6 +55,10 @@ int main(void)
     button3->init(new SmHalGpio<GPIOA_BASE, 1>());
     button4->init(new SmHalGpio<GPIOA_BASE, 6>());
 
+    {
+        SmHalAbstractGpio * BatGpio = new SmHalGpio<GPIOA_BASE, 0>();
+        BatGpio->setModeSpeed(SM_HAL_GPIO_MODE_AIN, SM_HAL_GPIO_SPEED_2M);
+    }
 
     SmHwMotor * motor = new SmHwMotor();
     motor->init(new SmHalGpio<GPIOA_BASE, 8>());
@@ -119,8 +127,15 @@ int main(void)
     // Do something
     display->setPix(20,20,1);
     display->update();
+    SmHalAbstractGpio * batEn = new SmHalGpio<GPIOA_BASE, 2>();
+    batEn->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
+    batEn->resetPin();
     while (1)
     {
+        batEn->setPin();
+        SmHwBattery::readValue();
+        batEn->resetPin();
+        SmHwBattery::readValue();
         SmHalSysTimer::processEvents();
         if (button1->getState())
         {
