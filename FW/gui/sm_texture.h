@@ -1,7 +1,8 @@
 #ifndef SM_TEXTURE_H_INCLUDED
 #define SM_TEXTURE_H_INCLUDED
 
-#include <string.h>
+#include <cstring>
+#include <cstdint>
 
 class SmTexture
 {
@@ -26,14 +27,14 @@ public:
 
     static int calcSize(int width, int height);
 
-    inline char * getPData(void) { return pData;}
+    inline uint8_t * getPData(void) { return pData;}
 
 private:
     int mWidth;
     int mHeight;
     int mSize;
 
-    char * pData;
+    uint8_t * pData;
 };
 
 #endif /* SM_TEXTURE_H_INCLUDED */

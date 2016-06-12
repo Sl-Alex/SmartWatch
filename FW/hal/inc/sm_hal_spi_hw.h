@@ -1,11 +1,11 @@
-#ifndef SM_HW_SPI_HW_H_INCLUDED
-#define SM_HW_SPI_HW_H_INCLUDED
+#ifndef SM_HAL_SPI_HW_H_INCLUDED
+#define SM_HAL_SPI_HW_H_INCLUDED
 
-#include "sm_hw_abstract_spi.h"
-#include "sm_hw_abstract_gpio.h"
+#include "sm_hal_abstract_spi.h"
+#include "sm_hal_abstract_gpio.h"
 
 template<uint32_t SPI_BASE, SpiConfig CFG>
-class SmHwSpiHw: public SmHwAbstractSpi
+class SmHalSpiHw: public SmHalAbstractSpi
 {
 public:
 	virtual void init(SpiMode mode, SpiWidth width);
@@ -15,7 +15,7 @@ public:
 };
 
 template<uint32_t SPI_BASE, SpiConfig CFG>
-void SmHwSpiHw<SPI_BASE, CFG>::init(SpiMode mode, SpiWidth width)
+void SmHalSpiHw<SPI_BASE, CFG>::init(SpiMode mode, SpiWidth width)
 {
     uint16_t tmpreg;
 
@@ -32,8 +32,8 @@ void SmHwSpiHw<SPI_BASE, CFG>::init(SpiMode mode, SpiWidth width)
 	/* Set BR bits according to SPI_BaudRatePrescaler value */
 	/* Set CPOL bit according to SPI_CPOL value */
 	/* Set CPHA bit according to SPI_CPHA value */
-	tmpreg |= (CFG | SPI_HW_SPI_MSMODE_MASTER |
-	width | mode | SPI_HW_SPI_NSS_MODE_SOFT);
+	tmpreg |= (CFG | SPI_HAL_SPI_MSMODE_MASTER |
+	width | mode | SPI_HAL_SPI_NSS_MODE_SOFT);
 
 	/* Write to SPIx CR1 */
 	((SPI_TypeDef *)SPI_BASE)->CR1 = tmpreg;
@@ -49,7 +49,7 @@ void SmHwSpiHw<SPI_BASE, CFG>::init(SpiMode mode, SpiWidth width)
 }
 
 template<uint32_t SPI_BASE, SpiConfig CFG>
-void SmHwSpiHw<SPI_BASE, CFG>::transfer(void * in, void * out, int size)
+void SmHalSpiHw<SPI_BASE, CFG>::transfer(void * in, void * out, int size)
 {
 	uint8_t * pOut = (uint8_t *)out;
 	uint8_t * pIn  = (uint8_t *)in;
@@ -69,7 +69,7 @@ void SmHwSpiHw<SPI_BASE, CFG>::transfer(void * in, void * out, int size)
 		while ((((SPI_TypeDef *)SPI_BASE)->SR & SPI_I2S_FLAG_RXNE) == 0);
 
 		data = ((SPI_TypeDef *)SPI_BASE)->DR;
-		if (CFG == SM_HW_SPI_CFG_FULL_DUPLEX)
+		if (CFG == SM_HAL_SPI_CFG_FULL_DUPLEX)
 		{
 			*pIn = data;
 			pIn++;
@@ -77,18 +77,5 @@ void SmHwSpiHw<SPI_BASE, CFG>::transfer(void * in, void * out, int size)
 		pOut++;
 	}
 }
-/*
-template<uint32_t SPI_BASE, SpiConfig CFG>
-void SmHwSpiHw<SPI_BASE, CFG>::setSs(int ss)
-{
-    SmHwAbstractSpi::setSs(ss);
-}
 
-template<uint32_t SPI_BASE, SpiConfig CFG>
-void SmHwSpiHw<SPI_BASE, CFG>::resetSs(int ss)
-{
-    SmHwAbstractSpi::resetSs(ss);
-}
-*/
-
-#endif /* SM_HW_SPI_HW_H_INCLUDED */
+#endif /* SM_HAL_SPI_HW_H_INCLUDED */

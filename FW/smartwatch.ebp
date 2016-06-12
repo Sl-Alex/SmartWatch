@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <EmBitz_project_file>
-	<EmBitzVersion release="0.42" revision="0" />
+	<EmBitzVersion release="0.40" revision="0" />
 	<FileVersion major="1" minor="0" />
 	<Project>
 		<Option title="smartwatch" />
@@ -63,6 +63,7 @@
 			<Add option="-DSTM32F103C8" />
 			<Add option="-DSTM32F10X_MD" />
 			<Add option="-DUSE_STDPERIPH_DRIVER" />
+			<Add option="-DHSE_VALUE=16000000" />
 			<Add option="-fno-strict-aliasing" />
 			<Add option="-DBPP=1" />
 			<Add option="-DPACK_VERT" />
@@ -74,11 +75,13 @@
 			<Add directory=".\cmsis" />
 			<Add directory=".\SPL\inc" />
 			<Add directory=".\SPL\src" />
-			<Add directory=".\halpp\inc" />
+			<Add directory=".\hal\inc" />
+			<Add directory=".\hw\inc" />
 		</Compiler>
 		<Cpp>
 			<Add option="-fno-exceptions" />
 			<Add option="-fno-rtti" />
+			<Add option="-std=c++11" />
 			<Add option="-g3" />
 			<Add option="-DBPP=1" />
 			<Add option="-DPACK_VERT" />
@@ -121,14 +124,22 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="gui\smartstorage.h" />
-		<Unit filename="halpp\inc\sm_hw_abstract_gpio.h" />
-		<Unit filename="halpp\inc\sm_hw_abstract_spi.h" />
-		<Unit filename="halpp\inc\sm_hw_gpio.h" />
-		<Unit filename="halpp\inc\sm_hw_rcc.h" />
-		<Unit filename="halpp\inc\sm_hw_spi_hw.h" />
-		<Unit filename="halpp\inc\sm_hw_spi_sw.h" />
-		<Unit filename="halpp\inc\sm_hw_sys_timer.h" />
-		<Unit filename="halpp\src\sm_hw_sys_timer.cpp">
+		<Unit filename="hal\inc\sm_hal_abstract_gpio.h" />
+		<Unit filename="hal\inc\sm_hal_abstract_spi.h" />
+		<Unit filename="hal\inc\sm_hal_gpio.h" />
+		<Unit filename="hal\inc\sm_hal_rcc.h" />
+		<Unit filename="hal\inc\sm_hal_spi_hw.h" />
+		<Unit filename="hal\inc\sm_hal_spi_sw.h" />
+		<Unit filename="hal\inc\sm_hal_sys_timer.h" />
+		<Unit filename="hal\src\sm_hal_sys_timer.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hw\inc\sm_hw_button.h" />
+		<Unit filename="hw\inc\sm_hw_motor.h" />
+		<Unit filename="hw\src\sm_hw_button.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hw\src\sm_hw_motor.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="inc\sh1106.h" />

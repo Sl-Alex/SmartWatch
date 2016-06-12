@@ -1,16 +1,16 @@
-#ifndef SM_HW_GPIO_H_INCLUDED
-#define SM_HW_GPIO_H_INCLUDED
+#ifndef SM_HAL_GPIO_H_INCLUDED
+#define SM_HAL_GPIO_H_INCLUDED
 
 #include "stm32f10x.h"
-#include "sm_hw_abstract_gpio.h"
+#include "sm_hal_abstract_gpio.h"
 
 template <uint32_t GPIO_BASE, uint8_t PIN>
-class SmHwGpio: public SmHwAbstractGpio
+class SmHalGpio: public SmHalAbstractGpio
 {
 public:
 
-    virtual void setModeSpeed(GpioMode mode, GpioSpeed speed);
-    virtual void setPin(void)
+    void setModeSpeed(GpioMode mode, GpioSpeed speed);
+    inline void setPin(void)
     {
         ((GPIO_TypeDef *)GPIO_BASE)->BSRR = (1UL << PIN);
     }
@@ -18,11 +18,11 @@ public:
     {
         ((GPIO_TypeDef *)GPIO_BASE)->BRR = (1UL << PIN);
     }
-    uint8_t readPin(void);
+    inline uint8_t readPin(void);
 };
 
 template <uint32_t GPIO_BASE, uint8_t PIN>
-void SmHwGpio<GPIO_BASE, PIN>::setModeSpeed(GpioMode mode, GpioSpeed speed)
+void SmHalGpio<GPIO_BASE, PIN>::setModeSpeed(GpioMode mode, GpioSpeed speed)
 {
     uint32_t currentmode = mode & 0x0F;
     // If it's an output pin
@@ -47,21 +47,18 @@ void SmHwGpio<GPIO_BASE, PIN>::setModeSpeed(GpioMode mode, GpioSpeed speed)
     }
 
     // Set pull-up/down
-    if (mode == SM_HW_GPIO_MODE_IN_PD)
+    if (mode == SM_HAL_GPIO_MODE_IN_PD)
     {
         ((GPIO_TypeDef *)GPIO_BASE)->BRR = (1UL << PIN);
     }
-    else
+    else if (mode == SM_HAL_GPIO_MODE_IN_PU)
     {
-        if (mode == SM_HW_GPIO_MODE_IN_PU)
-        {
-            ((GPIO_TypeDef *)GPIO_BASE)->BSRR = (1UL << PIN);
-        }
+        ((GPIO_TypeDef *)GPIO_BASE)->BSRR = (1UL << PIN);
     }
 }
 
 template <uint32_t GPIO_BASE, uint8_t PIN>
-uint8_t SmHwGpio<GPIO_BASE, PIN>::readPin(void)
+uint8_t SmHalGpio<GPIO_BASE, PIN>::readPin(void)
 {
     if (((GPIO_TypeDef *)GPIO_BASE)->IDR & (1UL << PIN))
     {
@@ -73,4 +70,4 @@ uint8_t SmHwGpio<GPIO_BASE, PIN>::readPin(void)
     }
 }
 
-#endif /* SM_HW_GPIO_H_INCLUDED */
+#endif /* SM_HAL_GPIO_H_INCLUDED */

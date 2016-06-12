@@ -2,7 +2,7 @@
 #include <cstring>
 #include "stm32f10x_spi.h"
 #include "stm32f10x_gpio.h"
-#include "string.h"
+#include <cstring>
 
 static const int SPI_PIN_MOSI   = GPIO_Pin_15;
 static const int SPI_PIN_MISO   = GPIO_Pin_14;
@@ -127,7 +127,7 @@ int SmartStorage::getSize(int idx)
     return pHeader[idx].size;
 }
 
-int SmartStorage::loadData(int idx, int offset, int cnt, char * pData)
+int SmartStorage::loadData(int idx, int offset, int cnt, uint8_t * pData)
 {
     int i;
     if (!pData) return -1;

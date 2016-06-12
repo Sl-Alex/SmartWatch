@@ -1,7 +1,7 @@
 #ifndef SMARTIMAGE_H
 #define SMARTIMAGE_H
 
-#include "string.h"
+#include <cstring>
 #include "sm_texture.h"
 #include "smartcanvas.h"
 

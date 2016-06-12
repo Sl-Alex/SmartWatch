@@ -12,7 +12,7 @@ int SmTexture::init(int width, int height)
 
     mSize = calcSize(mWidth, mHeight);
 
-    pData = new char[mSize];
+    pData = new uint8_t[mSize];
     return mSize;
 }
 

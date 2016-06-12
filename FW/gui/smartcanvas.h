@@ -1,7 +1,7 @@
 #ifndef SMARTCANVAS_H
 #define SMARTCANVAS_H
 
-#include "string.h"
+#include <cstring>
 #include "sm_texture.h"
 
 class SmartCanvas: public SmTexture

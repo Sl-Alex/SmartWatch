@@ -13,45 +13,80 @@
 **********************************************************************/
 #include "stm32f10x_conf.h"
 #include "sm_display.h"
-#include "sm_hw_gpio.h"
-#include "sm_hw_spi_sw.h"
-#include "sm_hw_spi_hw.h"
-#include "sm_hw_rcc.h"
+#include "sm_hal_gpio.h"
+#include "sm_hal_spi_sw.h"
+#include "sm_hal_spi_hw.h"
+#include "sm_hal_rcc.h"
+
+#include "sm_hw_button.h"
+#include "sm_hw_motor.h"
 
 // Display SPI interface
-typedef SmHwSpiSw<SM_HW_SPI_MODE0,SM_HW_SPI_CFG_OUT,SM_HW_SPI_WIDTH_8> DisplaySpi;
-typedef SmHwSpiHw<SPI2_BASE, SM_HW_SPI_CFG_FULL_DUPLEX> MemorySpi;
+typedef SmHalSpiSw<SM_HAL_SPI_MODE0, SM_HAL_SPI_CFG_OUT, SM_HAL_SPI_WIDTH_8> DisplaySpi;
+typedef SmHalSpiHw<SPI2_BASE, SM_HAL_SPI_CFG_FULL_DUPLEX> MemorySpi;
 
 int main(void)
 {
+    SystemCoreClockUpdate();
+    SmHalRcc::RccClockEnable(RCC_PERIPH_SPI2);
+    SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOA);
+    SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOB);
+    SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOC);
+
+    SmHalSysTimer::initSubscribersPool(10);
+
     // Initialize display memory
     SmDisplay * display = new SmDisplay();
 
+    SmHwButton *button1 = new SmHwButton();
+    SmHwButton *button2 = new SmHwButton();
+    SmHwButton *button3 = new SmHwButton();
+    SmHwButton *button4 = new SmHwButton();
+    button1->init(new SmHalGpio<GPIOA_BASE, 12>());
+    button2->init(new SmHalGpio<GPIOB_BASE, 3>());
+    button3->init(new SmHalGpio<GPIOA_BASE, 1>());
+    button4->init(new SmHalGpio<GPIOA_BASE, 6>());
+
+
+    SmHwMotor * motor = new SmHwMotor();
+    motor->init(new SmHalGpio<GPIOA_BASE, 8>());
+    SmHalSysTimer::initSubscribersPool(10);
+    SmHalSysTimer::subscribe(motor,1000,true);
+    SmHalSysTimer::init(1);
+
     // Initialize display interface
     DisplaySpi * spi = new DisplaySpi();
-    SmHwRcc::RccClockEnable(RCC_PERIPH_GPIOA);
-    spi->setSsPins(new SmHwGpio<GPIOA_BASE,1>(), 1);
-    spi->init(new SmHwGpio<GPIOA_BASE,3>(),     /// SCK
-              0,                                /// MISO - not used in SM_HW_SPI_CFG_OUT configuration
-              new SmHwGpio<GPIOA_BASE,2>());    /// MOSI
+    SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOA);
+    spi->setSsPins(new SmHalGpio<GPIOB_BASE,5>(), 1);
+    // Initialize flash SPI pins
+    {
+        SmHalGpio<GPIOB_BASE,8> * spiSck  = new SmHalGpio<GPIOB_BASE,8>();
+        SmHalGpio<GPIOB_BASE,9> * spiMosi = new SmHalGpio<GPIOB_BASE,9>();
+        SmHalGpio<GPIOB_BASE,6> * dispRes = new SmHalGpio<GPIOB_BASE,6>();
+        spiMosi->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP,SM_HAL_GPIO_SPEED_50M);
+        spiSck->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP,SM_HAL_GPIO_SPEED_50M);
+        dispRes->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP,SM_HAL_GPIO_SPEED_50M);
+        dispRes->setPin();
+        spi->init(spiSck,     /// SCK
+                  0,                                /// MISO - not used in SM_HW_SPI_CFG_OUT configuration
+                  spiMosi);    /// MOSI
+    }
 
     // Enable flash SPI/GPIO clocking
-    SmHwRcc::RccClockEnable(RCC_PERIPH_SPI2);
-    SmHwRcc::RccClockEnable(RCC_PERIPH_GPIOB);
     MemorySpi * spiMem = new MemorySpi();
 
     // Initialize flash SPI pins
     {
-        SmHwGpio<GPIOB_BASE,15> spiMosi;
-        SmHwGpio<GPIOB_BASE,14> spiMiso;
-        SmHwGpio<GPIOB_BASE,13> spiSck;
-        spiMosi.setModeSpeed(SM_HW_GPIO_MODE_AF_PP,SM_HW_GPIO_SPEED_50M);
-        spiMiso.setModeSpeed(SM_HW_GPIO_MODE_IN_FLOAT,SM_HW_GPIO_SPEED_50M);
-        spiSck.setModeSpeed(SM_HW_GPIO_MODE_AF_PP,SM_HW_GPIO_SPEED_50M);
+        SmHalGpio<GPIOB_BASE,15> spiMosi;
+        SmHalGpio<GPIOB_BASE,14> spiMiso;
+        SmHalGpio<GPIOB_BASE,13> spiSck;
+        spiMosi.setModeSpeed(SM_HAL_GPIO_MODE_AF_PP,SM_HAL_GPIO_SPEED_50M);
+        spiMiso.setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT,SM_HAL_GPIO_SPEED_50M);
+        spiSck.setModeSpeed(SM_HAL_GPIO_MODE_AF_PP,SM_HAL_GPIO_SPEED_50M);
     }
     // Initialize flash SPI HW
-    spiMem->setSsPins(new SmHwGpio<GPIOB_BASE,12>(), 1);
-    spiMem->init(SM_HW_SPI_MODE3, SM_HW_SPI_WIDTH_8);
+    spiMem->setSsPins(new SmHalGpio<GPIOB_BASE,12>(), 1);
+    spiMem->init(SM_HAL_SPI_MODE3, SM_HAL_SPI_WIDTH_8);
 
     /// @todo Just a test
     /*!< Select the FLASH: Chip Select low */
@@ -76,14 +111,14 @@ int main(void)
     Result = (Temp[0] << 16) | (Temp[1] << 8) | Temp[2];
 
     // Apply display interface
-    /// @todo Check power pin
-    display->init(128,64,spi,new SmHwGpio<GPIOA_BASE,0>(), new SmHwGpio<GPIOA_BASE,1>());
+    display->init(128,64,spi,new SmHalGpio<GPIOB_BASE,7>(), new SmHalGpio<GPIOC_BASE,13>());
 
     // Do something
     display->setPix(20,20,1);
     display->update();
     while (1)
     {
+        SmHalSysTimer::processEvents();
         display->update();
     }
 }

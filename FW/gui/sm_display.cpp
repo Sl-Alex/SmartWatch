@@ -11,7 +11,7 @@ SmDisplay::SmDisplay()
 {
 }
 
-void SmDisplay::init(int width, int height, SmHwAbstractSpi * spi, SmHwAbstractGpio * dc, SmHwAbstractGpio * power)
+void SmDisplay::init(int width, int height, SmHalAbstractSpi * spi, SmHalAbstractGpio * dc, SmHalAbstractGpio * power)
 {
 //    LcdInit();
     if (texture)
@@ -22,6 +22,11 @@ void SmDisplay::init(int width, int height, SmHwAbstractSpi * spi, SmHwAbstractG
     mSpi = spi;
     mDcPin = dc;
     mPowerPin = power;
+    mDcPin->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_50M);
+    mPowerPin->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_50M);
+
+    mPowerPin->resetPin();
+    mDcPin->resetPin();
 
 //    spi_Init();
 
@@ -62,27 +67,41 @@ void SmDisplay::init(int width, int height, SmHwAbstractSpi * spi, SmHwAbstractG
     sendCommand(LCD_CMD_ALL_OFF);
     sendCommand(LCD_CMD_NORMAL_DISPLAY);
 
-    sendCommand(LCD_CMD_DISPLAY_ON);//+ --turn on oled panel
+    fill(0x00);
 
-//    LcdClear();
+    sendCommand(LCD_CMD_DISPLAY_ON);//+ --turn on oled panel
 }
 
 void SmDisplay::setPix(int x, int y, int value)
 {
-    texture->getPData()[0] = 0x55;
+    for (int i = 0; i < 8; i++)
+        for(int j = 0; j < 128; j++)
+        {
+            if (j%2)
+                texture->getPData()[i*128+j] = 0x55;
+            else
+                texture->getPData()[i*128+j] = 0xAA;
+        }
 }
 
 void SmDisplay::update(void)
 {
-//    pAnimator->tick();
-//    if (!pAnimator2->tick())
-//    {
-//        imageIndex++;
-//        if (imageIndex >= IMG_CNT) imageIndex = 0;
-//        pImage->init(IMG_OFFSET + imageIndex);
-//        pAnimator2->start(125, 16, 0, 0, 32, 32);
-//    }
-    LcdOut(texture->getPData());
+    uint8_t m = 0;
+    uint8_t n = 0;
+
+    uint8_t *pData = texture->getPData();
+
+    for(m=0; m<8; m++)
+    {
+        sendCommand(LCD_CMD_SET_PAGE + m);    // page0-page1
+        sendCommand(LCD_CMD_SET_COL_L);         // low column start address
+        sendCommand(LCD_CMD_SET_COL_H);        // high column start address
+
+        for(n=0; n<128; n++)
+        {
+            sendData(pData++,1);
+        }
+    }
 }
 
 void SmDisplay::sendCommand(uint8_t cmd)

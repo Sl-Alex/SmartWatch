@@ -11,7 +11,7 @@ bool SmartImage::init(int imageIndex)
 
     if (SmartStorage::getSize(imageIndex) < 0)
         return false;
-    if (SmartStorage::loadData(imageIndex,0,sizeof(StorageHeader),(char *)&header) < 0)
+    if (SmartStorage::loadData(imageIndex,0,sizeof(StorageHeader),(uint8_t *)&header) < 0)
         return false;
 
     if (header.size != calcSize(header.width,header.height)) return false;

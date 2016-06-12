@@ -1,5 +1,5 @@
-#ifndef SM_HW_RCC_H_INCLUDED
-#define SM_HW_RCC_H_INCLUDED
+#ifndef SM_HAL_RCC_H_INCLUDED
+#define SM_HAL_RCC_H_INCLUDED
 
 #include "stm32f10x.h"
 
@@ -62,7 +62,7 @@ enum RccApb2Periph
     RCC_PERIPH_TIM11  = 0x00200000UL
 };
 
-class SmHwRcc
+class SmHalRcc
 {
 public:
 	static void RccClockEnable(RccAhbPeriph periph)
@@ -92,4 +92,4 @@ public:
 	}
 };
 
-#endif /* SM_HW_RCC_H_INCLUDED */
+#endif /* SM_HAL_RCC_H_INCLUDED */

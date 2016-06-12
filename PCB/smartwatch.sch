@@ -2073,7 +2073,6 @@ Wire Wire Line
 	3350 2900 3650 2900
 Wire Wire Line
 	3350 2950 3350 2900
-Connection ~ 3550 2300
 Wire Wire Line
 	2350 5100 2300 5100
 Connection ~ 1900 5100
