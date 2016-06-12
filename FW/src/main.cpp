@@ -40,8 +40,10 @@ int main(void)
     AFIO->MAPR|=AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
 
     SmHalSysTimer::initSubscribersPool(10);
+    SmHalSysTimer::init(1);
 
-    SmHwBattery::init();
+    SmHwBattery * battery = SmHwBattery::getInstance();
+    battery->init();
 
     // Initialize display memory
     SmDisplay * display = new SmDisplay();
@@ -63,7 +65,6 @@ int main(void)
     SmHwMotor * motor = new SmHwMotor();
     motor->init(new SmHalGpio<GPIOA_BASE, 8>());
     SmHalSysTimer::subscribe(motor,1000,true);
-    SmHalSysTimer::init(1);
 
     // Initialize display interface
     DisplaySpi * spi = new DisplaySpi();
@@ -133,9 +134,9 @@ int main(void)
     while (1)
     {
         batEn->setPin();
-        SmHwBattery::readValue();
+        battery->getValue();
         batEn->resetPin();
-        SmHwBattery::readValue();
+        battery->getValue();
         SmHalSysTimer::processEvents();
         if (button1->getState())
         {

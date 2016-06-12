@@ -151,20 +151,13 @@
 		<Unit filename="readme.txt" />
 		<Unit filename="SPL\inc\misc.h" />
 		<Unit filename="SPL\inc\stm32f10x_bkp.h" />
-		<Unit filename="SPL\inc\stm32f10x_can.h" />
-		<Unit filename="SPL\inc\stm32f10x_cec.h" />
-		<Unit filename="SPL\inc\stm32f10x_crc.h" />
-		<Unit filename="SPL\inc\stm32f10x_dac.h" />
 		<Unit filename="SPL\inc\stm32f10x_dbgmcu.h" />
-		<Unit filename="SPL\inc\stm32f10x_dma.h" />
 		<Unit filename="SPL\inc\stm32f10x_exti.h" />
 		<Unit filename="SPL\inc\stm32f10x_flash.h" />
-		<Unit filename="SPL\inc\stm32f10x_fsmc.h" />
 		<Unit filename="SPL\inc\stm32f10x_i2c.h" />
 		<Unit filename="SPL\inc\stm32f10x_iwdg.h" />
 		<Unit filename="SPL\inc\stm32f10x_pwr.h" />
 		<Unit filename="SPL\inc\stm32f10x_rtc.h" />
-		<Unit filename="SPL\inc\stm32f10x_sdio.h" />
 		<Unit filename="SPL\inc\stm32f10x_spi.h" />
 		<Unit filename="SPL\inc\stm32f10x_tim.h" />
 		<Unit filename="SPL\inc\stm32f10x_usart.h" />
@@ -175,31 +168,13 @@
 		<Unit filename="SPL\src\stm32f10x_bkp.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="SPL\src\stm32f10x_can.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="SPL\src\stm32f10x_cec.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="SPL\src\stm32f10x_crc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="SPL\src\stm32f10x_dac.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="SPL\src\stm32f10x_dbgmcu.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="SPL\src\stm32f10x_dma.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="SPL\src\stm32f10x_exti.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="SPL\src\stm32f10x_flash.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="SPL\src\stm32f10x_fsmc.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="SPL\src\stm32f10x_i2c.c">
@@ -212,9 +187,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="SPL\src\stm32f10x_rtc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="SPL\src\stm32f10x_sdio.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="SPL\src\stm32f10x_spi.c">

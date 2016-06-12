@@ -29,6 +29,7 @@ public:
     static bool subscribe(SmHalSysTimerIface *iface, uint32_t period, bool repeat);
     static void unsubscribe(SmHalSysTimerIface *iface);
     static void processEvents(void);
+    static uint32_t getTimeStamp(void) { return mTimeStamp; }
 private:
     static SmHalSysTimerSubscriber * mPool;
     static uint8_t mPoolSize;
