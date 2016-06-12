@@ -9,10 +9,12 @@ class SmHwButton: public SmHalSysTimerIface
 {
 public:
     void init(SmHalAbstractGpio * pin);
+    bool getState(void) { return mLastState; }
 private:
-    void onTimer(uint32_t timeStamp) {}
+    const uint8_t DEBOUNCING_TIME = 30;
+    void onTimer(uint32_t timeStamp);
     SmHalAbstractGpio * mGpio;
+    bool mLastState;
 };
-
 
 #endif /* SM_HW_BUTTON_H_INCLUDED */

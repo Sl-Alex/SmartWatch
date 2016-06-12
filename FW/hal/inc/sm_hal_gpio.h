@@ -61,13 +61,9 @@ template <uint32_t GPIO_BASE, uint8_t PIN>
 uint8_t SmHalGpio<GPIO_BASE, PIN>::readPin(void)
 {
     if (((GPIO_TypeDef *)GPIO_BASE)->IDR & (1UL << PIN))
-    {
         return 1;
-    }
     else
-    {
         return 0;
-    }
 }
 
 #endif /* SM_HAL_GPIO_H_INCLUDED */

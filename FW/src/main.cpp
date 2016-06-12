@@ -32,6 +32,10 @@ int main(void)
     SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOA);
     SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOB);
     SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOC);
+    SmHalRcc::RccClockEnable(RCC_PERIPH_AFIO);
+
+    // Disable JTAG, SWD remains enabled
+    AFIO->MAPR|=AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
 
     SmHalSysTimer::initSubscribersPool(10);
 
@@ -50,7 +54,6 @@ int main(void)
 
     SmHwMotor * motor = new SmHwMotor();
     motor->init(new SmHalGpio<GPIOA_BASE, 8>());
-    SmHalSysTimer::initSubscribersPool(10);
     SmHalSysTimer::subscribe(motor,1000,true);
     SmHalSysTimer::init(1);
 
@@ -119,6 +122,25 @@ int main(void)
     while (1)
     {
         SmHalSysTimer::processEvents();
-        display->update();
+        if (button1->getState())
+        {
+            display->fill(0x01);
+        }
+        else if (button2->getState())
+        {
+            display->fill(0x05);
+        }
+        else if (button3->getState())
+        {
+            display->fill(0x0F);
+        }
+        else if (button4->getState())
+        {
+            display->fill(0xAA);
+        }
+        else
+        {
+            display->update();
+        }
     }
 }
