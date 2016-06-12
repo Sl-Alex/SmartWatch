@@ -126,7 +126,6 @@
 		<Unit filename="gui\smartstorage.h" />
 		<Unit filename="hal\inc\sm_hal_abstract_gpio.h" />
 		<Unit filename="hal\inc\sm_hal_abstract_spi.h" />
-		<Unit filename="hal\inc\sm_hal_gpio.h" />
 		<Unit filename="hal\inc\sm_hal_rcc.h" />
 		<Unit filename="hal\inc\sm_hal_spi_hw.h" />
 		<Unit filename="hal\inc\sm_hal_spi_sw.h" />
@@ -142,8 +141,6 @@
 		<Unit filename="hw\src\sm_hw_motor.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="inc\sh1106.h" />
-		<Unit filename="inc\smartdisplay.h" />
 		<Unit filename="inc\stm32f10x.h" />
 		<Unit filename="inc\stm32f10x_conf.h" />
 		<Unit filename="inc\system_stm32f10x.h" />
@@ -164,7 +161,6 @@
 		<Unit filename="SPL\inc\stm32f10x_i2c.h" />
 		<Unit filename="SPL\inc\stm32f10x_iwdg.h" />
 		<Unit filename="SPL\inc\stm32f10x_pwr.h" />
-		<Unit filename="SPL\inc\stm32f10x_rcc.h" />
 		<Unit filename="SPL\inc\stm32f10x_rtc.h" />
 		<Unit filename="SPL\inc\stm32f10x_sdio.h" />
 		<Unit filename="SPL\inc\stm32f10x_spi.h" />
@@ -207,9 +203,6 @@
 		<Unit filename="SPL\src\stm32f10x_fsmc.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="SPL\src\stm32f10x_gpio.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="SPL\src\stm32f10x_i2c.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -217,9 +210,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="SPL\src\stm32f10x_pwr.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="SPL\src\stm32f10x_rcc.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="SPL\src\stm32f10x_rtc.c">
@@ -241,9 +231,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src\main.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src\sh1106.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src\startup_stm32f10x_md.S">

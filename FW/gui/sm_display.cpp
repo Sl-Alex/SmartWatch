@@ -3,8 +3,82 @@
 #include "smartfont.h"
 #include "smartstorage.h"
 #include "smartanimator.h"
-#include "sh1106.h"
 #include "stdio.h"
+
+/// Set Lower Column Start Address for Page Addressing Mode (00h~0Fh)
+#define LCD_CMD_SET_COL_L               0x00
+
+/// Set Higher Column Start Address for Page Addressing Mode (10h~1Fh)
+#define LCD_CMD_SET_COL_H               0x10
+
+/// @brief Set Memory Addressing Mode (20h)
+/// @details Next byte:
+///  0 - Horizontal Addressing Mode;
+///  1 - Vertical Addressing Mode;
+///  2 - Page Addressing Mode (RESET);
+///  3 - Invalid
+#define LCD_CMD_ADDR_MODE               0x20
+#define LCD_CMD_ADDR_MODE_HOR           0
+#define LCD_CMD_ADDR_MODE_VERT          1
+#define LCD_CMD_ADDR_MODE_PAGE          2       ///< Default
+
+/// Set Display Start Line (40h~7Fh)
+#define LCD_CMD_START_LINE              0x40
+
+/// Set Contrast Control for BANK0 (81h)
+#define LCD_CMD_CONTRAST                0x81
+
+/// Charge Bump Setting
+#define LCD_CMD_SET_CHARGE_BUMP         0x8D
+
+/// Column address 0 is mapped to SEG0 (RESET)
+#define LCD_CMD_SEGMENT_MAP_0           0xA0
+/// column address 127 is mapped to SEG0
+#define LCD_CMD_SEGMENT_MAP_1           0xA1
+
+/// Entire Display OFF
+#define LCD_CMD_ALL_OFF                 0xA4
+/// Entire Display ON
+#define LCD_CMD_ALL_ON                  0xA5
+
+/// Set normal display
+#define LCD_CMD_NORMAL_DISPLAY          0xA6
+/// Set inverse display
+#define LCD_CMD_INVERSE_DISPLAY         0xA7
+
+/// Set Multiplex Ratio
+#define LCD_CMD_MULTIPLEX_RATIO         0xA8
+
+/// Enable built-in DC/DC
+#define LCD_CMD_DCDC_ON                 0xAD
+
+/// Set Display ON
+#define LCD_CMD_DISPLAY_ON              0xAF
+/// Set Display OFF
+#define LCD_CMD_DISPLAY_OFF             0xAE
+
+/// Set Page Start Address for Page Addressing Mode
+#define LCD_CMD_SET_PAGE                0xB0
+
+/// Set COM Output Scan Direction from COM0 to COM[N –1]
+#define LCD_CMD_SCAN_DIR_PLUS           0xC0
+/// Set COM Output Scan Direction from COM[N-1] to COM0
+#define LCD_CMD_SCAN_DIR_MINUS          0xC8
+
+/// Set Display Offset
+#define LCD_CMD_DISPLAY_OFFSET          0xD3
+
+/// Set Display Clock Divide Ratio/ Oscillator Frequency
+#define LCD_CMD_SET_CLOCK_DIVIDE        0xD5
+
+/// Set Pre-charge Period
+#define LCD_CMD_SET_PRE_CHARGE_PERIOD   0xD9
+
+/// Set COM Pins Hardware Configuration
+#define LCD_CMD_SET_PIN_CONF            0xDA
+
+/// Set VCOMH Deselect Level
+#define LCD_CMD_SET_VCOMH               0xDB
 
 SmDisplay::SmDisplay()
     :texture(0)
@@ -60,7 +134,7 @@ void SmDisplay::init(int width, int height, SmHalAbstractSpi * spi, SmHalAbstrac
 //    LCDCommand_param(LCD_CMD_SET_VCOMH, 0x10);  // 0.77 * VCC
 
 // Set Memory Addressing Mode
-    sendCommand(LCD_CMD_ADDR_MODE, 0x02);
+    sendCommand(LCD_CMD_ADDR_MODE, LCD_CMD_ADDR_MODE_PAGE);
 
     sendCommand(LCD_CMD_SET_CHARGE_BUMP, 0x14); // Enable Charge Pump
 
