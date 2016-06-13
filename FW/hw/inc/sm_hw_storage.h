@@ -16,8 +16,17 @@ public:
         return &instance;
     }
     uint32_t readId(void);
+    void readData(uint8_t *pData, uint32_t flashAddr, uint32_t count);
 private:
     SmHwStorage() {}
+    inline uint8_t sendByte(uint8_t data);
+    void writeEnable(void);
+    void waitForWriteEnd(void);
+    void eraseSector(uint32_t SectorAddr);
+    void eraseBulk(void);
+    void writePage(uint8_t *pBuffer, uint32_t WriteAddr, uint32_t size);
+    void writeBuffer(uint8_t *pBuffer, unsigned int WriteAddr, unsigned int size);
+
     SmHalAbstractSpi *mSpi;
 };
 
