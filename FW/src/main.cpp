@@ -22,10 +22,10 @@
 #include "sm_hw_motor.h"
 #include "sm_hw_battery.h"
 #include "sm_hw_bt.h"
+#include "sm_hw_storage.h"
 
 // Display SPI interface
 typedef SmHalSpiSw<SM_HAL_SPI_MODE0, SM_HAL_SPI_CFG_OUT, SM_HAL_SPI_WIDTH_8> DisplaySpi;
-typedef SmHalSpiHw<SPI2_BASE, SM_HAL_SPI_CFG_FULL_DUPLEX> MemorySpi;
 
 int main(void)
 {
@@ -73,57 +73,21 @@ int main(void)
     DisplaySpi * spi = new DisplaySpi();
     SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOA);
     spi->setSsPins(new SmHalGpio<GPIOB_BASE,5>(), 1);
-    // Initialize flash SPI pins
+    // Initialize display SPI pins
     {
-        SmHalGpio<GPIOB_BASE,8> * spiSck  = new SmHalGpio<GPIOB_BASE,8>();
-        SmHalGpio<GPIOB_BASE,9> * spiMosi = new SmHalGpio<GPIOB_BASE,9>();
+        //SmHalGpio<GPIOB_BASE,8> * spiSck  = new SmHalGpio<GPIOB_BASE,8>();
+        //SmHalGpio<GPIOB_BASE,9> * spiMosi = new SmHalGpio<GPIOB_BASE,9>();
+        /// @todo Do something with this pin
         SmHalGpio<GPIOB_BASE,6> * dispRes = new SmHalGpio<GPIOB_BASE,6>();
-        spiMosi->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP,SM_HAL_GPIO_SPEED_50M);
-        spiSck->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP,SM_HAL_GPIO_SPEED_50M);
         dispRes->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP,SM_HAL_GPIO_SPEED_50M);
         dispRes->setPin();
-        spi->init(spiSck,     /// SCK
+        spi->init(new SmHalGpio<GPIOB_BASE,8>(),    /// SCK
                   0,                                /// MISO - not used in SM_HW_SPI_CFG_OUT configuration
-                  spiMosi);    /// MOSI
+                  new SmHalGpio<GPIOB_BASE,9>());   /// MOSI
     }
 
-    // Enable flash SPI/GPIO clocking
-    MemorySpi * spiMem = new MemorySpi();
-
-    // Initialize flash SPI pins
-    {
-        SmHalGpio<GPIOB_BASE,15> spiMosi;
-        SmHalGpio<GPIOB_BASE,14> spiMiso;
-        SmHalGpio<GPIOB_BASE,13> spiSck;
-        spiMosi.setModeSpeed(SM_HAL_GPIO_MODE_AF_PP,SM_HAL_GPIO_SPEED_50M);
-        spiMiso.setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT,SM_HAL_GPIO_SPEED_50M);
-        spiSck.setModeSpeed(SM_HAL_GPIO_MODE_AF_PP,SM_HAL_GPIO_SPEED_50M);
-    }
-    // Initialize flash SPI HW
-    spiMem->setSsPins(new SmHalGpio<GPIOB_BASE,12>(), 1);
-    spiMem->init(SM_HAL_SPI_MODE3, SM_HAL_SPI_WIDTH_8);
-
-    /// @todo Just a test
-    /*!< Select the FLASH: Chip Select low */
-    spiMem->resetSs();
-
-    /*!< Send "RDID " instruction */
-    uint8_t dataOut;
-    uint32_t Temp[3] = {0, 0, 0};
-    dataOut = 0x9F;
-    spiMem->transfer(&Temp[0], &dataOut, 1);
-    /*!< Read a byte from the FLASH */
-    spiMem->transfer(&Temp[0], &Temp[0], 1);
-    /*!< Read a byte from the FLASH */
-    spiMem->transfer(&Temp[1], &Temp[0], 1);
-    /*!< Read a byte from the FLASH */
-    spiMem->transfer(&Temp[2], &Temp[0], 1);
-
-    /*!< Deselect the FLASH: Chip Select high */
-    spiMem->setSs();
-
-    uint32_t Result = 0;
-    Result = (Temp[0] << 16) | (Temp[1] << 8) | Temp[2];
+    SmHwStorage::getInstance()->init();
+    SmHwStorage::getInstance()->readId();
 
     // Apply display interface
     display->init(128,64,spi,new SmHalGpio<GPIOB_BASE,7>(), new SmHalGpio<GPIOC_BASE,13>());

@@ -9,8 +9,6 @@ class SmHalSpiHw: public SmHalAbstractSpi
 {
 public:
 	virtual void init(SpiMode mode, SpiWidth width);
-//	virtual void setSs(int ss) {SmHwAbstractSpi}
-//	virtual void resetSs(int ss);
 	virtual void transfer(void * in, void * out, int size);
 };
 

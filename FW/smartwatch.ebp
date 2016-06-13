@@ -137,6 +137,7 @@
 		<Unit filename="hw\inc\sm_hw_bt.h" />
 		<Unit filename="hw\inc\sm_hw_button.h" />
 		<Unit filename="hw\inc\sm_hw_motor.h" />
+		<Unit filename="hw\inc\sm_hw_storage.h" />
 		<Unit filename="hw\src\sm_hw_battery.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -147,6 +148,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="hw\src\sm_hw_motor.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hw\src\sm_hw_storage.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="inc\stm32f10x.h" />
