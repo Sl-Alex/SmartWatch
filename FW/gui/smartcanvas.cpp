@@ -1,5 +1,4 @@
 #include "smartcanvas.h"
-#include "smartstorage.h"
 
 #define abs(a) ((a)>0?(a):(-(a)))
 

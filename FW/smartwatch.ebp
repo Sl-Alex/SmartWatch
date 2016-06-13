@@ -120,10 +120,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="gui\smartimage.h" />
-		<Unit filename="gui\smartstorage.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="gui\smartstorage.h" />
 		<Unit filename="hal\inc\sm_hal_abstract_gpio.h" />
 		<Unit filename="hal\inc\sm_hal_abstract_spi.h" />
 		<Unit filename="hal\inc\sm_hal_rcc.h" />
@@ -223,7 +219,7 @@
 		<Extensions>
 			<code_completion />
 			<debugger>
-				<target_debugging_settings target="Debug" active_interface="ST-link">
+				<target_debugging_settings target="Release" active_interface="ST-link">
 					<debug_interface interface_id="ST-link" ip_address="localhost" ip_port="4242" path="${EMBITZ}\share\contrib" executable="STLinkGDB.exe" description="" dont_start_server="false" backoff_time="1000" options="2" reg_filter="0" active_family="STMicroelectronics">
 						<family_options family_id="STMicroelectronics">
 							<option opt_id="ID_JTAG_SWD" opt_value="swd" />
@@ -240,7 +236,7 @@
 						</family_options>
 					</debug_interface>
 				</target_debugging_settings>
-				<target_debugging_settings target="Release" active_interface="ST-link">
+				<target_debugging_settings target="Debug" active_interface="ST-link">
 					<debug_interface interface_id="ST-link" ip_address="localhost" ip_port="4242" path="${EMBITZ}\share\contrib" executable="STLinkGDB.exe" description="" dont_start_server="false" backoff_time="1000" options="2" reg_filter="0" active_family="STMicroelectronics">
 						<family_options family_id="STMicroelectronics">
 							<option opt_id="ID_JTAG_SWD" opt_value="swd" />

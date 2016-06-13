@@ -1,5 +1,4 @@
 #include "smartfont.h"
-#include "smartstorage.h"
 
 SmartFont* SmartFont::pInstance = 0;
 int SmartFont::symbolWidth = -1;

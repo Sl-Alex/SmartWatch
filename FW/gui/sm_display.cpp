@@ -1,7 +1,6 @@
 #include "sm_display.h"
 #include "smartcanvas.h"
 #include "smartfont.h"
-#include "smartstorage.h"
 #include "smartanimator.h"
 #include "stdio.h"
 

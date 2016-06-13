@@ -1,5 +1,4 @@
 #include "smartimage.h"
-#include "smartstorage.h"
 
 #define abs(a) ((a)>0?(a):(-(a)))
 
@@ -9,17 +8,17 @@ bool SmartImage::init(int imageIndex)
 {
     StorageHeader header;
 
-    if (SmartStorage::getSize(imageIndex) < 0)
-        return false;
-    if (SmartStorage::loadData(imageIndex,0,sizeof(StorageHeader),(uint8_t *)&header) < 0)
-        return false;
+//    if (SmartStorage::getSize(imageIndex) < 0)
+//        return false;
+//    if (SmartStorage::loadData(imageIndex,0,sizeof(StorageHeader),(uint8_t *)&header) < 0)
+//        return false;
 
-    if (header.size != calcSize(header.width,header.height)) return false;
+//    if (header.size != calcSize(header.width,header.height)) return false;
 
     SmTexture::init(header.width, header.height);
 
-    if (SmartStorage::loadData(imageIndex,sizeof(StorageHeader),getSize(),getPData()) < 1)
-        return false;
+//    if (SmartStorage::loadData(imageIndex,sizeof(StorageHeader),getSize(),getPData()) < 1)
+//        return false;
 
     return true;
 }
