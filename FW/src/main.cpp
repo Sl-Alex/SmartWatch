@@ -21,6 +21,7 @@
 #include "sm_hw_button.h"
 #include "sm_hw_motor.h"
 #include "sm_hw_battery.h"
+#include "sm_hw_bt.h"
 
 // Display SPI interface
 typedef SmHalSpiSw<SM_HAL_SPI_MODE0, SM_HAL_SPI_CFG_OUT, SM_HAL_SPI_WIDTH_8> DisplaySpi;
@@ -38,6 +39,8 @@ int main(void)
 
     // Disable JTAG, SWD remains enabled
     AFIO->MAPR|=AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
+
+    SmHwBt::getInstance()->init(new SmHalGpio<GPIOB_BASE, 4>());
 
     SmHalSysTimer::initSubscribersPool(10);
     SmHalSysTimer::init(1);

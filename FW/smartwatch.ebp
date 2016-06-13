@@ -134,9 +134,13 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="hw\inc\sm_hw_battery.h" />
+		<Unit filename="hw\inc\sm_hw_bt.h" />
 		<Unit filename="hw\inc\sm_hw_button.h" />
 		<Unit filename="hw\inc\sm_hw_motor.h" />
 		<Unit filename="hw\src\sm_hw_battery.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hw\src\sm_hw_bt.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="hw\src\sm_hw_button.cpp">
