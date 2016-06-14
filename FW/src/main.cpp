@@ -23,6 +23,7 @@
 #include "sm_hw_battery.h"
 #include "sm_hw_bt.h"
 #include "sm_hw_storage.h"
+#include "sm_hw_powermgr.h"
 
 // Display SPI interface
 typedef SmHalSpiSw<SM_HAL_SPI_MODE0, SM_HAL_SPI_CFG_OUT, SM_HAL_SPI_WIDTH_8> DisplaySpi;
@@ -98,6 +99,8 @@ int main(void)
     SmHalAbstractGpio * batEn = new SmHalGpio<GPIOA_BASE, 2>();
     batEn->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
     batEn->resetPin();
+
+    SmHwPowerMgr::getInstance()->init();
     while (1)
     {
         batEn->setPin();
