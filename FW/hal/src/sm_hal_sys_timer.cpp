@@ -59,7 +59,10 @@ void SmHalSysTimer::initSubscribersPool(uint8_t max)
 
 void SmHalSysTimer::deinitSubscribersPool(void)
 {
-    delete[] mPool;
+    if (mPool)
+        delete[] mPool;
+
+    mPoolSize = 0;
     mPool = 0;
 }
 

@@ -128,5 +128,10 @@ int main(void)
         {
             display->update();
         }
+
+        if (button2->getState() && button3->getState())
+        {
+            SmHwPowerMgr::getInstance()->sleep();
+        }
     }
 }
