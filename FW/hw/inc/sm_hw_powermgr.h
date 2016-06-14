@@ -33,7 +33,7 @@ public:
     }
     void initSubscribersPool(uint8_t max);
     void deinitSubscribersPool(void);
-    bool subscribe(SmHwPowerMgrIface *iface, uint32_t period, bool repeat);
+    bool subscribe(SmHwPowerMgrIface *iface);
     void unsubscribe(SmHwPowerMgrIface *iface);
 private:
     SmHwPowerMgr() {}

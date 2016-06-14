@@ -42,15 +42,15 @@
 // AI3     A  7
 // ARDY    B  0
 
+//  (1UL << PIN_S2) | \
+//  (1UL << PIN_S3) |
+//  (1UL << PIN_BTRX) | \
+//  (1UL << PIN_AIRQ1) | \
+//  (1UL << PIN_AIRQ3) | \
+//  (1UL << PIN_ARDY))
 #define EXTI_LINES (\
   (1UL << PIN_S1) | \
-  (1UL << PIN_S2) | \
-  (1UL << PIN_S3) | \
-  (1UL << PIN_S4) | \
-  (1UL << PIN_BTRX) | \
-  (1UL << PIN_AIRQ1) | \
-  (1UL << PIN_AIRQ3) | \
-  (1UL << PIN_ARDY))
+  (1UL << PIN_S4))
 
 /// @todo Check with the hardware
 void SmHwPowerMgr::init(void)
@@ -60,15 +60,15 @@ void SmHwPowerMgr::init(void)
 
     // Initialize GPIO EXTI
     // Pins 0 to 3 (any port)
-    AFIO->EXTICR[0] = (PORT_S2    << ((PIN_S2    & 0x03) << 2)) | \
-                      (PORT_S3    << ((PIN_S3    & 0x03) << 2)) | \
-                      (PORT_AIRQ1 << ((PIN_AIRQ1 & 0x03) << 2)) | \
+//    AFIO->EXTICR[0] = (PORT_S2    << ((PIN_S2    & 0x03) << 2)) | \
+//                      (PORT_S3    << ((PIN_S3    & 0x03) << 2)) |
+    AFIO->EXTICR[0] = 0;//(PORT_AIRQ1 << ((PIN_AIRQ1 & 0x03) << 2)) | \
                       (PORT_ARDY  << ((PIN_ARDY  & 0x03) << 2));
     // Pins 4 to 7 (any port)
-    AFIO->EXTICR[1] = (PORT_S4    << ((PIN_S4    & 0x03) << 2)) | \
-                      (PORT_AIRQ3 << ((PIN_AIRQ3 & 0x03) << 2));
+    AFIO->EXTICR[1] = (PORT_S4    << ((PIN_S4    & 0x03) << 2));// | \
+                      //(PORT_AIRQ3 << ((PIN_AIRQ3 & 0x03) << 2));
     // Pins 8 to 11 (any port)
-    AFIO->EXTICR[2] = (PORT_S1    << ((PIN_S1    & 0x03) << 2)) | \
+    AFIO->EXTICR[2] = (PORT_S1    << ((PIN_S1    & 0x03) << 2));// | \
                       (PORT_BTRX  << ((PIN_BTRX  & 0x03) << 2));
     // Pins 12 to 15 (any port)
     AFIO->EXTICR[3] = 0;
@@ -101,7 +101,7 @@ void SmHwPowerMgr::deinitSubscribersPool(void)
     mPool = 0;
 }
 
-bool SmHwPowerMgr::subscribe(SmHwPowerMgrIface *iface, uint32_t period, bool repeat)
+bool SmHwPowerMgr::subscribe(SmHwPowerMgrIface *iface)
 {
     // Search for existing, update if found
     for (uint32_t i = 0; i < mPoolSize; ++i)
@@ -167,6 +167,8 @@ void SmHwPowerMgr::sleep(void)
 
     /* Reset SLEEPDEEP bit of Cortex System Control Register */
     SCB->SCR &= (uint32_t)~((uint32_t)SCB_SCR_SLEEPDEEP);
+
+    SystemInit();
 
     // Call onWake() for all subscribers
     for (uint32_t i = 0; i < mPoolSize; ++i)

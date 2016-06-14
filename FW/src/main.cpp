@@ -101,6 +101,11 @@ int main(void)
     batEn->resetPin();
 
     SmHwPowerMgr::getInstance()->init();
+    SmHwPowerMgr::getInstance()->initSubscribersPool(10);
+    SmHwPowerMgr::getInstance()->subscribe(button1);
+    SmHwPowerMgr::getInstance()->subscribe(button2);
+    SmHwPowerMgr::getInstance()->subscribe(button3);
+    SmHwPowerMgr::getInstance()->subscribe(button4);
     while (1)
     {
         batEn->setPin();
