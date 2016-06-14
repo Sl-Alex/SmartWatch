@@ -20,4 +20,4 @@ Project is created in [EmBitz](http://www.emblocks.org/web/)<br />
 **Status**: In progress, can be compiled but does not work yet. See issues list for details.<br />
 
 # Licensing
-The whole project except of SPL part is available under GPL v3 license (see [LICENSE](./LICENSE) file). SPL is written by STMicroelectronics and licensed under [Liberty V2](http:://www.st.com/software_license_agreement_liberty_v2) license.
+The whole project except of SPL part is available under GPL v3 license (see [LICENSE](./LICENSE) file). SPL is written by STMicroelectronics and licensed under [Liberty V2](http://www.st.com/software_license_agreement_liberty_v2) license.
