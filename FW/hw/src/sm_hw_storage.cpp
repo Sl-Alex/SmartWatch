@@ -48,7 +48,7 @@ void SmHwStorage::init(void)
     spiMiso.setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT,SM_HAL_GPIO_SPEED_50M);
     spiSck.setModeSpeed(SM_HAL_GPIO_MODE_AF_PP,SM_HAL_GPIO_SPEED_50M);
 
-    mSpi->setSsPins(new SmHalGpio<SS_PORT_BASE, SS_PIN>(), 1);
+    mSpi->setSsPin(new SmHalGpio<SS_PORT_BASE, SS_PIN>());
     ((SmHalSpiHw<SPI_BASE, SM_HAL_SPI_CFG_FULL_DUPLEX> *)mSpi)->init(SM_HAL_SPI_MODE3, SM_HAL_SPI_WIDTH_8);
 }
 

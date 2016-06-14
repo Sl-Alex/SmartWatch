@@ -31,31 +31,35 @@ class SmHalAbstractSpi
 {
 public:
     SmHalAbstractSpi()
-        :mSsPins(0),
-        mSsCount(0)
+        :mSsPin(0)
     {}
     virtual void transfer(void * in, void * out, int size) = 0;
+    virtual void init(void)
+    {
+        mSsPin->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_50M);
+        mSsPin->setPin();
+    }
+    virtual void deInit(void)
+    {
+        mSsPin->setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT, SM_HAL_GPIO_SPEED_50M);
+        mSsPin->resetPin();
+    };
     virtual ~SmHalAbstractSpi() {};
-    virtual void setSsPins(SmHalAbstractGpio *pSs , int ssCount)
+    virtual void setSsPin(SmHalAbstractGpio *pSs)
     {
-        mSsPins = pSs;
-        mSsCount = ssCount;
-        for (int i = 0; i < ssCount; ++i)
-        {
-            pSs->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_50M);
-        }
+        mSsPin = pSs;
+        init();
     }
-    virtual void setSs(int ss = 0)
+    virtual void setSs(void)
     {
-        mSsPins[ss].setPin();
+        mSsPin->setPin();
     }
-    virtual void resetSs(int ss = 0)
+    virtual void resetSs(void)
     {
-        mSsPins[ss].resetPin();
+        mSsPin->resetPin();
     }
 private:
-    SmHalAbstractGpio *mSsPins;
-    int mSsCount;
+    SmHalAbstractGpio *mSsPin;
 };
 
 #endif /* SM_HAL_ABSTRACT_SPI_H_INCLUDED */

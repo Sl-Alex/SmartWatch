@@ -13,6 +13,8 @@ public:
         mPinMiso(0),
         mPinMosi(0)
     {}
+    void init(void);
+    void deInit(void);
     virtual void init(SmHalAbstractGpio *pSck, SmHalAbstractGpio *pMiso, SmHalAbstractGpio *pMosi);
     virtual void transfer(void * in, void * out, int size);
 private:
@@ -22,17 +24,36 @@ private:
 };
 
 template<SpiMode MODE, SpiConfig CFG, SpiWidth WIDTH>
-void SmHalSpiSw<MODE, CFG, WIDTH>::init(SmHalAbstractGpio *pSck, SmHalAbstractGpio *pMiso, SmHalAbstractGpio *pMosi)
+void SmHalSpiSw<MODE, CFG, WIDTH>::deInit(void)
 {
-    mPinSck = pSck;
-    mPinMiso = pMiso;
-    mPinMosi = pMosi;
+    SmHalAbstractSpi::deInit();
+    if (mPinMiso)
+        mPinMiso->setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT,SM_HAL_GPIO_SPEED_2M);
+    if (mPinMosi)
+        mPinMosi->setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT,SM_HAL_GPIO_SPEED_2M);
+    if (mPinSck)
+        mPinSck->setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT,SM_HAL_GPIO_SPEED_2M);
+}
+
+template<SpiMode MODE, SpiConfig CFG, SpiWidth WIDTH>
+void SmHalSpiSw<MODE, CFG, WIDTH>::init(void)
+{
+    SmHalAbstractSpi::init();
     if (mPinMiso)
         mPinMiso->setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT,SM_HAL_GPIO_SPEED_50M);
     if (mPinMosi)
         mPinMosi->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP,SM_HAL_GPIO_SPEED_50M);
     if (mPinSck)
         mPinSck->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP,SM_HAL_GPIO_SPEED_50M);
+}
+
+template<SpiMode MODE, SpiConfig CFG, SpiWidth WIDTH>
+void SmHalSpiSw<MODE, CFG, WIDTH>::init(SmHalAbstractGpio *pSck, SmHalAbstractGpio *pMiso, SmHalAbstractGpio *pMosi)
+{
+    mPinSck = pSck;
+    mPinMiso = pMiso;
+    mPinMosi = pMosi;
+    init();
 }
 
 template<SpiMode MODE, SpiConfig CFG, SpiWidth WIDTH>

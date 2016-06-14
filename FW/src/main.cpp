@@ -73,15 +73,11 @@ int main(void)
     // Initialize display interface
     DisplaySpi * spi = new DisplaySpi();
     SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOA);
-    spi->setSsPins(new SmHalGpio<GPIOB_BASE,5>(), 1);
+    spi->setSsPin(new SmHalGpio<GPIOB_BASE,5>());
     // Initialize display SPI pins
     {
         //SmHalGpio<GPIOB_BASE,8> * spiSck  = new SmHalGpio<GPIOB_BASE,8>();
         //SmHalGpio<GPIOB_BASE,9> * spiMosi = new SmHalGpio<GPIOB_BASE,9>();
-        /// @todo Do something with this pin
-        SmHalGpio<GPIOB_BASE,6> * dispRes = new SmHalGpio<GPIOB_BASE,6>();
-        dispRes->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP,SM_HAL_GPIO_SPEED_50M);
-        dispRes->setPin();
         spi->init(new SmHalGpio<GPIOB_BASE,8>(),    /// SCK
                   0,                                /// MISO - not used in SM_HW_SPI_CFG_OUT configuration
                   new SmHalGpio<GPIOB_BASE,9>());   /// MOSI
@@ -91,7 +87,7 @@ int main(void)
     SmHwStorage::getInstance()->readId();
 
     // Apply display interface
-    display->init(128,64,spi,new SmHalGpio<GPIOB_BASE,7>(), new SmHalGpio<GPIOC_BASE,13>());
+    display->init(128,64,spi,new SmHalGpio<GPIOB_BASE,7>(), new SmHalGpio<GPIOC_BASE,13>(), new SmHalGpio<GPIOB_BASE, 6>());
 
     // Do something
     display->setPix(20,20,1);
@@ -106,6 +102,7 @@ int main(void)
     SmHwPowerMgr::getInstance()->subscribe(button2);
     SmHwPowerMgr::getInstance()->subscribe(button3);
     SmHwPowerMgr::getInstance()->subscribe(button4);
+    SmHwPowerMgr::getInstance()->subscribe(display);
     while (1)
     {
         batEn->setPin();
@@ -113,26 +110,7 @@ int main(void)
         batEn->resetPin();
         battery->getValue();
         SmHalSysTimer::processEvents();
-        if (button1->getState())
-        {
-            display->fill(0x01);
-        }
-        else if (button2->getState())
-        {
-            display->fill(0x05);
-        }
-        else if (button3->getState())
-        {
-            display->fill(0x0F);
-        }
-        else if (button4->getState())
-        {
-            display->fill(0xAA);
-        }
-        else
-        {
-            display->update();
-        }
+        display->update();
 
         if (button2->getState() && button3->getState())
         {
