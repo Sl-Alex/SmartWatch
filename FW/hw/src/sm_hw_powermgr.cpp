@@ -13,8 +13,8 @@ void SmHwPowerMgr::init(void)
     mPool = 0;
     mPoolSize = 0;
 
-	// 1. Init EXTI for all possible WFE sources
-	// (4 buttons, bt status, ACC/MAG IRQs)
+    // 1. Init EXTI for all possible WFE sources
+    // (4 buttons, bt status, ACC/MAG IRQs)
 }
 
 void SmHwPowerMgr::initSubscribersPool(uint8_t max)
@@ -75,7 +75,7 @@ void SmHwPowerMgr::unsubscribe(SmHwPowerMgrIface *iface)
 /// @todo Implement subscribers notification on sleep and on wake
 void SmHwPowerMgr::sleep(void)
 {
-	// Call onSleep() for all subscribers
+    // Call onSleep() for all subscribers
     for (uint32_t i = 0; i < mPoolSize; ++i)
     {
         if (mPool[i].iface != 0)
@@ -85,26 +85,26 @@ void SmHwPowerMgr::sleep(void)
     }
 
     // Entering STOP state with low power regulator mode and WFE
-	uint32_t tmpreg = 0;
+    uint32_t tmpreg = 0;
 
-	// Select the regulator state in STOP mode
-	tmpreg = PWR->CR;
-	// Clear PDDS and LPDS bits
-	tmpreg &= CR_DS_MASK;
-	// Set LPDS bit according to PWR_Regulator value
-	tmpreg |= PWR_Regulator_LowPower;
-	// Store the new value
-	PWR->CR = tmpreg;
-	// Set SLEEPDEEP bit of Cortex System Control Register
-	SCB->SCR |= SCB_SCR_SLEEPDEEP;
+    // Select the regulator state in STOP mode
+    tmpreg = PWR->CR;
+    // Clear PDDS and LPDS bits
+    tmpreg &= CR_DS_MASK;
+    // Set LPDS bit according to PWR_Regulator value
+    tmpreg |= PWR_Regulator_LowPower;
+    // Store the new value
+    PWR->CR = tmpreg;
+    // Set SLEEPDEEP bit of Cortex System Control Register
+    SCB->SCR |= SCB_SCR_SLEEPDEEP;
 
     // Goes to sleep at this step
-	__WFE();
+    __WFE();
 
-	/* Reset SLEEPDEEP bit of Cortex System Control Register */
-	SCB->SCR &= (uint32_t)~((uint32_t)SCB_SCR_SLEEPDEEP);
+    /* Reset SLEEPDEEP bit of Cortex System Control Register */
+    SCB->SCR &= (uint32_t)~((uint32_t)SCB_SCR_SLEEPDEEP);
 
-	// Call onWake() for all subscribers
+    // Call onWake() for all subscribers
     for (uint32_t i = 0; i < mPoolSize; ++i)
     {
         if (mPool[i].iface != 0)

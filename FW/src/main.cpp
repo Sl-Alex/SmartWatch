@@ -11,7 +11,7 @@
    ID:                 $Id:  $
 
 **********************************************************************/
-#include "stm32f10x_conf.h"
+//#include "stm32f10x_conf.h"
 #include "sm_display.h"
 #include "sm_hal_gpio.h"
 #include "sm_hal_spi_sw.h"

@@ -33,15 +33,15 @@ public:
     virtual void setModeSpeed(GpioMode mode, GpioSpeed speed) = 0;
 
     virtual void setMode(GpioMode mode)
-	{
-		mMode = mode;
-		setModeSpeed(mMode, mSpeed);
-	}
+    {
+        mMode = mode;
+        setModeSpeed(mMode, mSpeed);
+    }
     virtual void setSpeed(GpioSpeed speed)
-	{
-		mSpeed = speed;
-		setModeSpeed(mMode, mSpeed);
-	}
+    {
+        mSpeed = speed;
+        setModeSpeed(mMode, mSpeed);
+    }
     virtual void setPin(void) = 0;
     virtual void resetPin(void) = 0;
     virtual uint8_t readPin(void) = 0;

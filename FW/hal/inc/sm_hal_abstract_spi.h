@@ -19,12 +19,12 @@ enum SpiMode {
     SM_HAL_SPI_MODE3 = 3   ///< CPOL = 1, CPHA = 1 (default hight, second edge)
 };
 enum SpiMsMode {
-	SPI_HAL_SPI_MSMODE_MASTER = 0x0104,
-	SPI_HAL_SPI_MSMODE_SLAVE = 0x0000
+    SPI_HAL_SPI_MSMODE_MASTER = 0x0104,
+    SPI_HAL_SPI_MSMODE_SLAVE = 0x0000
 };
 enum SpiNssMode {
-	SPI_HAL_SPI_NSS_MODE_SOFT = 0x0200,
-	SPI_HAL_SPI_NSS_MODE_HARD = 0x0000
+    SPI_HAL_SPI_NSS_MODE_SOFT = 0x0200,
+    SPI_HAL_SPI_NSS_MODE_HARD = 0x0000
 };
 
 class SmHalAbstractSpi
@@ -34,25 +34,25 @@ public:
         :mSsPins(0),
         mSsCount(0)
     {}
-	virtual void transfer(void * in, void * out, int size) = 0;
-	virtual ~SmHalAbstractSpi() {};
-	virtual void setSsPins(SmHalAbstractGpio *pSs , int ssCount)
-	{
-	    mSsPins = pSs;
-	    mSsCount = ssCount;
-	    for (int i = 0; i < ssCount; ++i)
+    virtual void transfer(void * in, void * out, int size) = 0;
+    virtual ~SmHalAbstractSpi() {};
+    virtual void setSsPins(SmHalAbstractGpio *pSs , int ssCount)
+    {
+        mSsPins = pSs;
+        mSsCount = ssCount;
+        for (int i = 0; i < ssCount; ++i)
         {
             pSs->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_50M);
         }
-	}
-	virtual void setSs(int ss = 0)
-	{
-	    mSsPins[ss].setPin();
-	}
-	virtual void resetSs(int ss = 0)
-	{
-	    mSsPins[ss].resetPin();
-	}
+    }
+    virtual void setSs(int ss = 0)
+    {
+        mSsPins[ss].setPin();
+    }
+    virtual void resetSs(int ss = 0)
+    {
+        mSsPins[ss].resetPin();
+    }
 private:
     SmHalAbstractGpio *mSsPins;
     int mSsCount;

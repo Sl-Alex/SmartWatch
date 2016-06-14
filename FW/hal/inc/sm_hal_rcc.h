@@ -65,31 +65,31 @@ enum RccApb2Periph
 class SmHalRcc
 {
 public:
-	static void RccClockEnable(RccAhbPeriph periph)
-	{
-		RCC->AHBENR |= (uint32_t)periph;
-	}
-	static void RccClockEnable(RccApb1Periph periph)
-	{
-		RCC->APB1ENR |= (uint32_t)periph;
-	}
-	static void RccClockEnable(RccApb2Periph periph)
-	{
-		RCC->APB2ENR |= (uint32_t)periph;
-	}
+    static void RccClockEnable(RccAhbPeriph periph)
+    {
+        RCC->AHBENR |= (uint32_t)periph;
+    }
+    static void RccClockEnable(RccApb1Periph periph)
+    {
+        RCC->APB1ENR |= (uint32_t)periph;
+    }
+    static void RccClockEnable(RccApb2Periph periph)
+    {
+        RCC->APB2ENR |= (uint32_t)periph;
+    }
 
-	static void RccClockDisable(RccAhbPeriph periph)
-	{
-		RCC->AHBENR &= ~(uint32_t)periph;
-	}
-	static void RccClockDisable(RccApb1Periph periph)
-	{
-		RCC->APB1ENR &= ~(uint32_t)periph;
-	}
-	static void RccClockDisable(RccApb2Periph periph)
-	{
-		RCC->APB2ENR &= ~(uint32_t)periph;
-	}
+    static void RccClockDisable(RccAhbPeriph periph)
+    {
+        RCC->AHBENR &= ~(uint32_t)periph;
+    }
+    static void RccClockDisable(RccApb1Periph periph)
+    {
+        RCC->APB1ENR &= ~(uint32_t)periph;
+    }
+    static void RccClockDisable(RccApb2Periph periph)
+    {
+        RCC->APB2ENR &= ~(uint32_t)periph;
+    }
 };
 
 #endif /* SM_HAL_RCC_H_INCLUDED */

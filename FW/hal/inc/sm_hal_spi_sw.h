@@ -8,30 +8,30 @@ template<SpiMode MODE, SpiConfig CFG, SpiWidth WIDTH>
 class SmHalSpiSw: public SmHalAbstractSpi
 {
 public:
-	SmHalSpiSw()
-		:mPinSck(0),
-		mPinMiso(0),
-		mPinMosi(0)
+    SmHalSpiSw()
+        :mPinSck(0),
+        mPinMiso(0),
+        mPinMosi(0)
     {}
-	virtual void init(SmHalAbstractGpio *pSck, SmHalAbstractGpio *pMiso, SmHalAbstractGpio *pMosi);
-	virtual void transfer(void * in, void * out, int size);
+    virtual void init(SmHalAbstractGpio *pSck, SmHalAbstractGpio *pMiso, SmHalAbstractGpio *pMosi);
+    virtual void transfer(void * in, void * out, int size);
 private:
-	SmHalAbstractGpio *mPinSck;
-	SmHalAbstractGpio *mPinMiso;
-	SmHalAbstractGpio *mPinMosi;
+    SmHalAbstractGpio *mPinSck;
+    SmHalAbstractGpio *mPinMiso;
+    SmHalAbstractGpio *mPinMosi;
 };
 
 template<SpiMode MODE, SpiConfig CFG, SpiWidth WIDTH>
 void SmHalSpiSw<MODE, CFG, WIDTH>::init(SmHalAbstractGpio *pSck, SmHalAbstractGpio *pMiso, SmHalAbstractGpio *pMosi)
 {
-	mPinSck = pSck;
-	mPinMiso = pMiso;
-	mPinMosi = pMosi;
-	if (mPinMiso)
+    mPinSck = pSck;
+    mPinMiso = pMiso;
+    mPinMosi = pMosi;
+    if (mPinMiso)
         mPinMiso->setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT,SM_HAL_GPIO_SPEED_50M);
-	if (mPinMosi)
+    if (mPinMosi)
         mPinMosi->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP,SM_HAL_GPIO_SPEED_50M);
-	if (mPinSck)
+    if (mPinSck)
         mPinSck->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP,SM_HAL_GPIO_SPEED_50M);
 }
 

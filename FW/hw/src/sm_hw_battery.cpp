@@ -54,12 +54,12 @@ uint32_t SmHwBattery::readValue(void)
     uint32_t val = 0;
     // Start measurement
     ADC1->CR2 |= ADC_CR2_SWSTART;
-	while ((ADC1->SR & ADC_SR_EOC) != ADC_SR_EOC)
-	{
+    while ((ADC1->SR & ADC_SR_EOC) != ADC_SR_EOC)
+    {
 
-	}
-	val = ADC1->DR;
-	return val;
+    }
+    val = ADC1->DR;
+    return val;
 }
 
 void SmHwBattery::onTimer(uint32_t timeStamp)

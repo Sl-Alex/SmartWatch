@@ -48,7 +48,7 @@ private:
 
     int mSpeed; /// @todo Implement
     int mTick;
-	int mLimit;
+    int mLimit;
     int mX, mY, mXOff, mYOff, mW, mH;
 };
 

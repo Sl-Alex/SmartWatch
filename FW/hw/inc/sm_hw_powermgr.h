@@ -22,7 +22,7 @@ class SmHwPowerMgr
 {
 public:
     void init(void);
-	void sleep(void);
+    void sleep(void);
     SmHwPowerMgr(SmHwPowerMgr const&) = delete;
     void operator=(SmHwPowerMgr const&) = delete;
     static SmHwPowerMgr* getInstance()
