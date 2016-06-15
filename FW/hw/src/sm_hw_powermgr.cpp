@@ -55,9 +55,6 @@
 /// @todo Check with the hardware
 void SmHwPowerMgr::init(void)
 {
-    mPool = 0;
-    mPoolSize = 0;
-
     // Initialize GPIO EXTI
     // Pins 0 to 3 (any port)
 //    AFIO->EXTICR[0] = (PORT_S2    << ((PIN_S2    & 0x03) << 2)) | \

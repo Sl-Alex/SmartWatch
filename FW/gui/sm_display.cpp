@@ -1,4 +1,8 @@
 #include "sm_display.h"
+
+#include "sm_hal_spi_sw.h"
+#include "sm_hal_gpio.h"
+
 #include "smartcanvas.h"
 #include "smartfont.h"
 #include "smartanimator.h"
@@ -79,32 +83,27 @@
 /// Set VCOMH Deselect Level
 #define LCD_CMD_SET_VCOMH               0xDB
 
+typedef SmHalSpiSw<SM_HAL_SPI_MODE0, SM_HAL_SPI_CFG_OUT, SM_HAL_SPI_WIDTH_8> DisplaySpi;
+
 SmDisplay::SmDisplay()
     :texture(0)
 {
-}
+    mSpi = new DisplaySpi();
+    mSpi->setSsPin(new SmHalGpio<GPIOB_BASE,5>());
+    ((DisplaySpi *)mSpi)->init(new SmHalGpio<GPIOB_BASE,8>(),    /// SCK
+               0,                                /// MISO - not used in SM_HW_SPI_CFG_OUT configuration
+               new SmHalGpio<GPIOB_BASE,9>());   /// MOSI
 
-void SmDisplay::init(int width, int height, SmHalAbstractSpi * spi, SmHalAbstractGpio * dc, SmHalAbstractGpio * power, SmHalAbstractGpio * reset)
-{
-//    LcdInit();
-    if (texture)
-        delete texture;
+    mDcPin = new SmHalGpio<GPIOB_BASE,7>();
+    mPowerPin = new SmHalGpio<GPIOC_BASE,13>();
+    mResetPin = new SmHalGpio<GPIOB_BASE, 6>();
 
-    texture = new SmTexture();
-    texture->init(width, height);
-    mSpi = spi;
-    mDcPin = dc;
-    mPowerPin = power;
-    mResetPin = reset;
     mDcPin->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_50M);
     mPowerPin->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_50M);
     mResetPin->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
 
-    mPowerPin->resetPin();
     mDcPin->resetPin();
     mResetPin->setPin();
-
-//    spi_Init();
 
     sendCommand(LCD_CMD_DISPLAY_OFF);//+ display off
 
@@ -146,6 +145,17 @@ void SmDisplay::init(int width, int height, SmHalAbstractSpi * spi, SmHalAbstrac
     fill(0x00);
 
     sendCommand(LCD_CMD_DISPLAY_ON);//+ --turn on oled panel
+
+    SmHwPowerMgr::getInstance()->subscribe(this);
+}
+
+void SmDisplay::init(int width, int height)
+{
+    if (texture)
+        delete texture;
+
+    texture = new SmTexture();
+    texture->init(width, height);
 }
 
 void SmDisplay::setPix(int x, int y, int value)

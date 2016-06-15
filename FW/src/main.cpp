@@ -18,15 +18,12 @@
 #include "sm_hal_spi_hw.h"
 #include "sm_hal_rcc.h"
 
-#include "sm_hw_button.h"
+#include "sm_hw_keyboard.h"
 #include "sm_hw_motor.h"
 #include "sm_hw_battery.h"
 #include "sm_hw_bt.h"
 #include "sm_hw_storage.h"
 #include "sm_hw_powermgr.h"
-
-// Display SPI interface
-typedef SmHalSpiSw<SM_HAL_SPI_MODE0, SM_HAL_SPI_CFG_OUT, SM_HAL_SPI_WIDTH_8> DisplaySpi;
 
 int main(void)
 {
@@ -41,10 +38,14 @@ int main(void)
     // Disable JTAG, SWD remains enabled
     AFIO->MAPR|=AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
 
+    // Init system timer and power manager
+    SmHalSysTimer::initSubscribersPool(10);
+    SmHalSysTimer::init(1); ///< 1ms resolution
+    SmHwPowerMgr::getInstance()->initSubscribersPool(10);
+    SmHwPowerMgr::getInstance()->init(); ///< Initialize wake lines
+
     SmHwBt::getInstance()->init(new SmHalGpio<GPIOB_BASE, 4>());
 
-    SmHalSysTimer::initSubscribersPool(10);
-    SmHalSysTimer::init(1);
 
     SmHwBattery * battery = SmHwBattery::getInstance();
     battery->init();
@@ -52,67 +53,27 @@ int main(void)
     // Initialize display memory
     SmDisplay * display = new SmDisplay();
 
-    SmHwButton *button1 = new SmHwButton();
-    SmHwButton *button2 = new SmHwButton();
-    SmHwButton *button3 = new SmHwButton();
-    SmHwButton *button4 = new SmHwButton();
-    button1->init(new SmHalGpio<GPIOA_BASE, 12>());
-    button2->init(new SmHalGpio<GPIOB_BASE, 3>());
-    button3->init(new SmHalGpio<GPIOA_BASE, 1>());
-    button4->init(new SmHalGpio<GPIOA_BASE, 6>());
-
-    {
-        SmHalAbstractGpio * BatGpio = new SmHalGpio<GPIOA_BASE, 0>();
-        BatGpio->setModeSpeed(SM_HAL_GPIO_MODE_AIN, SM_HAL_GPIO_SPEED_2M);
-    }
+    SmHwKeyboard *keyboard = new SmHwKeyboard();
 
     SmHwMotor * motor = new SmHwMotor();
-    motor->init(new SmHalGpio<GPIOA_BASE, 8>());
     SmHalSysTimer::subscribe(motor,1000,true);
-
-    // Initialize display interface
-    DisplaySpi * spi = new DisplaySpi();
-    SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOA);
-    spi->setSsPin(new SmHalGpio<GPIOB_BASE,5>());
-    // Initialize display SPI pins
-    {
-        //SmHalGpio<GPIOB_BASE,8> * spiSck  = new SmHalGpio<GPIOB_BASE,8>();
-        //SmHalGpio<GPIOB_BASE,9> * spiMosi = new SmHalGpio<GPIOB_BASE,9>();
-        spi->init(new SmHalGpio<GPIOB_BASE,8>(),    /// SCK
-                  0,                                /// MISO - not used in SM_HW_SPI_CFG_OUT configuration
-                  new SmHalGpio<GPIOB_BASE,9>());   /// MOSI
-    }
 
     SmHwStorage::getInstance()->init();
     SmHwStorage::getInstance()->readId();
 
     // Apply display interface
-    display->init(128,64,spi,new SmHalGpio<GPIOB_BASE,7>(), new SmHalGpio<GPIOC_BASE,13>(), new SmHalGpio<GPIOB_BASE, 6>());
+    display->init(128,64);
 
     // Do something
     display->setPix(20,20,1);
     display->update();
-    SmHalAbstractGpio * batEn = new SmHalGpio<GPIOA_BASE, 2>();
-    batEn->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
-    batEn->resetPin();
 
-    SmHwPowerMgr::getInstance()->init();
-    SmHwPowerMgr::getInstance()->initSubscribersPool(10);
-    SmHwPowerMgr::getInstance()->subscribe(button1);
-    SmHwPowerMgr::getInstance()->subscribe(button2);
-    SmHwPowerMgr::getInstance()->subscribe(button3);
-    SmHwPowerMgr::getInstance()->subscribe(button4);
-    SmHwPowerMgr::getInstance()->subscribe(display);
     while (1)
     {
-        batEn->setPin();
-        battery->getValue();
-        batEn->resetPin();
-        battery->getValue();
         SmHalSysTimer::processEvents();
         display->update();
 
-        if (button2->getState() && button3->getState())
+        if (keyboard->getState(2) && keyboard->getState(3))
         {
             SmHwPowerMgr::getInstance()->sleep();
         }

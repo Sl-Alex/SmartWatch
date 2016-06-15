@@ -10,7 +10,7 @@ class SmDisplay: public SmHwPowerMgrIface
 {
 public:
     SmDisplay();
-    void init(int width, int height, SmHalAbstractSpi * spi, SmHalAbstractGpio * dc, SmHalAbstractGpio * power, SmHalAbstractGpio * reset);
+    void init(int width, int height);
     void setPix(int x, int y, int value);
     void update(void);
     void fill(uint8_t data);

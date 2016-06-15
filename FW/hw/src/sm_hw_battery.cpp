@@ -8,6 +8,9 @@
 #define MEAS_DELAY      2
 #define MEAS_INTERVAL   10000
 
+#define GPIO_AIN_PORT   GPIOA_BASE
+#define GPIO_AIN_PIN    0
+
 void SmHwBattery::init()
 {
     mValue = 0;
@@ -15,6 +18,9 @@ void SmHwBattery::init()
     mGpioEn = new SmHalGpio<GPIO_EN_PORT, GPIO_EN_PIN>();
     mGpioEn->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
     mGpioEn->setPin();
+
+    SmHalGpio<GPIO_AIN_PORT, GPIO_AIN_PIN> BatGpio;
+    BatGpio.setModeSpeed(SM_HAL_GPIO_MODE_AIN, SM_HAL_GPIO_SPEED_2M);
 
     ADC1->SQR3 = 0;
 

@@ -5,7 +5,7 @@ void SmHwBt::init(SmHalAbstractGpio * powerPin)
     // Initialize power pin
     mPowerPin = powerPin;
     // Initialize default BT state
-    enable();
+    disable();
     // Set as output
     mPowerPin->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
 }
