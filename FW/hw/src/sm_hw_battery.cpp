@@ -51,38 +51,37 @@ void SmHwBattery::init()
     // Start measurement
     ADC1->CR2 |= ADC_CR2_SWSTART;
 
-    // Subscribe for the further update notifications
-    SmHalSysTimer::subscribe(this, 10000, false);
-}
+    mMeasStep = 0;
 
-uint32_t SmHwBattery::readValue(void)
-{
-    uint32_t val = 0;
-    // Start measurement
-    ADC1->CR2 |= ADC_CR2_SWSTART;
-    while ((ADC1->SR & ADC_SR_EOC) != ADC_SR_EOC)
-    {
-
-    }
-    val = ADC1->DR;
-    return val;
+    SmHwPowerMgr::getInstance()->subscribe(this);
 }
 
 void SmHwBattery::onTimer(uint32_t timeStamp)
 {
-    static uint8_t step = 0;
-
-    if (step == 0)
+    if (mMeasStep == 0)
     {
         mGpioEn->setPin();
         SmHalSysTimer::subscribe(this, MEAS_DELAY, false);
-        step = 1;
+        mMeasStep = 1;
     }
     else
     {
-        step = 0;
+        mMeasStep = 0;
         ADC1->CR2 |= ADC_CR2_SWSTART;
     }
+}
+
+void SmHwBattery::onSleep(void)
+{
+    ADC1->CR2 &= ~ADC_CR2_ADON;
+    mGpioEn->resetPin();
+}
+
+void SmHwBattery::onWake(void)
+{
+    ADC1->CR2 |= ADC_CR2_ADON;
+    mMeasStep = 0;
+    onTimer(0);
 }
 
 extern "C"

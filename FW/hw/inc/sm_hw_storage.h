@@ -2,8 +2,9 @@
 #define SM_HW_STORAGE_H_INCLUDED
 
 #include "sm_hal_abstract_spi.h"
+#include "sm_hw_powermgr.h"
 
-class SmHwStorage
+class SmHwStorage: public SmHwPowerMgrIface
 {
 public:
     void init(void);
@@ -28,6 +29,10 @@ private:
     void writeBuffer(uint8_t *pBuffer, unsigned int WriteAddr, unsigned int size);
 
     SmHalAbstractSpi *mSpi;
+
+    // SmHwPowerMgrIface
+    void onSleep(void);
+    void onWake(void);
 };
 
 #endif /* SM_HW_STORAGE_H_INCLUDED */

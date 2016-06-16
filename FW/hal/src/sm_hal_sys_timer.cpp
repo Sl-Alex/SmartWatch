@@ -90,14 +90,18 @@ void SmHalSysTimer::processEvents(void)
             uint32_t endtime = mPool[i].starttime + mPool[i].period;
             if (timeStamp >= endtime)
             {
-                mPool[i].iface->onTimer(timeStamp);
+                SmHalSysTimerIface * iface = mPool[i].iface;
 
-                // Check if we have to stop notifications for this subscriber
+                // Clear iface
                 if (mPool[i].repeat == false)
                 {
                     mPool[i].iface = 0;
                 }
-                else
+
+                iface->onTimer(timeStamp);
+
+                // Check if we have to stop notifications for this subscriber
+                if (mPool[i].repeat)
                 {
                     mPool[i].starttime = timeStamp;
                 }

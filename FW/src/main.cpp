@@ -36,19 +36,22 @@ int main(void)
     SmHalRcc::RccClockEnable(RCC_PERIPH_ADC1);
 
     // Disable JTAG, SWD remains enabled
+    // This is for PA15, which is JTDI by default
     AFIO->MAPR|=AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
 
-    // Init system timer and power manager
+    // Initialize system timer (10 clients, 1ms resolution)
     SmHalSysTimer::initSubscribersPool(10);
-    SmHalSysTimer::init(1); ///< 1ms resolution
+    // Initialize with 1ms resolution
+    SmHalSysTimer::init(1);
+    // Initialize power manager (10 clients)
     SmHwPowerMgr::getInstance()->initSubscribersPool(10);
-    SmHwPowerMgr::getInstance()->init(); ///< Initialize wake lines
+    // Initialize wake lines
+    SmHwPowerMgr::getInstance()->init();
 
     SmHwBt::getInstance()->init(new SmHalGpio<GPIOB_BASE, 4>());
 
 
-    SmHwBattery * battery = SmHwBattery::getInstance();
-    battery->init();
+    SmHwBattery::getInstance()->init();
 
     // Initialize display memory
     SmDisplay * display = new SmDisplay();
@@ -59,7 +62,6 @@ int main(void)
     SmHalSysTimer::subscribe(motor,1000,true);
 
     SmHwStorage::getInstance()->init();
-    SmHwStorage::getInstance()->readId();
 
     // Apply display interface
     display->init(128,64);
@@ -73,6 +75,7 @@ int main(void)
         SmHalSysTimer::processEvents();
         display->update();
 
+        SmHwBattery::getInstance()->getValue();
         if (keyboard->getState(2) && keyboard->getState(3))
         {
             SmHwPowerMgr::getInstance()->sleep();

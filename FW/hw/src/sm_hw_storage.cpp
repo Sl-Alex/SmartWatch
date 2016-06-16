@@ -50,6 +50,8 @@ void SmHwStorage::init(void)
 
     mSpi->setSsPin(new SmHalGpio<SS_PORT_BASE, SS_PIN>());
     ((SmHalSpiHw<SPI_BASE, SM_HAL_SPI_CFG_FULL_DUPLEX> *)mSpi)->init(SM_HAL_SPI_MODE3, SM_HAL_SPI_WIDTH_8);
+
+    SmHwPowerMgr::getInstance()->subscribe(this);
 }
 
 inline uint8_t SmHwStorage::sendByte(uint8_t data)
@@ -324,4 +326,19 @@ void SmHwStorage::writeBuffer(uint8_t *pBuffer, unsigned int WriteAddr, unsigned
             }
         }
     }
+}
+
+void SmHwStorage::onSleep(void)
+{
+    mSpi->resetSs();
+    sendByte(FLASH_CMD_POWERDOWN);
+    mSpi->setSs();
+}
+
+void SmHwStorage::onWake(void)
+{
+    mSpi->resetSs();
+    sendByte(FLASH_CMD_READ_IDENTIFICATION);
+    mSpi->setSs();
+    /// @todo Wait at least 3us.
 }
