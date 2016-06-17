@@ -1,9 +1,10 @@
 #include "sm_hw_bt.h"
+#include "sm_hal_gpio.h"
 
-void SmHwBt::init(SmHalAbstractGpio * powerPin)
+void SmHwBt::init(void)
 {
     // Initialize power pin
-    mPowerPin = powerPin;
+    mPowerPin = new SmHalGpio<GPIOB_BASE, 4>();
     // Initialize default BT state
     disable();
     // Set as output

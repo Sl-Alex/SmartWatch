@@ -48,7 +48,7 @@ int main(void)
     // Initialize wake lines
     SmHwPowerMgr::getInstance()->init();
 
-    SmHwBt::getInstance()->init(new SmHalGpio<GPIOB_BASE, 4>());
+    SmHwBt::getInstance()->init();
 
 
     SmHwBattery::getInstance()->init();

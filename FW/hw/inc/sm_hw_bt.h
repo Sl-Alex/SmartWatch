@@ -7,7 +7,7 @@
 class SmHwBt
 {
 public:
-    void init(SmHalAbstractGpio * powerPin);
+    void init(void);
     void enable(void);
     void disable(void);
     SmHwBt(SmHwBt const&) = delete;
