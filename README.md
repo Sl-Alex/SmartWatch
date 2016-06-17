@@ -1,4 +1,4 @@
-# SmartWatch
+# General description
 This project aims to create an open-source smartwatch with the following functionality:
 - 1.3" OLED display (bright enough to work in outdoor conditions)
 - BLE module (HM-10), pin-to-pin compatibility with well-known HC-06
@@ -13,7 +13,7 @@ This project aims to create an open-source smartwatch with the following functio
 
 # Hardware
 Both schematic and PCB were created with KiCAD. KiCAD project is located in the [PCB](./PCB) subfolder. Project uses components from my [KiCAD_libs](https://github.com/Sl-Alex/KiCAD_libs) repository.<br />
-**Status**: Finished. PCB is assembled, all HW features are tested and work as expected.
+**Status**: Finished. PCB is assembled, all HW features are tested and work as expected. Standby current (without BLE) is about 250uA, active mode (display and all peripherals are on) consumes about 65mA. BLE module itself consumes about 1mA average current.
 
 # Software
 Project is created in [EmBitz](http://www.emblocks.org/web/)<br />
