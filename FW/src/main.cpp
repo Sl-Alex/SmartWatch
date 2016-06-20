@@ -24,16 +24,25 @@
 #include "sm_hw_bt.h"
 #include "sm_hw_storage.h"
 #include "sm_hw_powermgr.h"
+#include "sm_hw_bmc150.h"
+
+#define I2C_ACC 0x10
+#define I2C_MAGN 0x12
 
 int main(void)
 {
     SystemCoreClockUpdate();
-    SmHalRcc::RccClockEnable(RCC_PERIPH_SPI2);
-    SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOA);
-    SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOB);
-    SmHalRcc::RccClockEnable(RCC_PERIPH_GPIOC);
-    SmHalRcc::RccClockEnable(RCC_PERIPH_AFIO);
-    SmHalRcc::RccClockEnable(RCC_PERIPH_ADC1);
+    SmHalRcc::updateClocks();
+
+    SmHalRcc::clockEnable(RCC_PERIPH_SPI2);
+    SmHalRcc::clockEnable(RCC_PERIPH_GPIOA);
+    SmHalRcc::clockEnable(RCC_PERIPH_GPIOB);
+    SmHalRcc::clockEnable(RCC_PERIPH_GPIOC);
+    SmHalRcc::clockEnable(RCC_PERIPH_AFIO);
+    SmHalRcc::clockEnable(RCC_PERIPH_ADC1);
+    SmHalRcc::clockEnable(RCC_PERIPH_I2C2);
+
+    SmHwBmc150::getInstance()->init();
 
     // Disable JTAG, SWD remains enabled
     // This is for PA15, which is JTDI by default
@@ -66,14 +75,43 @@ int main(void)
     // Apply display interface
     display->init(128,64);
 
+    SmHalI2c::getInstance()->reset();
+
     // Do something
     display->setPix(20,20,1);
     display->update();
+
+    uint8_t data = 1;
+    uint8_t reg[2] = {0x4b, 0x01};
+
+    SmHalI2c::getInstance()->transfer(I2C_MAGN, &reg[0], 2, 0, 0);
+
+    reg[0] = 0x40;
+    // 0b00110010;
+    SmHalI2c::getInstance()->transfer(I2C_MAGN, &reg[0], 1, &data, 1);
+
+//    SmHalI2c::getInstance()->reset();
+    SmHwBmc150::getInstance()->checkPresent();
+
+    //reg[0] = 0x00;
+    // 0b11111010;
+    //SmHalI2c::getInstance()->transfer(I2C_ACC, &reg[0], 1, &data, 1);
 
     while (1)
     {
         SmHalSysTimer::processEvents();
         display->update();
+
+        uint8_t st1 = keyboard->getState(1);
+        uint8_t st2 = keyboard->getState(2) << 1;
+        uint8_t st3 = keyboard->getState(3) << 2;
+        uint8_t st4 = keyboard->getState(4) << 3;
+
+        uint8_t st = st1|st2|st3|st4;
+        if (st)
+        {
+            SmHwBt::getInstance()->send(0x30+st);
+        }
 
         SmHwBattery::getInstance()->getValue();
         if (keyboard->getState(2) && keyboard->getState(3))

@@ -62,34 +62,33 @@ enum RccApb2Periph
     RCC_PERIPH_TIM11  = 0x00200000UL
 };
 
+typedef struct
+{
+  uint32_t SYSCLK_Frequency;  /*!< returns SYSCLK clock frequency expressed in Hz */
+  uint32_t HCLK_Frequency;    /*!< returns HCLK clock frequency expressed in Hz */
+  uint32_t PCLK1_Frequency;   /*!< returns PCLK1 clock frequency expressed in Hz */
+  uint32_t PCLK2_Frequency;   /*!< returns PCLK2 clock frequency expressed in Hz */
+  uint32_t ADCCLK_Frequency;  /*!< returns ADCCLK clock frequency expressed in Hz */
+}RCC_Clocks;
+
 class SmHalRcc
 {
 public:
-    static void RccClockEnable(RccAhbPeriph periph)
-    {
-        RCC->AHBENR |= (uint32_t)periph;
-    }
-    static void RccClockEnable(RccApb1Periph periph)
-    {
-        RCC->APB1ENR |= (uint32_t)periph;
-    }
-    static void RccClockEnable(RccApb2Periph periph)
-    {
-        RCC->APB2ENR |= (uint32_t)periph;
-    }
-
-    static void RccClockDisable(RccAhbPeriph periph)
-    {
-        RCC->AHBENR &= ~(uint32_t)periph;
-    }
-    static void RccClockDisable(RccApb1Periph periph)
-    {
-        RCC->APB1ENR &= ~(uint32_t)periph;
-    }
-    static void RccClockDisable(RccApb2Periph periph)
-    {
-        RCC->APB2ENR &= ~(uint32_t)periph;
-    }
+    static void clockEnable(RccAhbPeriph periph);
+    static void clockEnable(RccApb1Periph periph);
+    static void clockEnable(RccApb2Periph periph);
+    static void clockDisable(RccAhbPeriph periph);
+    static void clockDisable(RccApb1Periph periph);
+    static void clockDisable(RccApb2Periph periph);
+#ifdef STM32F10X_CL
+    static void reset(RccAhbPeriph periph);
+#endif /* STM32F10X_CL */
+    static void reset(RccApb1Periph periph);
+    static void reset(RccApb2Periph periph);
+    static void updateClocks(void);
+    static const RCC_Clocks *const getClocks(void);
+private:
+    static RCC_Clocks clocks;
 };
 
 #endif /* SM_HAL_RCC_H_INCLUDED */

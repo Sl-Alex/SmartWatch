@@ -10,6 +10,8 @@ public:
     void init(void);
     void enable(void);
     void disable(void);
+    void send(uint8_t data);
+    bool isConnected(void);
     SmHwBt(SmHwBt const&) = delete;
     void operator=(SmHwBt const&) = delete;
     static SmHwBt* getInstance()
@@ -20,7 +22,10 @@ public:
     }
 private:
     SmHwBt() {}
-    SmHalAbstractGpio * mPowerPin;
+    SmHalAbstractGpio *mPowerPin;
+    SmHalAbstractGpio *mRxPin;
+    SmHalAbstractGpio *mTxPin;
+    SmHalAbstractGpio *mStPin;
 };
 
 #endif /* SM_HW_BT_H_INCLUDED */

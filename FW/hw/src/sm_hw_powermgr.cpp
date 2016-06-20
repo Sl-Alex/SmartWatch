@@ -45,12 +45,12 @@
 //  (1UL << PIN_S2) | \
 //  (1UL << PIN_S3) |
 //  (1UL << PIN_BTRX) | \
-//  (1UL << PIN_AIRQ1) | \
 //  (1UL << PIN_AIRQ3) | \
 //  (1UL << PIN_ARDY))
 #define EXTI_LINES (\
   (1UL << PIN_S1) | \
-  (1UL << PIN_S4))
+  (1UL << PIN_S4) | \
+  (1UL << PIN_AIRQ1))
 
 /// @todo Check with the hardware
 void SmHwPowerMgr::init(void)
@@ -59,7 +59,7 @@ void SmHwPowerMgr::init(void)
     // Pins 0 to 3 (any port)
 //    AFIO->EXTICR[0] = (PORT_S2    << ((PIN_S2    & 0x03) << 2)) | \
 //                      (PORT_S3    << ((PIN_S3    & 0x03) << 2)) |
-    AFIO->EXTICR[0] = 0;//(PORT_AIRQ1 << ((PIN_AIRQ1 & 0x03) << 2)) | \
+    AFIO->EXTICR[0] = (PORT_AIRQ1 << ((PIN_AIRQ1 & 0x03) << 2));// | \
                       (PORT_ARDY  << ((PIN_ARDY  & 0x03) << 2));
     // Pins 4 to 7 (any port)
     AFIO->EXTICR[1] = (PORT_S4    << ((PIN_S4    & 0x03) << 2));// | \
