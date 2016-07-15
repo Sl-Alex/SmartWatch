@@ -1,6 +1,6 @@
-#include "smartanimator.h"
+#include "sm_animator.h"
 
-void SmartAnimator::start(int x, int y, int xOff, int yOff, int w, int h)
+void SmAnimator::start(int x, int y, int xOff, int yOff, int w, int h)
 {
     mX = x;
     mY = y;
@@ -11,7 +11,7 @@ void SmartAnimator::start(int x, int y, int xOff, int yOff, int w, int h)
     mTick = 0;
 }
 
-bool SmartAnimator::tick()
+bool SmAnimator::tick()
 {
     if (mW == 0)
         return false;
@@ -22,11 +22,21 @@ bool SmartAnimator::tick()
     {
         if (mTick >= mW)
             return false;
+        if ((mTick + mSpeed) >= mW)
+        {
+            mTick = mW - 1;
+            mSpeed = 1;
+        }
     }
     else if ((mDir == ANIM_DIR_UP) || (mDir == ANIM_DIR_DOWN))
     {
         if (mTick >= mH)
             return false;
+        if ((mTick + mSpeed) >= mH)
+        {
+            mTick = mH - 1;
+            mSpeed = 1;
+        }
     }
 
     switch (mDir)
@@ -42,14 +52,14 @@ bool SmartAnimator::tick()
                 else
                     limit = mX + mLimit;
 
-                pCanvas->scrollArea(mX - limit,mY,mX - mTick,mY+mH-1,1,SmartCanvas::DIR_LEFT,false);
+                pDest->scrollArea(mX - limit,mY,mX - mTick,mY+mH-1,mSpeed,SmCanvas::DIR_LEFT,false);
             }
             // Draw a part of the image
-            pCanvas->drawCanvas(mX - mTick, mY, mXOff, mYOff, mTick  +1, mH, pImage);
+            pDest->drawCanvas(mX - mTick, mY, mXOff, mYOff, mTick  +1, mH, pSource);
             // Draw line in case of visual slide
             if ((mType == ANIM_TYPE_VIS_SLIDE) && (mTick != mW - 1))
             {
-                pCanvas->drawVLine(mX - mTick,mY, mY + mH - 1, 255);
+                pDest->drawVLine(mX - mTick,mY, mY + mH - 1, 255);
             }
             break;
         case ANIM_DIR_RIGHT:
@@ -63,14 +73,14 @@ bool SmartAnimator::tick()
                 else
                     limit = mX + mLimit;
 
-                pCanvas->scrollArea(mX + mTick,mY,mX + limit,mY+mH-1,1,SmartCanvas::DIR_RIGHT,false);
+                pDest->scrollArea(mX + mTick,mY,mX + limit,mY+mH-1,mSpeed,SmCanvas::DIR_RIGHT,false);
             }
             // Draw a part of the image
-            pCanvas->drawCanvas(mX, mY, mW + mXOff - mTick - 1, mYOff, mTick  + 1, mH, pImage);
+            pDest->drawCanvas(mX, mY, mW + mXOff - mTick - 1, mYOff, mTick  + 1, mH, pSource);
             // Draw line in case of visual slide
             if ((mType == ANIM_TYPE_VIS_SLIDE) && (mTick != mW - 1))
             {
-                pCanvas->drawVLine(mX + mTick, mY, mY + mH - 1, 255);
+                pDest->drawVLine(mX + mTick, mY, mY + mH - 1, 255);
             }
             break;
         case ANIM_DIR_UP:
@@ -84,14 +94,14 @@ bool SmartAnimator::tick()
                 else
                     limit = mY + mLimit;
 
-                pCanvas->scrollArea(mX,mY - limit,mX+mW-1,mY - mTick,1,SmartCanvas::DIR_UP,false);
+                pDest->scrollArea(mX,mY - limit,mX+mW-1,mY - mTick,mSpeed,SmCanvas::DIR_UP,false);
             }
             // Draw a part of the image
-            pCanvas->drawCanvas(mX, mY - mTick, mXOff, mYOff, mW, mTick  +1, pImage);
+            pDest->drawCanvas(mX, mY - mTick, mXOff, mYOff, mW, mTick  +1, pSource);
             // Draw line in case of visual slide
             if ((mType == ANIM_TYPE_VIS_SLIDE) && (mTick != mH - 1))
             {
-                pCanvas->drawHLine(mX, mX + mW - 1, mY - mTick, 255);
+                pDest->drawHLine(mX, mX + mW - 1, mY - mTick, 255);
             }
             break;
         case ANIM_DIR_DOWN:
@@ -105,28 +115,28 @@ bool SmartAnimator::tick()
                 else
                     limit = mY + mLimit;
 
-                pCanvas->scrollArea(mX,mY + mTick,mX+mW-1,mY + limit,1,SmartCanvas::DIR_DOWN,false);
+                pDest->scrollArea(mX,mY + mTick,mX+mW-1,mY + limit,mSpeed,SmCanvas::DIR_DOWN,false);
             }
             // Draw a part of the image
-            pCanvas->drawCanvas(mX, mY, mXOff, mH + mYOff - mTick - 1, mW, mTick  + 1, pImage);
+            pDest->drawCanvas(mX, mY, mXOff, mH + mYOff - mTick - 1, mW, mTick  + 1, pSource);
             // Draw line in case of visual slide
             if ((mType == ANIM_TYPE_VIS_SLIDE) && (mTick != mH - 1))
             {
-                pCanvas->drawHLine(mX, mX + mW - 1, mY + mTick, 255);
+                pDest->drawHLine(mX, mX + mW - 1, mY + mTick, 255);
             }
             break;
     }
 
-    mTick++;
+    mTick += mSpeed;
     if ((mDir == ANIM_DIR_LEFT) || (mDir == ANIM_DIR_RIGHT))
     {
-        if (mTick >= mW)
-            return false;
+//        if (mTick >= mW)
+//            return false;
     }
     else if ((mDir == ANIM_DIR_UP) || (mDir == ANIM_DIR_DOWN))
     {
-        if (mTick >= mH)
-            return false;
+//        if (mTick >= mH)
+//            return false;
     }
 
     return true;

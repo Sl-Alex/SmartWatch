@@ -1,10 +1,10 @@
-#ifndef SMARTCANVAS_H
-#define SMARTCANVAS_H
+#ifndef SM_CANVAS_H
+#define SM_CANVAS_H
 
 #include <cstring>
 #include "sm_texture.h"
 
-class SmartCanvas: public SmTexture
+class SmCanvas: public SmTexture
 {
 public:
     typedef enum {
@@ -23,8 +23,8 @@ public:
     void setPix(int x, int y, char value);
     char getPix(int x, int y);
 //    void drawCanvas(int x, int y, SmartCanvas * source);
-    void drawCanvas(int x, int y, int xOff, int yOff, int w, int h, SmartCanvas * source);
-    inline void drawCanvas(int x, int y, SmartCanvas * source)
+    void drawCanvas(int x, int y, int xOff, int yOff, int w, int h, SmCanvas * source);
+    inline void drawCanvas(int x, int y, SmCanvas * source)
         {drawCanvas(x, y, 0, 0, source->getWidth(), source->getHeight(), source);}
     void drawLine(int x1, int x2, int y1, int y2, char value);
     void drawHLine(int x1, int x2, int y, char value);
@@ -33,4 +33,4 @@ public:
     void scrollArea(int x1, int y1, int x2, int y2, int pixels, ScrollDirection dir, bool clear);
 };
 
-#endif // SMARTCANVAS_H
+#endif // SM_CANVAS_H

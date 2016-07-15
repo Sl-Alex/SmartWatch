@@ -2,6 +2,8 @@
 #include "sm_hal_gpio.h"
 #include "sm_hal_spi_hw.h"
 
+#include "sm_crc.h"
+
 #define MOSI_PORT_BASE  GPIOB_BASE
 #define MOSI_PIN        15
 #define MISO_PORT_BASE  GPIOB_BASE
@@ -52,7 +54,55 @@ void SmHwStorage::init(void)
     ((SmHalSpiHw<SPI_BASE, SM_HAL_SPI_CFG_FULL_DUPLEX> *)mSpi)->init(SM_HAL_SPI_MODE3, SM_HAL_SPI_WIDTH_8);
 
     SmHwPowerMgr::getInstance()->subscribe(this);
+
+    /// Read total number of elements in the storage
+    readData(&mCount, 0, sizeof(mCount));
+    /// Verify CRC
+    uint8_t crc = 0xFF;
+    uint32_t addr = 1;
+    for (uint32_t i = 0; i < mCount; ++i)
+    {
+        uint32_t offset;
+        uint32_t size;
+        /// Read offset
+        readData((uint8_t *)offset, addr, sizeof(offset));
+        crc = SmCrc::calc(0xFF, (uint8_t *)offset, sizeof(offset));
+        addr += sizeof(offset);
+        /// Read size
+        readData((uint8_t *)size, addr, sizeof(size));
+        crc = SmCrc::calc(0xFF, (uint8_t *)size, sizeof(size));
+        addr += sizeof(size);
+    }
+    uint8_t crcRead;
+    /// @TODO Verify CRC
 }
+
+uint32_t SmHwStorage::getElementSize(uint8_t element)
+{
+    uint32_t ret;
+
+    if (element >= mCount)
+        return 0;
+
+    // Read element size
+    readData((uint8_t *)ret, 1 + sizeof(uint32_t) + 2 * element * sizeof(uint32_t), sizeof(ret));
+}
+
+/// @TODO implement
+void SmHwStorage::readElement(uint8_t element, uint32_t offset, uint8_t * data, uint32_t size)
+{
+    if (element >= mCount)
+        return;
+
+    uint32_t startOffset;
+
+    // Read element offset
+    readData((uint8_t *)startOffset, 1 + 2 * element * sizeof(uint32_t), sizeof(startOffset));
+
+    // Read data
+    readData(data, startOffset + offset, size);
+}
+
 
 inline uint8_t SmHwStorage::sendByte(uint8_t data)
 {

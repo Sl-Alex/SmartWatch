@@ -26,6 +26,9 @@
 #include "sm_hw_powermgr.h"
 #include "sm_hw_bmc150.h"
 
+#include "sm_canvas.h"
+#include "sm_animator.h"
+
 #define I2C_ACC 0x10
 #define I2C_MAGN 0x12
 
@@ -74,11 +77,12 @@ int main(void)
 
     // Apply display interface
     display->init(128,64);
+    display->getCanvas()->clear();
 
     SmHalI2c::getInstance()->reset();
 
     // Do something
-    display->setPix(20,20,1);
+//    display->setPix(20,20,1);
     display->update();
 
     uint8_t data = 1;
@@ -97,8 +101,55 @@ int main(void)
     // 0b11111010;
     //SmHalI2c::getInstance()->transfer(I2C_ACC, &reg[0], 1, &data, 1);
 
+    SmCanvas * pCanvas = new SmCanvas();
+    pCanvas->init(32,32);
+    pCanvas->clear();
+    pCanvas->drawRect(0,0,31,31,1);
+    display->getCanvas()->drawCanvas(0,0,pCanvas);
+
+    SmAnimator * pAnimator= new SmAnimator();
+    pAnimator->setDestSource(display->getCanvas(),pCanvas);
+    pAnimator->setType(SmAnimator::AnimType::ANIM_TYPE_VIS_SLIDE);
+    pAnimator->setDirection(SmAnimator::AnimDir::ANIM_DIR_LEFT);
+    pAnimator->setSpeed(2);
+    pAnimator->start(48,16,0,0,32,32);
+
+    int xOff = 0;
+    int yOff = 0;
     while (1)
     {
+//        xOff++;
+//        yOff++;
+//        xOff &= 0x1F;
+//        yOff &= 0x1F;
+        if (!pAnimator->tick())
+        {
+            static bool dir = true;
+            static bool step = true;
+            dir = !dir;
+            if (dir)
+            {
+                pAnimator->setDirection(SmAnimator::AnimDir::ANIM_DIR_LEFT);
+                pAnimator->setSpeed(3);
+            }
+            else
+            {
+                pAnimator->setDirection(SmAnimator::AnimDir::ANIM_DIR_RIGHT);
+                pAnimator->setSpeed(1);
+                step = ! step;
+            }
+            if (step)
+            {
+                pCanvas->fill(0x00);
+                pCanvas->drawRect(0,0,31,31,1);
+            }
+            else
+                pCanvas->fill(0xFF);
+            pAnimator->start(48,16,0,0,32,32);
+        }
+
+//        display->getCanvas()->drawCanvas(32,32,xOff,yOff,32,32,pCanvas);
+
         SmHalSysTimer::processEvents();
         display->update();
 

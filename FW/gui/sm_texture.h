@@ -20,6 +20,7 @@ public:
 
     /// @brief Clears texture memory
     void clear(void) { memset(pData, 0, mSize); }
+    void fill(uint8_t sample) { memset(pData, sample, mSize); }
 
     inline int getWidth(void) { return mWidth; }
     inline int getHeight(void) { return mHeight; }

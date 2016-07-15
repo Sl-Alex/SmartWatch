@@ -3,9 +3,9 @@
 #include "sm_hal_spi_sw.h"
 #include "sm_hal_gpio.h"
 
-#include "smartcanvas.h"
-#include "smartfont.h"
-#include "smartanimator.h"
+#include "sm_canvas.h"
+#include "sm_font.h"
+#include "sm_animator.h"
 #include "stdio.h"
 
 /// Set Lower Column Start Address for Page Addressing Mode (00h~0Fh)
@@ -86,7 +86,7 @@
 typedef SmHalSpiSw<SM_HAL_SPI_MODE0, SM_HAL_SPI_CFG_OUT, SM_HAL_SPI_WIDTH_8> DisplaySpi;
 
 SmDisplay::SmDisplay()
-    :texture(0)
+    :mCanvas(0)
 {
     mSpi = new DisplaySpi();
     mSpi->setSsPin(new SmHalGpio<GPIOB_BASE,5>());
@@ -151,11 +151,11 @@ SmDisplay::SmDisplay()
 
 void SmDisplay::init(int width, int height)
 {
-    if (texture)
-        delete texture;
+    if (mCanvas)
+        delete mCanvas;
 
-    texture = new SmTexture();
-    texture->init(width, height);
+    mCanvas = new SmCanvas();
+    mCanvas->init(width, height);
 }
 
 void SmDisplay::setPix(int x, int y, int value)
@@ -164,9 +164,9 @@ void SmDisplay::setPix(int x, int y, int value)
         for(int j = 0; j < 128; j++)
         {
             if (j%2)
-                texture->getPData()[i*128+j] = 0x55;
+                mCanvas->getPData()[i*128+j] = 0x55;
             else
-                texture->getPData()[i*128+j] = 0xAA;
+                mCanvas->getPData()[i*128+j] = 0xAA;
         }
 }
 
@@ -175,7 +175,7 @@ void SmDisplay::update(void)
     uint8_t m = 0;
     uint8_t n = 0;
 
-    uint8_t *pData = texture->getPData();
+    uint8_t *pData = mCanvas->getPData();
 
     for(m=0; m<8; m++)
     {
@@ -294,8 +294,6 @@ void SmDisplay::onWake(void)
 
     sendCommand(LCD_CMD_ALL_OFF);
     sendCommand(LCD_CMD_NORMAL_DISPLAY);
-
-    fill(0x01);
 
     sendCommand(LCD_CMD_DISPLAY_ON);//+ --turn on oled panel
 }

@@ -1,34 +1,15 @@
-#include "smartimage.h"
+#include "sm_canvas.h"
 
 #define abs(a) ((a)>0?(a):(-(a)))
 
 #define swap_int(a, b) { int t = a; a = b; b = t; }
 
-bool SmartImage::init(int imageIndex)
-{
-    StorageHeader header;
-
-//    if (SmartStorage::getSize(imageIndex) < 0)
-//        return false;
-//    if (SmartStorage::loadData(imageIndex,0,sizeof(StorageHeader),(uint8_t *)&header) < 0)
-//        return false;
-
-//    if (header.size != calcSize(header.width,header.height)) return false;
-
-    SmTexture::init(header.width, header.height);
-
-//    if (SmartStorage::loadData(imageIndex,sizeof(StorageHeader),getSize(),getPData()) < 1)
-//        return false;
-
-    return true;
-}
-
-void SmartImage::setPix(int x, int y, char value)
+void SmCanvas::setPix(int x, int y, char value)
 {
     if ((x < 0) || (x >= getWidth())) return;
     if ((y < 0) || (y >= getHeight())) return;
 #if (BPP == 8)
-    pData[y * getWidth() + x] = value;
+    getPData()[y * getWidth() + x] = value;
 #elif (BPP == 1)
 #ifdef PACK_VERT
     if (value)
@@ -53,7 +34,7 @@ void SmartImage::setPix(int x, int y, char value)
 #endif
 }
 
-char SmartImage::getPix(int x, int y)
+char SmCanvas::getPix(int x, int y)
 {
     if ((x < 0) || (x >= getWidth())) return 0;
     if ((y < 0) || (y >= getHeight())) return 0;
@@ -69,7 +50,7 @@ char SmartImage::getPix(int x, int y)
 #endif
 }
 
-void SmartImage::drawCanvas(int x, int y, int xOff, int yOff, int w, int h, SmartCanvas * source)
+void SmCanvas::drawCanvas(int x, int y, int xOff, int yOff, int w, int h, SmCanvas * source)
 {
     int x_left = 0;
     int x_right = w;
@@ -90,7 +71,7 @@ void SmartImage::drawCanvas(int x, int y, int xOff, int yOff, int w, int h, Smar
     }
 }
 
-void SmartImage::drawLine(int x1, int y1, int x2, int y2, char value)
+void SmCanvas::drawLine(int x1, int y1, int x2, int y2, char value)
 {
     if (x1 == x2)
     {
@@ -147,7 +128,7 @@ void SmartImage::drawLine(int x1, int y1, int x2, int y2, char value)
     }
 }
 
-void SmartImage::drawHLine(int x1, int x2, int y, char value)
+void SmCanvas::drawHLine(int x1, int x2, int y, char value)
 {
     if (x1 > x2)
         swap_int(x1,x2);
@@ -157,7 +138,7 @@ void SmartImage::drawHLine(int x1, int x2, int y, char value)
     }
 }
 
-void SmartImage::drawVLine(int x, int y1, int y2, char value)
+void SmCanvas::drawVLine(int x, int y1, int y2, char value)
 {
     if (y1 > y2)
         swap_int(y1,y2);
@@ -167,7 +148,7 @@ void SmartImage::drawVLine(int x, int y1, int y2, char value)
     }
 }
 
-void SmartImage::drawRect(int x1, int y1, int x2, int y2, char value)
+void SmCanvas::drawRect(int x1, int y1, int x2, int y2, char value)
 {
     drawHLine(x1, x2, y1, value);
     drawHLine(x1, x2, y2, value);
@@ -175,7 +156,7 @@ void SmartImage::drawRect(int x1, int y1, int x2, int y2, char value)
     drawVLine(x2, y1, y2, value);
 }
 
-void SmartImage::scrollArea(int x1, int y1, int x2, int y2, int pixels, ScrollDirection dir, bool clear)
+void SmCanvas::scrollArea(int x1, int y1, int x2, int y2, int pixels, ScrollDirection dir, bool clear)
 {
     int _x1, _y1;
     int _x2, _y2;

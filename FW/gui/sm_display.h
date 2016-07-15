@@ -1,7 +1,7 @@
 #ifndef SMDISPLAY_H
 #define SMDISPLAY_H
 
-#include "sm_texture.h"
+#include "sm_canvas.h"
 #include "sm_hal_abstract_gpio.h"
 #include "sm_hal_abstract_spi.h"
 #include "sm_hw_powermgr.h"
@@ -14,6 +14,7 @@ public:
     void setPix(int x, int y, int value);
     void update(void);
     void fill(uint8_t data);
+    inline SmCanvas * getCanvas(void) { return mCanvas; }
 private:
     void sendCommand(uint8_t cmd);
     void sendCommand(uint8_t cmd, uint8_t data);
@@ -22,7 +23,7 @@ private:
     void powerOff(void);
     void onSleep(void);
     void onWake(void);
-    SmTexture * texture;
+    SmCanvas * mCanvas;
     SmHalAbstractSpi * mSpi;
     SmHalAbstractGpio * mDcPin;
     SmHalAbstractGpio * mPowerPin;

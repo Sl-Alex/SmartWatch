@@ -1,9 +1,9 @@
-#ifndef SMARTANIMATOR_H
-#define SMARTANIMATOR_H
+#ifndef SM_ANIMATOR_H
+#define SM_ANIMATOR_H
 
-#include "smartcanvas.h"
+#include "sm_canvas.h"
 
-class SmartAnimator
+class SmAnimator
 {
 public:
     typedef enum {
@@ -19,7 +19,7 @@ public:
         ANIM_DIR_RIGHT
     } AnimDir;
 
-    SmartAnimator()
+    SmAnimator()
         :mTick(0),
         mX(0),
         mY(0),
@@ -28,8 +28,7 @@ public:
         mW(0),
         mH(0) {}
 
-    inline void setCanvas(SmartCanvas * canvas) {pCanvas = canvas;}
-    inline void setImage(SmartCanvas * image) {pImage = image;}
+    inline void setDestSource(SmCanvas * dest, SmCanvas * source) {pDest = dest; pSource = source;}
     inline void setType(AnimType type) {mType = type;}
     inline void setDirection(AnimDir direction) {mDir = direction;}
     inline void setSpeed(int speed) {mSpeed = speed;}
@@ -40,8 +39,8 @@ public:
     void finish();
 
 private:
-    SmartCanvas * pCanvas;
-    SmartCanvas * pImage;
+    SmCanvas * pDest;
+    SmCanvas * pSource;
 
     AnimType mType;
     AnimDir mDir;
@@ -52,4 +51,4 @@ private:
     int mX, mY, mXOff, mYOff, mW, mH;
 };
 
-#endif // SMARTANIMATOR_H
+#endif // SM_ANIMATOR_H

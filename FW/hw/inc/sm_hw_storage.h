@@ -17,7 +17,10 @@ public:
         return &instance;
     }
     uint32_t readId(void);
+    uint32_t getElementSize(uint8_t element);
+    void readElement(uint8_t element, uint32_t offset, uint8_t * data, uint32_t size);
     void readData(uint8_t *pData, uint32_t flashAddr, uint32_t count);
+    inline uint32_t elementsCount(void) { return mCount; }
 private:
     SmHwStorage() {}
     inline uint8_t sendByte(uint8_t data);
@@ -29,6 +32,8 @@ private:
     void writeBuffer(uint8_t *pBuffer, unsigned int WriteAddr, unsigned int size);
 
     SmHalAbstractSpi *mSpi;
+
+    uint8_t mCount;    ///< Number of elements in the storage
 
     // SmHwPowerMgrIface
     void onSleep(void);
