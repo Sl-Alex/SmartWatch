@@ -3,7 +3,7 @@ This project aims to create an open-source smartwatch with the following functio
 - 1.3" OLED display (bright enough to work in outdoor conditions)
 - BLE module (HM-10), pin-to-pin compatibility with well-known HC-06
 - small vibration motor (SMS/Call notifications and so on)
-- STM32F103C8T6 microcontroller.
+- STM32F103CBT6 microcontroller.
 - Big external SPI flash memory (M25P40), SW OTA update and a lot of images can be stored there.
 - BMC150 accelerometer/compass (can recognize double tap on the screen).
 - BMP180 barometer/thermometer (just because there is a plenty of space).

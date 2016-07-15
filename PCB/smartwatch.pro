@@ -1,4 +1,4 @@
-update=28/04/2016 21:29:04
+update=15.07.2016 23:09:22
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,6 +23,8 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
+[general]
+version=1
 [eeschema]
 version=1
 LibDir=D:/KiCAD_libs
@@ -38,5 +40,3 @@ LibName8=modules
 LibName9=memory
 LibName10=sensors
 LibName11=connectors
-[general]
-version=1
