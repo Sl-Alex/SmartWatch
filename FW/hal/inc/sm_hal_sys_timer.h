@@ -5,11 +5,16 @@
 
 extern "C" void SysTick_Handler(void);
 
+/// @brief System timer interface
+/// @details Provides pure virtual callbacks which should be defined in the derived classes
 class SmHalSysTimerIface
 {
 public:
+    /// @brief Trivial constructor
     SmHalSysTimerIface(){}
+    /// @brief Virtual destructor
     virtual ~SmHalSysTimerIface(){}
+    /// @brief onTimer event. Should be redefined in the derived class
     virtual void onTimer(uint32_t timeStamp) = 0;
 };
 

@@ -8,7 +8,7 @@
 
 extern "C" void ADC1_2_IRQHandler(void);
 
-/// @brief Battery monitoring.
+/// @brief Battery status monitoring.
 /// @details Monitors battery voltage and charge status.
 /// This class is a singleton, because we have only one battery and exclusive ADC access.
 /// After \ref init is called, it subscribes to the timer and power manager events.
@@ -37,16 +37,19 @@ public:
         return &instance;
     }
 private:
-    SmHwBattery() {}
-    uint32_t mValue;
-    uint8_t mMeasStep;
-    friend void ADC1_2_IRQHandler(void);
-    SmHalAbstractGpio * mGpioEn;
+    SmHwBattery() {}    ///< Default constructor is hidden
 
-    // SmHalSysTimerIface
+    uint32_t mValue;    ///< Latest value
+    uint8_t mMeasStep;  ///< Measurement step (delay/measurement)
+
+    friend void ADC1_2_IRQHandler(void);
+
+    SmHalAbstractGpio * mGpioEn;    ///< Measurement circuit control pin
+
+    // SmHalSysTimerIface events
     void onTimer(uint32_t timeStamp);
 
-    // SmHalSysTimerIface
+    // SmHalSysTimerIface events
     void onSleep(void);
     void onWake(void);
 };
