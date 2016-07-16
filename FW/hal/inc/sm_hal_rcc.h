@@ -62,14 +62,14 @@ enum RccApb2Periph
     RCC_PERIPH_TIM11  = 0x00200000UL
 };
 
-typedef struct
+struct SmHalRccClocks
 {
   uint32_t SYSCLK_Frequency;  /*!< returns SYSCLK clock frequency expressed in Hz */
   uint32_t HCLK_Frequency;    /*!< returns HCLK clock frequency expressed in Hz */
   uint32_t PCLK1_Frequency;   /*!< returns PCLK1 clock frequency expressed in Hz */
   uint32_t PCLK2_Frequency;   /*!< returns PCLK2 clock frequency expressed in Hz */
   uint32_t ADCCLK_Frequency;  /*!< returns ADCCLK clock frequency expressed in Hz */
-}RCC_Clocks;
+};
 
 class SmHalRcc
 {
@@ -86,9 +86,9 @@ public:
     static void reset(RccApb1Periph periph);
     static void reset(RccApb2Periph periph);
     static void updateClocks(void);
-    static const RCC_Clocks *const getClocks(void);
+    static const SmHalRccClocks *const getClocks(void);
 private:
-    static RCC_Clocks clocks;
+    static SmHalRccClocks clocks;
 };
 
 #endif /* SM_HAL_RCC_H_INCLUDED */

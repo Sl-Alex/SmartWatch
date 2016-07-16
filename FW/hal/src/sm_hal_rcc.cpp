@@ -1,6 +1,6 @@
 #include "sm_hal_rcc.h"
 
-RCC_Clocks SmHalRcc::clocks;
+SmHalRccClocks SmHalRcc::clocks;
 
 void SmHalRcc::clockEnable(RccAhbPeriph periph)
 {
@@ -207,7 +207,7 @@ void SmHalRcc::updateClocks(void)
     clocks.ADCCLK_Frequency = clocks.PCLK2_Frequency / presc;
 }
 
-const RCC_Clocks *const SmHalRcc::getClocks(void)
+const SmHalRccClocks *const SmHalRcc::getClocks(void)
 {
     return &clocks;
 }

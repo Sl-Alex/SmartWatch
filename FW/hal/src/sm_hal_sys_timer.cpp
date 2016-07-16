@@ -74,7 +74,6 @@ void SmHalSysTimer::init(uint32_t ms)
     SysTick_Config(ms);
 }
 
-/// @todo Implement time check and automatic removing
 void SmHalSysTimer::processEvents(void)
 {
     static uint32_t timeStamp = 0;

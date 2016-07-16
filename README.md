@@ -12,7 +12,7 @@ This project aims to create an open-source smartwatch with the following functio
 - 3D models for all parts are in my [KiCAD_libs](https://github.com/Sl-Alex/KiCAD_libs) repository, case will be available a later, so the whole project can be easily reproduced.
 
 # Hardware
-Both schematic and PCB were created with KiCAD. KiCAD project is located in the [PCB](./PCB) subfolder. Project uses components from my [KiCAD_libs](https://github.com/Sl-Alex/KiCAD_libs) repository.<br />
+Both schematic and PCB were created with KiCAD. KiCAD project is located in the PCB subfolder. Project uses components from my [KiCAD_libs](https://github.com/Sl-Alex/KiCAD_libs) repository.<br />
 **Status**: Finished. PCB is assembled, all HW features are tested and work as expected. Standby current (without BLE) is about 250uA, active mode (display and all peripherals are on) consumes about 65mA. BLE module itself consumes about 1mA average current.
 
 # Software
@@ -20,4 +20,4 @@ Project is created in [EmBitz](http://www.emblocks.org/web/)<br />
 **Status**: In progress, can be compiled but does not work yet. See issues list for details.<br />
 
 # Licensing
-The whole project is available under GPL v3 license (see [LICENSE](./LICENSE) file) except of files, which clearly mention other license type in the file header.
+The whole project is available under GPL v3 license see LICENSE file except of files, which clearly mention other license type in the file header.

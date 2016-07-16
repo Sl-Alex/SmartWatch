@@ -1,15 +1,18 @@
+/**
+    @file sm_hw_battery.cpp
+*/
 #include "sm_hw_battery.h"
 
 #include "stm32f10x.h"
 #include "sm_hal_gpio.h"
 
-#define GPIO_EN_PORT    GPIOA_BASE
-#define GPIO_EN_PIN     2
-#define MEAS_DELAY      2
-#define MEAS_INTERVAL   10000
+#define GPIO_EN_PORT    GPIOA_BASE  ///< Battery measurement enable port
+#define GPIO_EN_PIN     2           ///< Battery measurement enable pin
+#define MEAS_DELAY      2           ///< Delay between enabling and measurement
+#define MEAS_INTERVAL   500         ///< Battery voltage update interval
 
-#define GPIO_AIN_PORT   GPIOA_BASE
-#define GPIO_AIN_PIN    0
+#define GPIO_AIN_PORT   GPIOA_BASE  ///< Battery voltage input port
+#define GPIO_AIN_PIN    0           ///< Battery voltage input pin
 
 void SmHwBattery::init()
 {
@@ -28,7 +31,7 @@ void SmHwBattery::init()
 
     ADC1->CR2 |= ADC_CR2_ADON;
 
-    /// @todo Add several ms delay before ADC calibration
+    // Wait a bit before ADC calibration
     uint32_t timestamp = SmHalSysTimer::getTimeStamp();
     timestamp += MEAS_DELAY;    // 2ms
     // Wait a bit before proceed
@@ -87,6 +90,8 @@ void SmHwBattery::onWake(void)
 extern "C"
 {
 
+/// @brief ADC interrupt handler.
+/// Measurement enable circuit is disabled after the measurement.
 void ADC1_2_IRQHandler (void)
 {
     SmHwBattery::getInstance()->mValue = ADC1->DR;

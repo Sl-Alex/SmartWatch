@@ -52,7 +52,8 @@
   (1UL << PIN_S4) | \
   (1UL << PIN_AIRQ1))
 
-/// @todo Check with the hardware
+/// @todo Enable wake up on any button (temporary disabled).
+/// Just uncomment commented lines in this function
 void SmHwPowerMgr::init(void)
 {
     // Initialize GPIO EXTI
