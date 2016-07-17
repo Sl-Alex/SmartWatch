@@ -4,6 +4,8 @@
 #include "stm32f10x.h"
 #include "sm_hal_abstract_gpio.h"
 
+/// @brief GPIO implementation
+/// @details See @ref SmHalAbstractGpio for details
 template <uint32_t GPIO_BASE, uint8_t PIN>
 class SmHalGpio: public SmHalAbstractGpio
 {
