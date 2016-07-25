@@ -18,7 +18,8 @@ int SmTexture::init(int width, int height)
 
 SmTexture::~SmTexture()
 {
-    delete[] pData;
+    if (pData)
+        delete[] pData;
 }
 
 int SmTexture::calcSize(int width, int height)

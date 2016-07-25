@@ -21,8 +21,8 @@
  * located in the very beginning of the flash. Actually, it contains just a number of
  * elements, their parameters (offset and size in bytes) and CRC32 in the end.
  *
- * @todo The whole table must be verified during the start-up.
- * Access to any element must be blocked if CRC32 is wrong.
+ * The whole table is verified during the start-up.
+ * Access to any element is blocked if CRC32 is wrong.
  *
  * Offset       | Parameter | Size  | Description
  * ------------ | --------- | ----- | ------
@@ -36,6 +36,7 @@
  * offset1      | data1     | size1 | Actual data for the first element
  * offset2      | data2     | size2 | Actual data for the second element
  * ...          | ...       | ...   | ... Other data elements ...
+ *
  */
 
 /// @brief HW storage element information
@@ -79,6 +80,9 @@ public:
     /// @param element: Element index
     /// @return Element size
     uint32_t getElementSize(uint8_t element);
+
+    /// @brief get element info
+    bool getElementInfo(uint8_t element, SmHwStorageElementInfo * info);
 
     /// @brief Read element or its part
     /// @param element: Element index

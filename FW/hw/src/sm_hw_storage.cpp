@@ -88,14 +88,23 @@ void SmHwStorage::init(void)
 
 uint32_t SmHwStorage::getElementSize(uint8_t element)
 {
-    if (element >= mCount)
+    SmHwStorageElementInfo elementInfo;
+
+    if (getElementInfo(element, &elementInfo) == false)
         return 0;
 
-    // Read element info
-    SmHwStorageElementInfo elementInfo;
-    readData(1 + sizeof(SmHwStorageElementInfo)*element, (uint8_t *)&elementInfo, sizeof(elementInfo));
-
     return elementInfo.size;
+}
+
+bool SmHwStorage::getElementInfo(uint8_t element, SmHwStorageElementInfo * info)
+{
+    if (element >= mCount)
+        return false;
+
+    // Read element info
+    readData(1 + sizeof(SmHwStorageElementInfo)*element, (uint8_t *)info, sizeof(SmHwStorageElementInfo));
+
+    return true;
 }
 
 void SmHwStorage::readElement(uint8_t element, uint32_t offset, uint8_t * pData, uint32_t size)

@@ -3,24 +3,35 @@
 
 #include "sm_image.h"
 
-/// Font layout in memory:
-/// uint32_t count
-/// uint32_t height
-/// uint32_t baseLine
-/// SymbolProps[count] {
-///     uint32_t symbol;
-///     uint8_t width;
-///     uint32_t size;
-///     uint32_t offset;
-/// }
-/// uint8_t data[]; /// @offset starting from the font beginning
+/** @addtogroup EXTERNAL_FLASH
+ * @{
+ *
+ * @par Font element
+ *
+ * Font element holds a group of images.
+ * It has a header with symbols count, font height, baseline and an array of offsets for
+ * each symbol. Each symbol has an image element layout.
+ * So, font layout in the @ref SmHwStorage is the following:
+ *
+ * Offset  | Parameter | Size | Description
+ * ------- | --------- | ---- | ------
+ * 0x0000  | count     | 32   | Image width in pixels
+ * 0x0004  | height    | 32   | Image height in pixels
+ * 0x0008  | baseLine  | 32   | Image size in bytes
+ * 0x000C  | offset1   | 32   | First symbol offset
+ * 0x0010  | offset2   | 32   | Second symbol offset
+ * ...     | ...       | 32   | ...
+ * offset1 | symbol1   | ---  | Symbol1 image
+ * offset2 | symbol2   | ---  | Symbol2 image
+ * ...     | ...       | ...  | ...
+ *
+ * @}
+ *
+ */
 
-struct SmFontSymbol {
-    uint32_t symbol;    ///< UTF-32 encoding
-    uint8_t width;      ///< width (pixels)
-};
-
-class SmFont: public SmCanvas
+/// @brief Font class
+/// @todo Implement properly
+class SmFont: public SmImage
 {
 public:
     /// @brief Draw symbol from font on a canvas

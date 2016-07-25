@@ -4,6 +4,8 @@
 #include <cstring>
 #include <cstdint>
 
+/// @brief Texture in the native image format
+/// @todo Write more about native image format
 class SmTexture
 {
 public:

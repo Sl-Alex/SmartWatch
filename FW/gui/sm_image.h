@@ -4,23 +4,44 @@
 #include <cstring>
 #include "sm_canvas.h"
 
+/** @addtogroup EXTERNAL_FLASH
+ * @{
+ *
+ * @par Image element
+ *
+ * Image element holds image in a native image format of the display (see @ref SmTexture for more information).
+ * It has a header with image width, height and size and actual image data.
+ * So, image layout in the @ref SmHwStorage is the following:
+ *
+ * Offset       | Parameter | Size  | Description
+ * ------------ | --------- | ----- | ------
+ * 0x0000       | width     | 32    | Image width in pixels
+ * 0x0004       | height    | 32    | Image height in pixels
+ * 0x0008       | size      | 32    | Image size in bytes
+ *
+ * @}
+ *
+ */
+
+/// @brief Image class
 class SmImage: public SmCanvas
 {
 public:
-    typedef enum {
-        DIR_LEFT,
-        DIR_RIGHT,
-        DIR_UP,
-        DIR_DOWN
-    } ScrollDirection;
 
+    /// @brief Init image by index (see @ref EXTERNAL_FLASH)
+    virtual bool init(int imageIndex);
+
+    /// @brief Init image by offset in the @ref EXTERNAL_FLASH
+    virtual bool initOffset(uint32_t offset);
+
+private:
     struct ImageHeader {
         int width;
         int height;
         int size;
     };
 
-    virtual bool init(int imageIndex);
+    ImageHeader header;
 };
 
 #endif // SM_IMAGE_H
