@@ -55,52 +55,62 @@ void SmHwStorage::init(void)
 
     SmHwPowerMgr::getInstance()->subscribe(this);
 
-    /// Read total number of elements in the storage
-    readData(&mCount, 0, sizeof(mCount));
-    /// Verify CRC
-    uint8_t crc = 0xFF;
+    // Read total number of elements in the storage
+    readData(0, &mCount, sizeof(mCount));
+
+    // Verify CRC
+    uint32_t crc = 0xFFFFFFFF;
     uint32_t addr = 1;
+    SmHwStorageElementInfo elementInfo;
+    // Next element offset. We can check if it is correct
+    uint32_t nextOffset = 1 + sizeof(elementInfo)*mCount + 4;
     for (uint32_t i = 0; i < mCount; ++i)
     {
-        uint32_t offset;
-        uint32_t size;
-        /// Read offset
-        readData((uint8_t *)offset, addr, sizeof(offset));
-        crc = SmCrc::calc(0xFF, (uint8_t *)offset, sizeof(offset));
-        addr += sizeof(offset);
-        /// Read size
-        readData((uint8_t *)size, addr, sizeof(size));
-        crc = SmCrc::calc(0xFF, (uint8_t *)size, sizeof(size));
-        addr += sizeof(size);
+        // Read element info
+        readData(addr, (uint8_t *)&elementInfo, sizeof(elementInfo));
+        crc = SmCrc::calc32(crc, (uint8_t *)&elementInfo, sizeof(elementInfo));
+        addr += sizeof(elementInfo);
+
+        if(elementInfo.offset != nextOffset)
+        {
+            mCount = 0;
+            return;
+        }
+
+        // Calculate next element offset
+        nextOffset += elementInfo.size;
     }
-    uint8_t crcRead;
-    /// @TODO Verify CRC
+    uint32_t crcStored;
+    readData(1 + sizeof(elementInfo)*mCount, (uint8_t *)&crcStored, sizeof(crcStored));
+    if (crcStored != crc)
+        mCount = 0;
 }
 
 uint32_t SmHwStorage::getElementSize(uint8_t element)
 {
-    uint32_t ret;
-
     if (element >= mCount)
         return 0;
 
-    // Read element size
-    readData((uint8_t *)ret, 1 + sizeof(uint32_t) + 2 * element * sizeof(uint32_t), sizeof(ret));
+    // Read element info
+    SmHwStorageElementInfo elementInfo;
+    readData(1 + sizeof(SmHwStorageElementInfo)*element, (uint8_t *)&elementInfo, sizeof(elementInfo));
+
+    return elementInfo.size;
 }
 
-/// @TODO implement
-void SmHwStorage::readElement(uint8_t element, uint32_t offset, uint8_t * data, uint32_t size)
+void SmHwStorage::readElement(uint8_t element, uint32_t offset, uint8_t * pData, uint32_t size)
 {
     if (element >= mCount)
         return;
 
     uint32_t startOffset;
 
-    // Read element offset
-    readData((uint8_t *)startOffset, 1 + 2 * element * sizeof(uint32_t), sizeof(startOffset));
+    // Read element info
+    SmHwStorageElementInfo elementInfo;
+    readData(1 + sizeof(SmHwStorageElementInfo)*element, (uint8_t *)&elementInfo, sizeof(elementInfo));
 
     // Read data
-    readData(data, startOffset + offset, size);
+    readData(elementInfo.offset + offset, pData, size);
 }
 
 
@@ -134,7 +144,7 @@ uint32_t SmHwStorage::readId(void)
     return result;
 }
 
-void SmHwStorage::readData(uint8_t *pData, uint32_t flashAddr, uint32_t count)
+void SmHwStorage::readData(uint32_t offset, uint8_t *pData, uint32_t size)
 {
     uint8_t res = 0;
     uint8_t data;
@@ -145,15 +155,15 @@ void SmHwStorage::readData(uint8_t *pData, uint32_t flashAddr, uint32_t count)
     // Send "Read from Memory " instruction
     sendByte(FLASH_CMD_READ_DATA_BYTES);
 
-    // Send flashAddr high nibble address byte to read from
-    sendByte((flashAddr & 0xFF0000) >> 16);
-    // Send flashAddr medium nibble address byte to read from
-    sendByte((flashAddr & 0xFF00) >> 8);
-    // Send flashAddr low nibble address byte to read from
-    sendByte(flashAddr & 0xFF);
+    // Send offset high nibble address byte to read from
+    sendByte((offset & 0xFF0000) >> 16);
+    // Send offset medium nibble address byte to read from
+    sendByte((offset & 0xFF00) >> 8);
+    // Send offset low nibble address byte to read from
+    sendByte(offset & 0xFF);
 
     data = FLASH_DUMMY_BYTE;
-    while (count--) // while there is data to be read
+    while (size--) // while there is data to be read
     {
         // Read a byte from the FLASH
         mSpi->transfer(pData, &data, 1);

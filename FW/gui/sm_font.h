@@ -20,11 +20,12 @@ struct SmFontSymbol {
     uint8_t width;      ///< width (pixels)
 };
 
-class SmFont: public SmImage
+class SmFont: public SmCanvas
 {
 public:
-    static bool loadFont(void);
-    static int drawSymbol(SmCanvas * canvas, int x, int y, char symbol);
+    /// @brief Draw symbol from font on a canvas
+    /// @details index: Font index (See @ref SmHwStorageIndices)
+    static int drawSymbol(int index, SmCanvas * canvas, int x, int y, uint32_t symbol);
     static int drawText(SmCanvas * canvas, int x, int y, char * symbol);
     static inline SmFont * getInstance()
     {

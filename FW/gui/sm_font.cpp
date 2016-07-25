@@ -1,15 +1,9 @@
 #include "sm_font.h"
+#include "sm_hw_storage.h"
 
 SmFont* SmFont::pInstance = 0;
 
-bool SmFont::loadFont(void)
-{
-    if (getInstance()->init(2) == false) return false;
-
-    return true;
-}
-
-int SmFont::drawSymbol(SmCanvas * canvas, int x, int y, char symbol)
+int SmFont::drawSymbol(int index, SmCanvas * canvas, int x, int y, uint32_t symbol)
 {
 //    canvas->drawCanvas(x,y,
 //                       symbol * symbolWidth, 0,

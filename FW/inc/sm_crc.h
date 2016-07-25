@@ -15,7 +15,9 @@ public:
         return &instance;
     }
 
-    static uint8_t calc(uint8_t init, uint8_t * data, uint32_t size);
+    static uint8_t  calc8 (uint8_t  init, const uint8_t * data, uint32_t size);
+    static uint32_t calc32(uint32_t init, const uint8_t * data, uint32_t size);
+
 private:
     SmCrc() {}
 };
