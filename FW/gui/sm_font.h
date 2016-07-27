@@ -20,9 +20,9 @@
  * really matter because all conversion is done on the smartphone side, firmware knows nothing about the symbols.
  * It just receives something like symbol1 index and it knows exactly where it is stored.
  * Internal strings used by the firmware are encoded in the same manner before compilation with
- * an external tool(SmFlashPacker)
+ * an external tool(FlashPacker)
  *
- * @todo Write SmFlashPacker
+ * @todo Write FlashPacker
  *
  * So, font layout in the @ref SmHwStorage is the following:
  *

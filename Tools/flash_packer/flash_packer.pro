@@ -7,4 +7,3 @@ DEFINES += BPP=1
 DEFINES += PACK_VERT
 
 SOURCES += main.cpp
-
