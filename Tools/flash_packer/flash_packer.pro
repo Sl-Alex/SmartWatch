@@ -9,7 +9,11 @@ DEFINES += PACK_VERT
 SOURCES += main.cpp \
     parser_bin.cpp \
     parser_txt.cpp \
-    parser_pbm.cpp
+    parser_pbm.cpp \
+    pbm_image.cpp \
+    flash_image.cpp
 
 HEADERS += \
-    global.h
+    global.h \
+    pbm_image.h \
+    flash_image.h
