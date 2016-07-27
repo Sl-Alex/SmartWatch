@@ -24,6 +24,18 @@ struct FileInfo{
     uint32_t size;
 };
 
+string fileExt(string fileName)
+{
+    string result = "";
+    size_t extpos = fileName.find_last_of('.');
+
+    if (extpos == std::string::npos)
+        return result;
+
+    result = fileName.substr(extpos + 1,fileName.length());
+    return result;
+}
+
 /// @brief Search
 void fileSearch(int number, const vector<string> * fileList, vector<string> * result)
 {
@@ -43,7 +55,6 @@ void fileSearch(int number, const vector<string> * fileList, vector<string> * re
 
         // File is found
         result->push_back(fileName);
-        std::cout << fileName << std::endl;
     }
 }
 
@@ -76,8 +87,6 @@ int main()
             continue;
 
         fileList.push_back(fileName);
-
-        //std::cout << fileName << std::endl;
     }
 
     // Parse fileList
@@ -88,6 +97,47 @@ int main()
 
         // Get a list of files matching to "NNN*" template
         fileSearch(number, &fileList, &matchList);
+
+        if (matchList.size() == 1)
+        {
+            if (fileExt(matchList[0]).compare("txt") == 0)
+            {
+                /// @todo Implement
+                std::cout << matchList[0] << " - text element"  << std::endl;
+            }
+            else if (fileExt(matchList[0]).compare("bin") == 0)
+            {
+                /// @todo Implement
+                std::cout << matchList[0] << " - binary element" << std::endl;
+            }
+            else if (fileExt(matchList[0]).compare("pbm") == 0)
+            {
+                /// @todo Implement
+                std::cout << matchList[0] << " - image element" << std::endl;
+            }
+            else
+            {
+                /// @todo Implement
+                std::cout << matchList[0] << " - unknown element" << std::endl;
+            }
+        }
+        else if (matchList.size() == 2)
+        {
+            /// @todo Implement
+            std::cout << matchList[0] << " and " << matchList[1] << " can contain font" << std::endl;
+        }
+        else if (matchList.size() == 0)
+        {
+            std::cout << "Stopping." << std::endl;
+            break;
+        }
+        else
+        {
+            std::cout << "Wrong number of files (" << matchList.size() <<") is found for number " << std::setfill('0') << std::setw(3) << number << std::endl;
+            std::cout << "Stopping." << std::endl;
+            break;
+        }
+
 
         number++;
     }
