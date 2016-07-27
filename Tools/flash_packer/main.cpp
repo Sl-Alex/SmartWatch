@@ -14,6 +14,8 @@
 #error "Unknown OS"
 #endif
 
+#include "global.h"
+
 using namespace std;
 
 const int MAX_FILES = 100;
@@ -62,6 +64,8 @@ int main()
 {
     // List of files
     vector<string> fileList;
+    // List of flash elements
+    vector<FlashElement> flashElements;
 
     // Get file list in the directory
     DIR *dir;
@@ -100,26 +104,34 @@ int main()
 
         if (matchList.size() == 1)
         {
+            ifstream inFile(matchList[0], ios::in|ios::binary);
             if (fileExt(matchList[0]).compare("txt") == 0)
             {
-                /// @todo Implement
                 std::cout << matchList[0] << " - text element"  << std::endl;
+                FlashElement element;
+                parseTxt(inFile, &element);
+                flashElements.push_back(element);
             }
             else if (fileExt(matchList[0]).compare("bin") == 0)
             {
-                /// @todo Implement
                 std::cout << matchList[0] << " - binary element" << std::endl;
+                FlashElement element;
+                parseBin(inFile, &element);
+                flashElements.push_back(element);
             }
             else if (fileExt(matchList[0]).compare("pbm") == 0)
             {
-                /// @todo Implement
                 std::cout << matchList[0] << " - image element" << std::endl;
+                FlashElement element;
+                parsePbm(inFile, &element);
+                flashElements.push_back(element);
             }
             else
             {
                 /// @todo Implement
                 std::cout << matchList[0] << " - unknown element" << std::endl;
             }
+            inFile.close();
         }
         else if (matchList.size() == 2)
         {
@@ -144,13 +156,16 @@ int main()
 
     // Here we will write output file
     ofstream outfile("out.bin", ios::out|ios::binary|ios::trunc);
-    char header[10];
-    memset(header,0,sizeof(header));
-    header[0] = 'A';
-    header[1] = 'B';
-    header[2] = 'C';
-    header[3] = 'D';
-    outfile.write(header,sizeof(header));
+    /// @todo Write flash header
+
+    // Write elements
+    for (auto it = flashElements.begin(); it != flashElements.end(); ++it)
+    {
+        FlashElement element = *it;
+        outfile.write(element.data,element.size);
+        if (element.size) delete[] element.data;
+    }
+
     outfile.close();
 
     closedir (dir);
