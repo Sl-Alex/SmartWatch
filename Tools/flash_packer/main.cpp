@@ -1,7 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <string.h>
+#include <string>
+#include <sstream>
+#include <iomanip>
 
 // Include dirent.h
 #if defined(WIN32)
@@ -21,6 +23,29 @@ struct FileInfo{
     enum FileType{FT_PBM, FT_BIN} type;
     uint32_t size;
 };
+
+/// @brief Search
+void fileSearch(int number, const vector<string> * fileList, vector<string> * result)
+{
+    result->clear();
+
+    string numStr;
+    std::ostringstream oss;
+    oss << std::setfill('0') << std::setw(3) << number;
+    numStr = oss.str();
+
+    for (auto it = fileList->begin(); it != fileList->end(); ++it)
+    {
+        string fileName;
+        fileName = *it;
+        if (fileName.compare(0,numStr.length(),numStr) != 0)
+            continue;
+
+        // File is found
+        result->push_back(fileName);
+        std::cout << fileName << std::endl;
+    }
+}
 
 int main()
 {
@@ -55,11 +80,19 @@ int main()
         //std::cout << fileName << std::endl;
     }
 
-    for (auto it = fileList.begin(); it != fileList.end(); ++it)
+    // Parse fileList
+    int number = 0;
+    while (true)
     {
-        std::cout << *it << std::endl;
+        vector<string> matchList;
+
+        // Get a list of files matching to "NNN*" template
+        fileSearch(number, &fileList, &matchList);
+
+        number++;
     }
 
+    // Here we will write output file
     ofstream outfile("out.bin", ios::out|ios::binary|ios::trunc);
     char header[10];
     memset(header,0,sizeof(header));
