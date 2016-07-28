@@ -1,5 +1,7 @@
-#include "global.h"
 #include <iostream>
+#include <cstring>
+
+#include "global.h"
 #include "pbm_image.h"
 #include "flash_image.h"
 

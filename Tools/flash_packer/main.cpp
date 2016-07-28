@@ -5,10 +5,9 @@
 #include <sstream>
 #include <iomanip>
 
-// Include dirent.h
 #if defined(WIN32)
-#include "dirent.h"
-#elif defined(LINUX)
+#include "dirent_win.h"
+#elif defined(__linux__)
 #include <dirent.h>
 #else
 #error "Unknown OS"
