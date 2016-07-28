@@ -29,9 +29,7 @@
 
 void SmHalI2c::init(void)
 {
-    static bool isDone = false;
-
-    if (isDone) return;
+    SmHalRcc::reset(RCC_PERIPH_I2C2);
 
     // Configure I2C2 pins: PB10->SCL and PB11->SDA
     SmHalGpio<I2C_SCL_PORT, I2C_SCL_PIN> scl;
@@ -40,7 +38,6 @@ void SmHalI2c::init(void)
     scl.setModeSpeed(SM_HAL_GPIO_MODE_AF_OD, SM_HAL_GPIO_SPEED_2M);
     sda.setModeSpeed(SM_HAL_GPIO_MODE_AF_OD, SM_HAL_GPIO_SPEED_2M);
 
-    SmHalRcc::reset(RCC_PERIPH_I2C2);
 
     // Enable I2C2
 #define CR1_PE_Set              ((uint16_t)0x0001)
@@ -147,29 +144,40 @@ void SmHalI2c::init(void)
     I2C2->CR1 |= CR1_ACK_Set;
 }
 
-void SmHalI2c::reset(void)
+void SmHalI2c::reset(bool complete)
 {
     SmHalGpio<I2C_SCL_PORT, I2C_SCL_PIN> scl;
     SmHalGpio<I2C_SDA_PORT, I2C_SDA_PIN> sda;
 
-    scl.setModeSpeed(SM_HAL_GPIO_MODE_OUT_OD, SM_HAL_GPIO_SPEED_50M);
-    sda.setModeSpeed(SM_HAL_GPIO_MODE_OUT_OD, SM_HAL_GPIO_SPEED_50M);
-
-    sda.setPin();
-    scl.setPin();
-
-    // Clock out 9 SCL pulses
-    for (int t = 0; t < I2C_TIMEOUT; t++);
-    for (uint8_t i = 0; i < 9; i++)
+    if (sda.readPin() == 0)
     {
-        scl.resetPin();
-        for (int t = 0; t < I2C_TIMEOUT; t++);
+        sda.setPin();
         scl.setPin();
-        for (int t = 0; t < I2C_TIMEOUT; t++);
-    }
 
-    // Initialize I2C hardware
-    init();
+        scl.setModeSpeed(SM_HAL_GPIO_MODE_OUT_OD, SM_HAL_GPIO_SPEED_50M);
+        sda.setModeSpeed(SM_HAL_GPIO_MODE_OUT_OD, SM_HAL_GPIO_SPEED_50M);
+
+        // Clock out up to 9 SCL pulses
+        for (int t = 0; t < I2C_TIMEOUT; t++);
+        for (uint8_t i = 0; i < 9; i++)
+        {
+            scl.resetPin();
+            /// @todo Replace with more accurate timeout
+            for (int t = 0; t < I2C_TIMEOUT; t++);
+            scl.setPin();
+            for (int t = 0; t < I2C_TIMEOUT; t++);
+            if (sda.readPin() == 1)
+                break;
+        }
+        init();
+    }
+    else
+    {
+        if (complete)
+        {
+            init();
+        }
+    }
 }
 
 bool SmHalI2c::start(void)

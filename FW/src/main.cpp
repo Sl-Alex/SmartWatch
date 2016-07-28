@@ -80,7 +80,7 @@ int main(void)
     display->init(128,64);
     display->getCanvas()->clear();
 
-    SmHalI2c::getInstance()->reset();
+    SmHalI2c::getInstance()->reset(false);
 
     // Do something
 //    display->setPix(20,20,1);

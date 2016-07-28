@@ -7,7 +7,7 @@ class SmHalI2c
 {
 public:
     void init(void);
-    void reset(void);
+    void reset(bool complete);
     bool transfer(uint8_t addr, uint8_t * wr, uint8_t wr_size, uint8_t * rd, uint8_t rd_size);
 
     SmHalI2c(SmHalI2c const&) = delete;
