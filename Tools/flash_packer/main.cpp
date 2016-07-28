@@ -133,7 +133,7 @@ uint32_t calcCRC32(uint32_t init, const char * data, uint32_t size)
     while (size--)
         crc = (crc >> 8) ^ crc32Table[(crc ^ *data++) & 0xFF];
 
-    return crc ^ 0xFFFFFFFF;
+    return crc;
 }
 
 int main()

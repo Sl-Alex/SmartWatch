@@ -27,6 +27,7 @@
 #include "sm_hw_bmc150.h"
 
 #include "sm_canvas.h"
+#include "sm_image.h"
 #include "sm_animator.h"
 
 #define I2C_ACC 0x10
@@ -101,8 +102,11 @@ int main(void)
     // 0b11111010;
     //SmHalI2c::getInstance()->transfer(I2C_ACC, &reg[0], 1, &data, 1);
 
-    SmCanvas * pCanvas = new SmCanvas();
-    pCanvas->init(32,32);
+    SmImage * pCanvas = new SmImage();
+    pCanvas->init(5);
+
+//    SmCanvas * pCanvas = new SmCanvas();
+//    pCanvas->init(32,32);
     pCanvas->clear();
     pCanvas->drawRect(0,0,31,31,1);
     display->getCanvas()->drawCanvas(0,0,pCanvas);
@@ -140,12 +144,16 @@ int main(void)
             }
             if (step)
             {
+                pCanvas->init(0);
+                //pCanvas->fill(0x00);
+                //pCanvas->drawRect(0,0,31,31,1);
+            }
+            else
+            {
                 pCanvas->fill(0x00);
                 pCanvas->drawRect(0,0,31,31,1);
             }
-            else
-                pCanvas->fill(0xFF);
-            pAnimator->start(48,16,0,0,32,32);
+            pAnimator->start(48-dir,16,0,0,32,32);
         }
 
 //        display->getCanvas()->drawCanvas(32,32,xOff,yOff,32,32,pCanvas);

@@ -113,7 +113,7 @@ uint32_t SmCrc::calc32(uint32_t init, const uint8_t * data, uint32_t size)
     while (size--)
         crc = (crc >> 8) ^ crc32Table[(crc ^ *data++) & 0xFF];
 
-    return crc ^ 0xFFFFFFFF;
+    return crc;
 }
 
 uint8_t SmCrc::calc8(uint8_t init, const uint8_t * data, uint32_t size)

@@ -112,7 +112,7 @@ private:
 
     SmHalAbstractSpi *mSpi;
 
-    uint8_t mCount;    ///< Number of elements in the storage
+    uint32_t mCount;    ///< Number of elements in the storage
 
     // SmHwPowerMgrIface
     void onSleep(void);
