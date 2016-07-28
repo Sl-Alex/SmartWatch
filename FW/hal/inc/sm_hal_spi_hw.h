@@ -8,8 +8,6 @@ template<uint32_t SPI_BASE, SpiConfig CFG>
 class SmHalSpiHw: public SmHalAbstractSpi
 {
 public:
-    void init(void){}
-    void deInit(void){}
     virtual void init(SpiMode mode, SpiWidth width);
     virtual void transfer(void * in, void * out, int size);
 };
