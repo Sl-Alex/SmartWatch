@@ -1,7 +1,7 @@
 #include <cstring>
 #include "sm_hal_sys_timer.h"
 
-SmHalSysTimerSubscriber *SmHalSysTimer::mPool = 0;
+SmHalSysTimer::SmHalSysTimerSubscriber *SmHalSysTimer::mPool = 0;
 uint8_t SmHalSysTimer::mPoolSize = 0;
 uint32_t SmHalSysTimer::mTimeStamp = 0;
 

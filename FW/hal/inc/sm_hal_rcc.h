@@ -3,11 +3,14 @@
 
 #include "stm32f10x.h"
 
+/// @brief RCC AHB peripheral
+/// @todo Check if it can be removed
 enum RccAhbPeriph
 {
 
 };
 
+/// @brief RCC APB1 peripheral
 enum RccApb1Periph
 {
     RCC_PERIPH_TIM2   = 0x00000001,
@@ -37,6 +40,7 @@ enum RccApb1Periph
     RCC_PERIPH_CEC    = 0x40000000
 };
 
+/// @brief RCC APB2 peripheral
 enum RccApb2Periph
 {
     RCC_PERIPH_AFIO   = 0x00000001UL,
@@ -62,30 +66,43 @@ enum RccApb2Periph
     RCC_PERIPH_TIM11  = 0x00200000UL
 };
 
+/// @brief System clocks
 struct SmHalRccClocks
 {
-  uint32_t SYSCLK_Frequency;  /*!< returns SYSCLK clock frequency expressed in Hz */
-  uint32_t HCLK_Frequency;    /*!< returns HCLK clock frequency expressed in Hz */
-  uint32_t PCLK1_Frequency;   /*!< returns PCLK1 clock frequency expressed in Hz */
-  uint32_t PCLK2_Frequency;   /*!< returns PCLK2 clock frequency expressed in Hz */
-  uint32_t ADCCLK_Frequency;  /*!< returns ADCCLK clock frequency expressed in Hz */
+  uint32_t SYSCLK_Frequency;  ///< returns SYSCLK clock frequency in Hz
+  uint32_t HCLK_Frequency;    ///< returns HCLK clock frequency in Hz
+  uint32_t PCLK1_Frequency;   ///< returns PCLK1 clock frequency in Hz
+  uint32_t PCLK2_Frequency;   ///< returns PCLK2 clock frequency in Hz
+  uint32_t ADCCLK_Frequency;  ///< returns ADCCLK clock frequency in Hz
 };
 
+/// @brief RCC control class
 class SmHalRcc
 {
 public:
+    /// @brief Enable AHB peripheral clock
     static void clockEnable(RccAhbPeriph periph);
+    /// @brief Enable APB1 peripheral clock
     static void clockEnable(RccApb1Periph periph);
+    /// @brief Enable APB2 peripheral clock
     static void clockEnable(RccApb2Periph periph);
+    /// @brief Disable AHB peripheral clock
     static void clockDisable(RccAhbPeriph periph);
+    /// @brief Disable APB1 peripheral clock
     static void clockDisable(RccApb1Periph periph);
+    /// @brief Disable APB2 peripheral clock
     static void clockDisable(RccApb2Periph periph);
 #ifdef STM32F10X_CL
+    /// @brief Reset AHB peripheral
     static void reset(RccAhbPeriph periph);
 #endif /* STM32F10X_CL */
+    /// @brief Reset APB1 peripheral
     static void reset(RccApb1Periph periph);
+    /// @brief Reset APB2 peripheral
     static void reset(RccApb2Periph periph);
+    /// @brief Calculate current system clocks
     static void updateClocks(void);
+    /// @brief Get current system clocks
     static const SmHalRccClocks *const getClocks(void);
 private:
     static SmHalRccClocks clocks;

@@ -3,7 +3,7 @@
 
 SmFont* SmFont::pInstance = 0;
 
-int SmFont::drawSymbol(int index, SmCanvas * canvas, int x, int y, uint32_t symbol)
+int SmFont::drawSymbol(int index, SmCanvas * canvas, int x, int y, uint16_t symbol)
 {
 //    canvas->drawCanvas(x,y,
 //                       symbol * symbolWidth, 0,
@@ -13,7 +13,7 @@ int SmFont::drawSymbol(int index, SmCanvas * canvas, int x, int y, uint32_t symb
     return pInstance->getWidth();
 }
 
-int SmFont::drawText(SmCanvas * canvas, int x, int y, char * symbol)
+int SmFont::drawText(SmCanvas * canvas, int x, int y, uint16_t * symbol)
 {
     if (symbol == 0)
         return -1;

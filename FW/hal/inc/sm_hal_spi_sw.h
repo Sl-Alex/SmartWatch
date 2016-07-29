@@ -4,6 +4,9 @@
 #include "sm_hal_abstract_spi.h"
 #include "sm_hal_abstract_gpio.h"
 
+/// @brief HW SPI templated class
+/// @param MODE: SPI mode (see @ref SpiMode for possible modes)
+/// @param CFG: SPI configuration (see @ref SpiConfig for possible configurations)
 template<SpiMode MODE, SpiConfig CFG, SpiWidth WIDTH>
 class SmHalSpiSw: public SmHalAbstractSpi
 {
@@ -13,9 +16,13 @@ public:
         mPinMiso(0),
         mPinMosi(0)
     {}
+    /// @brief Initialize SPI
     void init(void);
+    /// @brief Deinitialize SPI
     void deInit(void);
+    /// @brief Initialize SPI from the given pins
     virtual void init(SmHalAbstractGpio *pSck, SmHalAbstractGpio *pMiso, SmHalAbstractGpio *pMosi);
+    /// @brief Transfer data
     virtual void transfer(void * in, void * out, int size);
 private:
     SmHalAbstractGpio *mPinSck;

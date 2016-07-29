@@ -52,8 +52,11 @@ class SmFont: public SmImage
 public:
     /// @brief Draw symbol from font on a canvas
     /// @details index: Font index (See @ref SmHwStorageIndices)
-    static int drawSymbol(int index, SmCanvas * canvas, int x, int y, uint32_t symbol);
-    static int drawText(SmCanvas * canvas, int x, int y, char * symbol);
+    static int drawSymbol(int index, SmCanvas * canvas, int x, int y, uint16_t symbol);
+    
+    /// @brief Output text on a canvas
+    static int drawText(SmCanvas * canvas, int x, int y, uint16_t * symbol);
+
     static inline SmFont * getInstance()
     {
         if(!pInstance)

@@ -3,22 +3,25 @@
 
 #include "stm32f10x.h"
 
+/// @brief GPIO speed enumeration
 enum GpioSpeed
 {
-    SM_HAL_GPIO_SPEED_10M = 1,
-    SM_HAL_GPIO_SPEED_2M,
-    SM_HAL_GPIO_SPEED_50M
+    SM_HAL_GPIO_SPEED_10M = 1,  ///< 10MHz maximum
+    SM_HAL_GPIO_SPEED_2M,       ///< 2MHz maximum
+    SM_HAL_GPIO_SPEED_50M       ///< 50MHz maximum
 };
+
+/// @brief Available GPIO modes 
 enum GpioMode
 {
-    SM_HAL_GPIO_MODE_AIN      = 0,
-    SM_HAL_GPIO_MODE_IN_FLOAT = 0x04,
-    SM_HAL_GPIO_MODE_IN_PD    = 0x28,
-    SM_HAL_GPIO_MODE_IN_PU    = 0x48,
-    SM_HAL_GPIO_MODE_OUT_OD   = 0x14,
-    SM_HAL_GPIO_MODE_OUT_PP   = 0x10,
-    SM_HAL_GPIO_MODE_AF_OD    = 0x1C,
-    SM_HAL_GPIO_MODE_AF_PP    = 0x18
+    SM_HAL_GPIO_MODE_AIN      = 0,      ///< Analog input (useful for ADC inputs)
+    SM_HAL_GPIO_MODE_IN_FLOAT = 0x04,   ///< Input without pull-up/down resistors
+    SM_HAL_GPIO_MODE_IN_PD    = 0x28,   ///< Input with pull-down resistor
+    SM_HAL_GPIO_MODE_IN_PU    = 0x48,   ///< Input with pull-up resistor
+    SM_HAL_GPIO_MODE_OUT_OD   = 0x14,   ///< Generic output with open-drain driver
+    SM_HAL_GPIO_MODE_OUT_PP   = 0x10,   ///< Generic output with push-pull driver
+    SM_HAL_GPIO_MODE_AF_OD    = 0x1C,   ///< Alternative function output with open-drain driver
+    SM_HAL_GPIO_MODE_AF_PP    = 0x18    ///< Alternative function output with push-pull driver
 };
 
 /// @brief GPIO abstraction
@@ -26,6 +29,9 @@ class SmHalAbstractGpio
 {
 public:
 
+    /// @brief Default constructor
+    /// Default pin mode will be set to @ref SM_HAL_GPIO_MODE_IN_FLOAT,
+    /// default speed will be limited to @ref SM_HAL_GPIO_SPEED_2M
     SmHalAbstractGpio()
         :mMode(SM_HAL_GPIO_MODE_IN_FLOAT),
         mSpeed(SM_HAL_GPIO_SPEED_2M)

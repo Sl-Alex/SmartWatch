@@ -6,15 +6,27 @@
 #include "sm_hal_abstract_spi.h"
 #include "sm_hw_powermgr.h"
 
+/// @brief Display class
 class SmDisplay: public SmHwPowerMgrIface
 {
 public:
+    /// @brief Constructor
+    /// @details Initializes display and subscribes to SmHwPowerMgr events
     SmDisplay();
+    
+    /// @brief Initializes display buffer (built-in SmCanvas)
     void init(int width, int height);
-    void setPix(int x, int y, int value);
+
+    /// @brief Output display buffer to the display
     void update(void);
+    
+    /// @brief Fill display directly with a pattern (useful for clearing it before enable)
+    /// @todo Move it to private section
     void fill(uint8_t data);
+    
+    /// @brief Get a pointer to the built-in SmCanvas
     inline SmCanvas * getCanvas(void) { return mCanvas; }
+
 private:
     void sendCommand(uint8_t cmd);
     void sendCommand(uint8_t cmd, uint8_t data);

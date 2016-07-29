@@ -1,9 +1,5 @@
 #include "sm_crc.h"
 
-//  Name  : CRC-32
-//  Poly  : 0x04C11DB7    x^32 + x^26 + x^23 + x^22 + x^16 + x^12 + x^11
-//                       + x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x + 1
-
 const uint8_t crc8Table[256] = {
     0x00, 0x31, 0x62, 0x53, 0xC4, 0xF5, 0xA6, 0x97,
     0xB9, 0x88, 0xDB, 0xEA, 0x7D, 0x4C, 0x1F, 0x2E,

@@ -4,11 +4,17 @@
 #include "sm_hal_abstract_spi.h"
 #include "sm_hal_abstract_gpio.h"
 
+/// @brief HW SPI templated class
+/// @param SPI_BASE: SPI HW base address
+/// @param CFG: SPI configuration (see @ref SpiConfig for possible configurations)
 template<uint32_t SPI_BASE, SpiConfig CFG>
 class SmHalSpiHw: public SmHalAbstractSpi
 {
 public:
+    /// @brief Initialize SPI HW with given mode and width
     virtual void init(SpiMode mode, SpiWidth width);
+    
+    /// @brief Transfer data
     virtual void transfer(void * in, void * out, int size);
 };
 
@@ -55,14 +61,14 @@ void SmHalSpiHw<SPI_BASE, CFG>::transfer(void * in, void * out, int size)
     {
         uint8_t data = *pOut;
 
-        /*!< Loop while DR register in not emplty */
+        // Loop while DR register in not empty
 #define SPI_I2S_FLAG_TXE                ((uint16_t)0x0002)
         while ((((SPI_TypeDef *)SPI_BASE)->SR & SPI_I2S_FLAG_TXE) == 0);
 
-        /*!< Send byte through the SPI peripheral */
+        // Send byte through the SPI peripheral
         ((SPI_TypeDef *)SPI_BASE)->DR = data;
 
-        /*!< Wait to receive a byte */
+        // Wait to receive a byte
 #define SPI_I2S_FLAG_RXNE               ((uint16_t)0x0001)
         while ((((SPI_TypeDef *)SPI_BASE)->SR & SPI_I2S_FLAG_RXNE) == 0);
 
