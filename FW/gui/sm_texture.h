@@ -24,12 +24,18 @@ public:
     void clear(void) { memset(pData, 0, mSize); }
     void fill(uint8_t sample) { memset(pData, sample, mSize); }
 
+    /// @brief Get texture width
     inline int getWidth(void) { return mWidth; }
+    /// @brief Get texture height
     inline int getHeight(void) { return mHeight; }
+    /// @brief Get texture size
     inline int getSize(void) { return mSize; }
 
+    /// @brief Calc size
+    /// @todo Do we really need this function?
     static int calcSize(int width, int height);
-
+    
+    /// @brief Get a pointer to the texture data
     inline uint8_t * getPData(void) { return pData;}
 
 private:

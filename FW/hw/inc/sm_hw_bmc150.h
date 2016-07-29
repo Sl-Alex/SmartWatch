@@ -3,12 +3,18 @@
 
 #include "sm_hal_i2c.h"
 
+/// @brief BMC150 (accelerometer/magnetometer) wrapper class
 class SmHwBmc150
 {
 public:
+    /// @brief Initialize HW and double tap interrupt output
     void init(void);
-    bool isPresent(void) { return mPresent; }
+    
+    /// @brief Simple alive check
     bool checkPresent(void);
+    
+    /// @brief Returns last alive check result
+    bool isPresent(void) { return mPresent; }
 
     SmHwBmc150(SmHwBmc150 const&) = delete;
     void operator=(SmHwBmc150 const&) = delete;

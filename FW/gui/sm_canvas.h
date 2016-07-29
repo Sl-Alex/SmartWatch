@@ -4,6 +4,8 @@
 #include <cstring>
 #include "sm_texture.h"
 
+/// @brief Canvas class
+/// @todo Probably can be merged with @ref SmTexture
 class SmCanvas: public SmTexture
 {
 public:
@@ -13,12 +15,6 @@ public:
         DIR_UP,
         DIR_DOWN
     } ScrollDirection;
-
-    struct StorageHeader {
-        int width;
-        int height;
-        int size;
-    };
 
     void setPix(int x, int y, char value);
     char getPix(int x, int y);

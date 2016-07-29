@@ -25,6 +25,7 @@ void SmHwMotor::onWake(void)
 
 void SmHwMotor::onTimer(uint32_t timeStamp)
 {
+    /// @todo Implement correct behaviour
     static uint8_t tmp = 0;
     tmp = 1 - tmp;
 
