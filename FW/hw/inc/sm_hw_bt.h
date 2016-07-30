@@ -1,5 +1,5 @@
-#ifndef SM_HW_BT_H_INCLUDED
-#define SM_HW_BT_H_INCLUDED
+#ifndef SM_HW_BT_H
+#define SM_HW_BT_H
 
 #include <cstdint>
 #include "sm_hal_abstract_gpio.h"
@@ -35,4 +35,4 @@ private:
     SmHalAbstractGpio *mStPin;
 };
 
-#endif /* SM_HW_BT_H_INCLUDED */
+#endif // SM_HW_BT_H

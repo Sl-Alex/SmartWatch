@@ -1,5 +1,5 @@
-#ifndef SM_HW_KEYBOARD_H_INCLUDED
-#define SM_HW_KEYBOARD_H_INCLUDED
+#ifndef SM_HW_KEYBOARD_H
+#define SM_HW_KEYBOARD_H
 
 #include "sm_hal_sys_timer.h"
 #include "sm_hw_powermgr.h"
@@ -28,4 +28,4 @@ private:
     bool mLastState[4];
 };
 
-#endif /* SM_HW_KEYBOARD_H_INCLUDED */
+#endif // SM_HW_KEYBOARD_H

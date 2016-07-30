@@ -1,5 +1,5 @@
-#ifndef SMDISPLAY_H
-#define SMDISPLAY_H
+#ifndef SM_DISPLAY_H
+#define SM_DISPLAY_H
 
 #include "sm_canvas.h"
 #include "sm_hal_abstract_gpio.h"
@@ -13,17 +13,17 @@ public:
     /// @brief Constructor
     /// @details Initializes display and subscribes to SmHwPowerMgr events
     SmDisplay();
-    
+
     /// @brief Initializes display buffer (built-in SmCanvas)
     void init(int width, int height);
 
     /// @brief Output display buffer to the display
     void update(void);
-    
+
     /// @brief Fill display directly with a pattern (useful for clearing it before enable)
     /// @todo Move it to private section
     void fill(uint8_t data);
-    
+
     /// @brief Get a pointer to the built-in SmCanvas
     inline SmCanvas * getCanvas(void) { return mCanvas; }
 
@@ -42,4 +42,4 @@ private:
     SmHalAbstractGpio * mResetPin;
 };
 
-#endif /* SMDISPLAY_H */
+#endif // SM_DISPLAY_H

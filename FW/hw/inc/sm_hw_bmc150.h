@@ -1,5 +1,5 @@
-#ifndef SM_HW_BMC150_H_INCLUDED
-#define SM_HW_BMC150_H_INCLUDED
+#ifndef SM_HW_BMC150_H
+#define SM_HW_BMC150_H
 
 #include "sm_hal_i2c.h"
 
@@ -44,4 +44,4 @@ private:
     bool mPresent;
 };
 
-#endif /* SM_HW_BMC150_H_INCLUDED */
+#endif // SM_HW_BMC150_H

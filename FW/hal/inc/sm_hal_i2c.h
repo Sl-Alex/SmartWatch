@@ -1,5 +1,5 @@
-#ifndef SM_HAL_I2C_H_INCLUDED
-#define SM_HAL_I2C_H_INCLUDED
+#ifndef SM_HAL_I2C_H
+#define SM_HAL_I2C_H
 
 #include "stm32f10x.h"
 
@@ -42,4 +42,4 @@ private:
     bool getFlagStatus(uint32_t flag);
 };
 
-#endif /* SM_HAL_I2C_H_INCLUDED */
+#endif // SM_HAL_I2C_H

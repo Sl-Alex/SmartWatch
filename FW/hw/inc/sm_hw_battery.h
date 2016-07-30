@@ -1,5 +1,5 @@
-#ifndef SM_HW_BATTERY_H_INCLUDED
-#define SM_HW_BATTERY_H_INCLUDED
+#ifndef SM_HW_BATTERY_H
+#define SM_HW_BATTERY_H
 
 #include <cstdint>
 #include "sm_hal_sys_timer.h"
@@ -55,4 +55,4 @@ private:
 };
 
 
-#endif /* SM_HW_BATTERY_H_INCLUDED */
+#endif // SM_HW_BATTERY_H

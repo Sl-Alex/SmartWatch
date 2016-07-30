@@ -1,5 +1,5 @@
-#ifndef SM_HAL_ABSTRACT_GPIO_H_INCLUDED
-#define SM_HAL_ABSTRACT_GPIO_H_INCLUDED
+#ifndef SM_HAL_ABSTRACT_GPIO_H
+#define SM_HAL_ABSTRACT_GPIO_H
 
 #include "stm32f10x.h"
 
@@ -66,4 +66,4 @@ private:
     GpioSpeed mSpeed;
 };
 
-#endif /* SM_HAL_ABSTRACT_GPIO_H_INCLUDED */
+#endif // SM_HAL_ABSTRACT_GPIO_H

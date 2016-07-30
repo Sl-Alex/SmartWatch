@@ -1,5 +1,5 @@
-#ifndef SM_HAL_RCC_H_INCLUDED
-#define SM_HAL_RCC_H_INCLUDED
+#ifndef SM_HAL_RCC_H
+#define SM_HAL_RCC_H
 
 #include "stm32f10x.h"
 
@@ -108,4 +108,4 @@ private:
     static SmHalRccClocks clocks;
 };
 
-#endif /* SM_HAL_RCC_H_INCLUDED */
+#endif // SM_HAL_RCC_H

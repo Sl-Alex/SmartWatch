@@ -25,6 +25,7 @@
 #include "sm_hw_storage.h"
 #include "sm_hw_powermgr.h"
 #include "sm_hw_bmc150.h"
+#include "sm_hw_bmp180.h"
 
 #include "sm_canvas.h"
 #include "sm_image.h"
@@ -47,6 +48,7 @@ int main(void)
     SmHalRcc::clockEnable(RCC_PERIPH_I2C2);
 
     SmHwBmc150::getInstance()->init();
+    SmHwBmp180::getInstance()->init(); /// I2C init is done in BMC150 initialization
 
     // Disable JTAG, SWD remains enabled
     // This is for PA15, which is JTDI by default
@@ -97,6 +99,8 @@ int main(void)
 
 //    SmHalI2c::getInstance()->reset();
     SmHwBmc150::getInstance()->checkPresent();
+    SmHwBmp180::getInstance()->checkPresent();
+
 
     //reg[0] = 0x00;
     // 0b11111010;

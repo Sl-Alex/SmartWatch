@@ -1,5 +1,5 @@
-#ifndef SM_HAL_GPIO_H_INCLUDED
-#define SM_HAL_GPIO_H_INCLUDED
+#ifndef SM_HAL_GPIO_H
+#define SM_HAL_GPIO_H
 
 #include "stm32f10x.h"
 #include "sm_hal_abstract_gpio.h"
@@ -68,4 +68,4 @@ uint8_t SmHalGpio<GPIO_BASE, PIN>::readPin(void)
         return 0;
 }
 
-#endif /* SM_HAL_GPIO_H_INCLUDED */
+#endif // SM_HAL_GPIO_H

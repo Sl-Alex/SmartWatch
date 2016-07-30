@@ -28,4 +28,4 @@ private:
     SmCrc() {}
 };
 
-#endif /* SM_CRC_H */
+#endif // SM_CRC_H

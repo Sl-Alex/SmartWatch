@@ -1,5 +1,5 @@
-#ifndef SM_TEXTURE_H_INCLUDED
-#define SM_TEXTURE_H_INCLUDED
+#ifndef SM_TEXTURE_H
+#define SM_TEXTURE_H
 
 #include <cstring>
 #include <cstdint>
@@ -46,4 +46,4 @@ private:
     uint8_t * pData;
 };
 
-#endif /* SM_TEXTURE_H_INCLUDED */
+#endif // SM_TEXTURE_H

@@ -1,5 +1,5 @@
-#ifndef SM_HW_POWERMGR_H_INCLUDED
-#define SM_HW_POWERMGR_H_INCLUDED
+#ifndef SM_HW_POWERMGR_H
+#define SM_HW_POWERMGR_H
 
 #include <cstdint>
 #include "stm32f10x.h"
@@ -56,4 +56,4 @@ private:
     SmHwPowerMgrSubscriber *mPool;
 };
 
-#endif /* SM_HW_POWERMGR_H_INCLUDED */
+#endif // SM_HW_POWERMGR_H

@@ -1,5 +1,5 @@
-#ifndef SM_HW_MOTOR_H_INCLUDED
-#define SM_HW_MOTOR_H_INCLUDED
+#ifndef SM_HW_MOTOR_H
+#define SM_HW_MOTOR_H
 
 #include "sm_hal_abstract_gpio.h"
 #include "sm_hal_sys_timer.h"
@@ -18,4 +18,4 @@ private:
     SmHalAbstractGpio * mGpio;
 };
 
-#endif /* SM_HW_MOTOR_H_INCLUDED */
+#endif // SM_HW_MOTOR_H

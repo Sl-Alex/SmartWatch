@@ -1,5 +1,5 @@
-#ifndef SM_HW_STORAGE_H_INCLUDED
-#define SM_HW_STORAGE_H_INCLUDED
+#ifndef SM_HW_STORAGE_H
+#define SM_HW_STORAGE_H
 
 #include "sm_hal_abstract_spi.h"
 #include "sm_hw_powermgr.h"
@@ -121,4 +121,4 @@ private:
 
 /// @}
 
-#endif /* SM_HW_STORAGE_H_INCLUDED */
+#endif // SM_HW_STORAGE_H

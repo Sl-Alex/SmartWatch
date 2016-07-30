@@ -135,6 +135,7 @@
 		</Unit>
 		<Unit filename="hw\inc\sm_hw_battery.h" />
 		<Unit filename="hw\inc\sm_hw_bmc150.h" />
+		<Unit filename="hw\inc\sm_hw_bmp180.h" />
 		<Unit filename="hw\inc\sm_hw_bt.h" />
 		<Unit filename="hw\inc\sm_hw_keyboard.h" />
 		<Unit filename="hw\inc\sm_hw_motor.h" />
@@ -144,6 +145,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="hw\src\sm_hw_bmc150.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hw\src\sm_hw_bmp180.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="hw\src\sm_hw_bt.cpp">

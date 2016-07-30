@@ -1,5 +1,5 @@
-#ifndef SM_HAL_ABSTRACT_SPI_H_INCLUDED
-#define SM_HAL_ABSTRACT_SPI_H_INCLUDED
+#ifndef SM_HAL_ABSTRACT_SPI_H
+#define SM_HAL_ABSTRACT_SPI_H
 
 /// @file
 
@@ -92,4 +92,4 @@ private:
     SmHalAbstractGpio *mSsPin;
 };
 
-#endif /* SM_HAL_ABSTRACT_SPI_H_INCLUDED */
+#endif // SM_HAL_ABSTRACT_SPI_H

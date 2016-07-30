@@ -1,5 +1,5 @@
-#ifndef SM_HAL_SYS_TIMER_H_INCLUDED
-#define SM_HAL_SYS_TIMER_H_INCLUDED
+#ifndef SM_HAL_SYS_TIMER_H
+#define SM_HAL_SYS_TIMER_H
 
 #include "stm32f10x.h"
 
@@ -49,4 +49,4 @@ private:
     friend void SysTick_Handler(void); // We should be able to access timestamp in the IRQ
 };
 
-#endif /* SM_HAL_SYS_TIMER_H_INCLUDED */
+#endif // SM_HAL_SYS_TIMER_H

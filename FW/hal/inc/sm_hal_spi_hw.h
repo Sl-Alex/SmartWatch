@@ -1,5 +1,5 @@
-#ifndef SM_HAL_SPI_HW_H_INCLUDED
-#define SM_HAL_SPI_HW_H_INCLUDED
+#ifndef SM_HAL_SPI_HW_H
+#define SM_HAL_SPI_HW_H
 
 #include "sm_hal_abstract_spi.h"
 #include "sm_hal_abstract_gpio.h"
@@ -82,4 +82,4 @@ void SmHalSpiHw<SPI_BASE, CFG>::transfer(void * in, void * out, int size)
     }
 }
 
-#endif /* SM_HAL_SPI_HW_H_INCLUDED */
+#endif // SM_HAL_SPI_HW_H
