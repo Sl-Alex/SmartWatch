@@ -26,6 +26,10 @@ public:
     uint8_t getPixel(uint32_t x, uint32_t y);
 
     /// @brief Get image data size (in bytes)
+    uint32_t getWidth(void) { return mWidth; }
+    /// @brief Get image data size (in bytes)
+    uint32_t getHeight(void) { return mHeight; }
+    /// @brief Get image data size (in bytes)
     uint32_t getSize(void) { return mSize; }
 
     /// @brief Get image data

@@ -9,13 +9,18 @@ bool SmImage::init(int imageIndex)
 {
     // Get element info by index
     SmHwStorageElementInfo info;
-    SmHwStorage::getInstance()->getElementInfo(imageIndex, &info);
+    bool ret = SmHwStorage::getInstance()->getElementInfo(imageIndex, &info);
+
+    if (!ret)
+        return false;
 
     // Initialize image by offset
-    return initOffset(info.offset);
+    initOffset(info.offset);
+
+    return true;
 }
 
-bool SmImage::initOffset(uint32_t offset)
+void SmImage::initOffset(uint32_t offset)
 {
     // Read image header
     SmHwStorage::getInstance()->readData(offset, (uint8_t *)&header, sizeof(header));
@@ -23,6 +28,4 @@ bool SmImage::initOffset(uint32_t offset)
     SmTexture::init(header.width, header.height);
     // Read image data
     SmHwStorage::getInstance()->readData(offset + sizeof(header), (uint8_t *)getPData(), header.size);
-
-    return true;
 }

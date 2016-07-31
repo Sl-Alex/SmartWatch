@@ -10,7 +10,7 @@
  *
  * Font element holds a group of images.
  * It has a header with symbols count, font height, baseline and an array of offsets and symbols
- * in UCS-4 encoding. All symbol data are located then in the image element format.
+ * in UCS-2 encoding. All symbol data are located then in the image element format.
  *
  * Symbols itself are not used directly by the firmware. Instead of this, firmware uses its own
  * code table in order to minimize fonts and to make an indexed access to any symbol in the font
@@ -34,8 +34,8 @@
  * 0x000C   | offset1   | 32   | First symbol offset
  * 0x0010   | offset2   | 32   | Second symbol offset
  * ...      | ...       | 32   | ...
- * 0xNNNN   | symbol1   | ---  | Symbol1 (UCS-4)
- * 0xNNNN+4 | symbol2   | ---  | Symbol2 (UCS-4)
+ * 0xNNNN   | symbol1   | 16   | Symbol1 (UCS-2)
+ * 0xNNNN+2 | symbol2   | 16   | Symbol2 (UCS-2)
  * ...      | ...       | ...  | ...
  * offset1  | image1    | ---  | Symbol1 image
  * offset2  | image2    | ---  | Symbol2 image
@@ -50,27 +50,34 @@
 class SmFont: public SmImage
 {
 public:
-    /// @brief Draw symbol from font on a canvas
-    /// @details index: Font index (See @ref SmHwStorageIndices)
-    static int drawSymbol(int index, SmCanvas * canvas, int x, int y, uint16_t symbol);
-    
-    /// @brief Output text on a canvas
-    static int drawText(SmCanvas * canvas, int x, int y, uint16_t * symbol);
 
-    static inline SmFont * getInstance()
-    {
-        if(!pInstance)
-        {
-            pInstance = new SmFont();
-        }
-        return pInstance;
-    }
+    /// @brief Initialize font by the index (see @ref SmHwStorageIndices)
+    bool init(int index);
+
+    /// @brief Draw symbol from font on a canvas
+    /// @params canvas: Canvas to draw on
+    /// @params x: X coordinate on the canvas
+    /// @params y: Canvas to draw on the canvas
+    /// @params symbol: Symbol to output (symbol from the font code table)
+    void drawSymbol(SmCanvas * canvas, int x, int y, uint16_t symbol);
+
+    /// @brief Output text on a canvas
+    /// @params canvas: Canvas to draw on
+    /// @params x: X coordinate on the canvas
+    /// @params y: Y coordinate on the canvas
+    /// @params text: Pointer to the text to output
+    /// @params count: Number of symbols to output
+    void drawText(SmCanvas * canvas, int x, int y, uint16_t * text, uint16_t count);
+
 private:
-    static SmFont * pInstance;
-    //Symbol
-    SmFont(){}
-    SmFont(const SmFont&);
-    SmFont& operator=(SmFont&);
+    uint32_t mFontOffset;   ///< Start address of the font element in the external flash
+    // These parameters are stored in external flash
+    uint32_t mSymbolCount;
+    uint32_t mFontHeight;
+    uint32_t mBaseLine;
+    // These parameters can be calculated from the parameters above
+    uint32_t mDataTableOffset;
+    uint32_t mSymbolTableOffset;
 };
 
 #endif // SM_FONT_H

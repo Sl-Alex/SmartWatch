@@ -211,8 +211,38 @@ int main()
         }
         else if (matchList.size() == 2)
         {
-            /// @todo Implement
-            std::cout << matchList[0] << " and " << matchList[1] << " can contain font" << std::endl;
+            uint32_t txtNum;
+            uint32_t pbmNum;
+            if ((matchList[0].find(".txt",matchList[0].length() - 4) != std::string::npos) &&
+                (matchList[1].find(".pbm",matchList[0].length() - 4) != std::string::npos))
+            {
+                txtNum = 0;
+                pbmNum = 1;
+            }
+            else if ((matchList[0].find(".pbm",matchList[0].length() - 4) != std::string::npos) &&
+                     (matchList[1].find(".txt",matchList[0].length() - 4) != std::string::npos))
+            {
+                txtNum = 1;
+                pbmNum = 0;
+            }
+            else
+            {
+                std::cout << "Wrong font files" << std::endl;
+                std::cout << "Stopping." << std::endl;
+                break;
+            }
+
+            std::cout << matchList[0] << " and " << matchList[1] << " contain font" << std::endl;
+
+            std::ifstream inFileTxt(matchList[txtNum], ios::in|ios::binary);
+            std::ifstream inFilePbm(matchList[pbmNum], ios::in|ios::binary);
+
+            FlashElement element;
+            parseFont(inFileTxt, inFilePbm, &element);
+            flashElements.push_back(element);
+
+            inFilePbm.close();
+            inFileTxt.close();
         }
         else if (matchList.size() == 0)
         {
@@ -284,8 +314,6 @@ int main()
     }
 
     outfile.close();
-
-    //delete[] pHeader;
 
     closedir (dir);
 }

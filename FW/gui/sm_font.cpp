@@ -1,44 +1,48 @@
 #include "sm_font.h"
 #include "sm_hw_storage.h"
 
-SmFont* SmFont::pInstance = 0;
-
-int SmFont::drawSymbol(int index, SmCanvas * canvas, int x, int y, uint16_t symbol)
+bool SmFont::init(int index)
 {
-//    canvas->drawCanvas(x,y,
-//                       symbol * symbolWidth, 0,
-//                       symbolWidth,
-//                       8,
-//                       getInstance());
-    return pInstance->getWidth();
+    // Get element info by index
+    SmHwStorageElementInfo info;
+    bool ret = SmHwStorage::getInstance()->getElementInfo(index, &info);
+
+    if (!ret)
+        return false;
+
+    // Store font offset
+    mFontOffset = info.offset;
+
+    // Read font header
+    SmHwStorage::getInstance()->readData(mFontOffset,
+                                         (uint8_t *)&mSymbolCount, sizeof(mSymbolCount));
+    SmHwStorage::getInstance()->readData(mFontOffset + sizeof(uint32_t),
+                                         (uint8_t *)&mFontHeight, sizeof(mFontHeight));
+    SmHwStorage::getInstance()->readData(mFontOffset + 2*sizeof(uint32_t),
+                                         (uint8_t *)&mBaseLine, sizeof(mBaseLine));
+
+    // Calculate offsets
+    mDataTableOffset = mFontOffset + 3*sizeof(uint32_t);
+    mSymbolTableOffset = mDataTableOffset + sizeof(uint32_t) * mSymbolCount;
+
+    return true;
 }
 
-int SmFont::drawText(SmCanvas * canvas, int x, int y, uint16_t * symbol)
+void SmFont::drawSymbol(SmCanvas * canvas, int x, int y, uint16_t symbol)
 {
-    if (symbol == 0)
-        return -1;
-    if ((getInstance()->getSize() % 256) != 0)
-        return -1;
+    uint32_t offset;
 
-    int x_off = x;
+    SmHwStorage::getInstance()->readData(mDataTableOffset + symbol * sizeof(offset),
+                                         (uint8_t *)&offset, sizeof(offset));
 
-    while(*symbol)
-    {
-        // Draw one symbol
-//        canvas->drawCanvas(x_off,y,
-//                           (*symbol) * symbolWidth, 0,
-//                           symbolWidth,
-//                           pInstance->getHeight(),
-//                           pInstance);
-        // Go to the next symbol
-        ///x_off += symbolWidth;
-        if (x_off > canvas->getWidth())
-        {
-            x_off = canvas->getWidth();
-            break;
-        }
-        symbol++;
-    }
+    offset += mFontOffset;
 
-    return x_off - x;
+    SmImage::initOffset(offset);
+
+    canvas->drawCanvas(x,y,this);
+}
+
+void SmFont::drawText(SmCanvas * canvas, int x, int y, uint16_t * symbol, uint16_t count)
+{
+    /// @todo Implement
 }

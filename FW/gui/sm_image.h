@@ -32,7 +32,7 @@ public:
     virtual bool init(int imageIndex);
 
     /// @brief Init image by offset in the @ref EXTERNAL_FLASH
-    virtual bool initOffset(uint32_t offset);
+    virtual void initOffset(uint32_t offset);
 
 private:
     struct ImageHeader {
