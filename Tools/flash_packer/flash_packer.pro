@@ -12,7 +12,9 @@ SOURCES += main.cpp \
     parser_pbm.cpp \
     parser_font.cpp \
     pbm_image.cpp \
-    flash_image.cpp
+    flash_image.cpp \
+    crc32.cpp \
+    sm_strings_process.cpp
 
 HEADERS += \
     global.h \

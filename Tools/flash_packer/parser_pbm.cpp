@@ -5,7 +5,6 @@
 #include "pbm_image.h"
 #include "flash_image.h"
 
-/// @todo Implement
 bool parsePbm(std::ifstream &inFile, FlashElement * element)
 {
     element->size = 0;
@@ -27,6 +26,7 @@ bool parsePbm(std::ifstream &inFile, FlashElement * element)
     // 0x0000       | width     | 32    | Image width in pixels
     // 0x0004       | height    | 32    | Image height in pixels
     // 0x0008       | size      | 32    | Image size in bytes
+    // 0x000A       | data      | ...   | Image data
 
     // Create a new array
     element->size = sizeof(uint32_t) * 3 + conv_image.getSize();

@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+/// @brief Load PBM image from file
 bool PbmImage::loadFromFile(std::ifstream * fs)
 {
     if (pData)

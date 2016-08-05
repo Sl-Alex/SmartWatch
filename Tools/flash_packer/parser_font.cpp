@@ -1,10 +1,10 @@
 #include <vector>
+#include <iostream>
 #include "global.h"
 #include "pbm_image.h"
 #include "flash_image.h"
 
-/// @todo Implement
-bool parseFont(std::ifstream &inFileTxt, std::ifstream &inFilePbm, FlashElement * element)
+bool parseFont(std::ifstream &inFileTxt, std::ifstream &inFilePbm, FlashElement * element, FontTable * table)
 {
     element->size = 0;
 
@@ -54,7 +54,7 @@ bool parseFont(std::ifstream &inFileTxt, std::ifstream &inFilePbm, FlashElement 
     while (true)
     {
         // Search for the symbol delimiter (black pixel in the first row)
-        sym_end = sym_start;
+        sym_end = UINT32_MAX;
         for (uint32_t i = sym_start; i < fontImage.getWidth(); ++i)
         {
             if (fontImage.getPixel(i, 0))
@@ -63,7 +63,7 @@ bool parseFont(std::ifstream &inFileTxt, std::ifstream &inFilePbm, FlashElement 
                 break;
             }
         }
-        if (sym_start == sym_end)
+        if (sym_end == UINT32_MAX)
         {
             sym_end = fontImage.getWidth() - 1;
         }
@@ -80,6 +80,7 @@ bool parseFont(std::ifstream &inFileTxt, std::ifstream &inFilePbm, FlashElement 
     }
     if (symbolsCount != imageVector.size())
     {
+        std::cout << "Text file contains " << symbolsCount << " symbols, but image file contains " << imageVector.size() << std::endl;
         for (auto it = imageVector.begin(); it != imageVector.end(); ++it)
         {
             delete *it;
@@ -133,28 +134,33 @@ bool parseFont(std::ifstream &inFileTxt, std::ifstream &inFilePbm, FlashElement 
         delete image;
     }
     // Write symbols
+    table->count = symbolsCount;
+    table->symbols = new uint16_t[symbolsCount];
+    uint32_t num = 0;
     for (auto it = imageVector.begin(); it != imageVector.end(); ++it)
     {
-        /// @todo Write data
         uint16_t symbol;
         inFileTxt.read((char *)&symbol, sizeof(symbol));
+        // Store symbol
+        table->symbols[num++] = symbol;
         memcpy(element->data + symbolOffset, &symbol, sizeof(symbol));
         symbolOffset += sizeof(symbol);
     }
     imageVector.clear();
 
-// 0x0000   | count     | 32   | Image width in pixels
-// 0x0004   | height    | 32   | Image height in pixels
-// 0x0008   | baseLine  | 32   | Image size in bytes
-// 0x000C   | offset1   | 32   | First symbol offset
-// 0x0010   | offset2   | 32   | Second symbol offset
-// ...      | ...       | 32   | ...
-// 0xNNNN   | symbol1   | 16  | Symbol1 (UCS-2)
-// 0xNNNN+2 | symbol2   | 16   | Symbol2 (UCS-2)
-// ...      | ...       | ...  | ...
-// offset1  | image1    | ---  | Symbol1 image
-// offset2  | image2    | ---  | Symbol2 image
-// ...      | ...       | ...  | ...
+    // Font layout in flash
+    // 0x0000   | count     | 32   | Number of symbols in font
+    // 0x0004   | height    | 32   | Font height
+    // 0x0008   | baseLine  | 32   | Font base line
+    // 0x000C   | offset1   | 32   | First symbol offset
+    // 0x0010   | offset2   | 32   | Second symbol offset
+    // ...      | ...       | 32   | ...
+    // 0xNNNN   | symbol1   | 16   | Symbol1 (UCS-2LE)
+    // 0xNNNN+2 | symbol2   | 16   | Symbol2 (UCS-2LE)
+    // ...      | ...       | ...  | ...
+    // offset1  | image1    | ---  | Symbol1 image (see parser_pbm for image layout)
+    // offset2  | image2    | ---  | Symbol2 image
+    // ...      | ...       | ...  | ...
 
     return true;
 }
