@@ -18,6 +18,7 @@
  * 0x0000       | width     | 32    | Image width in pixels
  * 0x0004       | height    | 32    | Image height in pixels
  * 0x0008       | size      | 32    | Image size in bytes
+ * 0x000C       | data      | ...   | Image data
  *
  * @}
  *

@@ -44,5 +44,11 @@ void SmFont::drawSymbol(SmCanvas * canvas, int x, int y, uint16_t symbol)
 
 void SmFont::drawText(SmCanvas * canvas, int x, int y, uint16_t * symbol, uint16_t count)
 {
+    while (count--)
+    {
+        drawSymbol(canvas, x, y, *symbol);
+        x += getWidth() + 1;
+        symbol++;
+    }
     /// @todo Implement
 }

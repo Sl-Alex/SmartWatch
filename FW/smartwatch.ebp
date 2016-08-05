@@ -166,8 +166,8 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="inc\sm_crc.h" />
+		<Unit filename="inc\sm_strings.h" />
 		<Unit filename="inc\stm32f10x.h" />
-		<Unit filename="inc\stm32f10x_conf.h" />
 		<Unit filename="inc\system_stm32f10x.h" />
 		<Unit filename="readme.txt" />
 		<Unit filename="src\main.cpp">

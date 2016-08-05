@@ -126,8 +126,8 @@ int main(void)
     int xOff = 0;
     int yOff = 0;
 
-    SmFont * myFont = new SmFont();
-    myFont->init(8);
+    SmFont * smallFont = new SmFont();
+    smallFont->init(IDX_FW_FONT_SMALL);
     while (1)
     {
 //        xOff++;
@@ -159,10 +159,12 @@ int main(void)
             else
             {
                 pCanvas->fill(0x00);
-                myFont->drawSymbol(pCanvas, 4,  13, 2);
-                myFont->drawSymbol(pCanvas, 10,  13, 10);
-                myFont->drawSymbol(pCanvas, 16, 13, 9);
-                myFont->drawSymbol(pCanvas, 22, 13, 8);
+                uint16_t text[] = {2, 10, 9, 8};
+                smallFont->drawText(pCanvas, 4, 13, SM_STRING_HELL, SM_STRING_HELL_SZ);
+//                myFont->drawSymbol(pCanvas, 4,  13, 2);
+//                myFont->drawSymbol(pCanvas, 10,  13, 10);
+//                myFont->drawSymbol(pCanvas, 16, 13, 9);
+//                myFont->drawSymbol(pCanvas, 22, 13, 8);
                 pCanvas->drawRect(0,0,31,31,1);
             }
             pAnimator->start(48-dir,16,0,0,32,32);

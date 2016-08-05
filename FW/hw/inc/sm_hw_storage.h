@@ -46,6 +46,8 @@ struct SmHwStorageElementInfo
     uint32_t size;      ///< Element size (bytes)
 };
 
+#include "sm_strings.h"
+
 /// @brief HW storage elements indices
 enum SmHwStorageIndices {
     // Fixed part begin
@@ -54,7 +56,9 @@ enum SmHwStorageIndices {
     IDX_FW_DEPENDENT_START = 2, ///< Beginning of the FW-dependent indices
     // Fixed part end, the rest is FW-dependent
     // First number should be equal to IDX_FW_DEPENDENT_START
-    IDX_FW_FONT_SMALL = IDX_FW_DEPENDENT_START, ///< Small font
+    IDX_FW_FONT_SMALL = FONT_IDX_SMALL,   ///< Small font
+    IDX_FW_FONT_MEDIUM = FONT_IDX_MEDIUM, ///< Medium font
+    IDX_FW_FONT_DIGITS = FONT_IDX_DIGITS, ///< Large font
 };
 
 /// @brief External SPI flash class

@@ -22,24 +22,21 @@
  * Internal strings used by the firmware are encoded in the same manner before compilation with
  * an external tool(FlashPacker)
  *
- * @todo Write FlashPacker
- *
  * So, font layout in the @ref SmHwStorage is the following:
  *
- * Offset   | Parameter | Size | Description
- * -------- | --------- | ---- | ------
- * 0x0000   | count     | 32   | Image width in pixels
- * 0x0004   | height    | 32   | Image height in pixels
- * 0x0008   | baseLine  | 32   | Image size in bytes
+ * 0x0000   | count     | 32   | Number of symbols in font
+ * 0x0004   | height    | 32   | Font height
+ * 0x0008   | baseLine  | 32   | Font base line
  * 0x000C   | offset1   | 32   | First symbol offset
  * 0x0010   | offset2   | 32   | Second symbol offset
  * ...      | ...       | 32   | ...
- * 0xNNNN   | symbol1   | 16   | Symbol1 (UCS-2)
- * 0xNNNN+2 | symbol2   | 16   | Symbol2 (UCS-2)
+ * 0xNNNN   | symbol1   | 16   | Symbol1 (UCS-2LE)
+ * 0xNNNN+2 | symbol2   | 16   | Symbol2 (UCS-2LE)
  * ...      | ...       | ...  | ...
- * offset1  | image1    | ---  | Symbol1 image
+ * offset1  | image1    | ---  | Symbol1 image (see image element description)
  * offset2  | image2    | ---  | Symbol2 image
  * ...      | ...       | ...  | ...
+
  *
  * @}
  *
