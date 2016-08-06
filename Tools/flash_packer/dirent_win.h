@@ -444,11 +444,11 @@ _wreaddir(
     if (datap) {
         size_t n;
         DWORD attr;
-        
+
         /* Pointer to directory entry to return */
         entp = &dirp->ent;
 
-        /* 
+        /*
          * Copy file name as wide-character string.  If the file name is too
          * long to fit in to the destination buffer, then truncate file name
          * to PATH_MAX characters and zero-terminate the buffer.
@@ -791,7 +791,7 @@ closedir(
  */
 static void
 rewinddir(
-    DIR* dirp) 
+    DIR* dirp)
 {
     /* Rewind wide-character string directory stream */
     _wrewinddir (dirp->wdirp);

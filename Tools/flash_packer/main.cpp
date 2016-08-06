@@ -4,29 +4,29 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
-#include <locale>
-#include <codecvt>
+#include <algorithm>
 
+// Include dirent.h (simple directory navigation)
 #if defined(WIN32)
-#include "dirent_win.h"
+    #include "dirent_win.h"
 #elif defined(__linux__)
-#include <dirent.h>
+    #include <dirent.h>
 #else
-#error "Unknown OS"
+    // Didn't test on other operating systems
+    // If you have dirent.h in your OS, please include it
+    #error "Unknown OS"
 #endif
 
+// All functions declarations
 #include "global.h"
 
-const int MAX_FILES = 100;
+/// @brief Maximum number of flash elements
+const int MAX_ELEMENTS = 100;
 
-struct FileInfo{
-    std::string name;
-    enum FileType{FT_PBM, FT_BIN} type;
-    uint32_t size;
-};
-
+/// @brief Path to the resources folder
 std::string resourcePath = "";
 
+/// @brief Get file extension
 std::string fileExt(std::string fileName)
 {
     std::string result = "";
@@ -39,6 +39,7 @@ std::string fileExt(std::string fileName)
     return result;
 }
 
+/// @brief Get full file name (including path)
 std::string fullName(std::string fileName)
 {
     std::string ret = resourcePath;
@@ -47,7 +48,7 @@ std::string fullName(std::string fileName)
     return ret;
 }
 
-/// @brief Search
+/// @brief Search for the file starting from the specified number (e.g. "000.bin" or "001_BLABLABLA.txt")
 void fileSearch(int number, const std::vector<std::string> * fileList, std::vector<std::string> * result)
 {
     result->clear();
@@ -69,6 +70,7 @@ void fileSearch(int number, const std::vector<std::string> * fileList, std::vect
     }
 }
 
+/// @brief Print flash_packer usage instructions
 void usage(void)
 {
     std::cout << R"(Usage:
@@ -146,21 +148,39 @@ int main(int argc, char** argv)
             {
                 std::cout << matchList[0] << ": text"  << std::endl;
                 FlashElement element;
-                parseTxt(inFile, &element);
+                if (parseTxt(inFile, &element) == false)
+                {
+                    std::cout << "Parsing failed" << std::endl;
+                    std::cout << "Stopping." << std::endl;
+                    inFile.close();
+                    break;
+                }
                 flashElements.push_back(element);
             }
             else if (fileExt(matchList[0]).compare("bin") == 0)
             {
                 std::cout << matchList[0] << ": binary" << std::endl;
                 FlashElement element;
-                parseBin(inFile, &element);
+                if (parseBin(inFile, &element) == false)
+                {
+                    std::cout << "Parsing failed" << std::endl;
+                    std::cout << "Stopping." << std::endl;
+                    inFile.close();
+                    break;
+                }
                 flashElements.push_back(element);
             }
             else if (fileExt(matchList[0]).compare("pbm") == 0)
             {
                 std::cout << matchList[0] << ": image" << std::endl;
                 FlashElement element;
-                parsePbm(inFile, &element);
+                if (parsePbm(inFile, &element) == false)
+                {
+                    std::cout << "Parsing failed" << std::endl;
+                    std::cout << "Stopping." << std::endl;
+                    inFile.close();
+                    break;
+                }
                 flashElements.push_back(element);
             }
             else
@@ -208,7 +228,15 @@ int main(int argc, char** argv)
             // Parse font
             FlashElement element;
             FontTable * table = new FontTable();
-            parseFont(inFileTxt, inFilePbm, &element, table);
+            if (parseFont(inFileTxt, inFilePbm, &element, table) == false)
+            {
+                std::cout << "Parsing failed" << std::endl;
+                std::cout << "Stopping." << std::endl;
+                delete table;
+                inFileTxt.close();
+                inFilePbm.close();
+                break;
+            }
             // Store font element index
             table->index = number;
             // Store font table
@@ -234,6 +262,12 @@ int main(int argc, char** argv)
         }
 
         number++;
+        if (number >= MAX_ELEMENTS)
+        {
+            std::cout << "Maximum of " << MAX_ELEMENTS <<" resource files is allowed." << std::endl;
+            std::cout << "Stopping." << std::endl;
+            break;
+        }
     }
 
     // Here we will write output update file for the external flash memory

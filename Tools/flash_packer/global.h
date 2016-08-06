@@ -4,15 +4,17 @@
 #include <fstream>
 #include <vector>
 
+/// @brief Flash element structure
 struct FlashElement{
-    uint32_t size;
-    char * data;
+    uint32_t size;  ///< Flash element size (bytes)
+    char * data;    ///< Flash element data
 };
 
+/// @brief Font table
 struct FontTable{
-    uint32_t index;
-    uint32_t count;
-    uint16_t * symbols;
+    uint32_t index;     ///< Font index (equals to the flash element index)
+    uint32_t count;     ///< Number of UCS-2LE symbols
+    uint16_t * symbols; ///< Pointer to the array of symbols
 };
 
 /// @brief Read the whole file info flash element
