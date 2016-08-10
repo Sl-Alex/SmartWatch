@@ -35,3 +35,13 @@ void SmHwMotor::onTimer(uint32_t timeStamp)
         mGpio->resetPin();
 
 }
+
+void SmHwMotor::onKeyDown(uint8_t key)
+{
+    mGpio->setPin();
+}
+
+void SmHwMotor::onKeyUp(uint8_t key)
+{
+    mGpio->resetPin();
+}

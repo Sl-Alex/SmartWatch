@@ -14,14 +14,10 @@ public:
     SmHwKeyboardIface(){}
     /// @brief Virtual destructor
     virtual ~SmHwKeyboardIface(){}
-    /// @brief onKey1 event. Should be redefined in the derived class
-    virtual void onKey1(void) = 0;
-    /// @brief onKey2 event. Should be redefined in the derived class
-    virtual void onKey2(void) = 0;
-    /// @brief onKey3 event. Should be redefined in the derived class
-    virtual void onKey3(void) = 0;
-    /// @brief onKey4 event. Should be redefined in the derived class
-    virtual void onKey4(void) = 0;
+    /// @brief onKeyDown event. Should be redefined in the derived class
+    virtual void onKeyDown(uint8_t key) = 0;
+    /// @brief onKeyUp event. Should be redefined in the derived class
+    virtual void onKeyUp(uint8_t key) = 0;
 };
 
 /// @brief Simple GPIO keyboard class
@@ -36,7 +32,17 @@ public:
 
     /// @brief get button state
     /// @param button: number from 1 to 4
-    bool getState(uint8_t button) { return mLastState[button - 1]; }
+    bool getState(uint8_t button) { return (mLastState >> button) & 0x01; }
+
+    void initSubscribersPool(uint8_t max);
+
+    void deinitSubscribersPool(void);
+
+    /// @brief Subscribe for the power manager notifications
+    bool subscribe(SmHwKeyboardIface *iface);
+
+    /// @brief Unsubscribe for the power manager notifications
+    void unsubscribe(SmHwKeyboardIface *iface);
 
 private:
     const uint8_t DEBOUNCING_TIME = 30;
@@ -44,7 +50,14 @@ private:
     void onSleep(void);
     void onWake(void);
     SmHalAbstractGpio * mGpioPins[4];
-    bool mLastState[4];
+    uint8_t mLastState;
+
+    struct SmHwKeyboardSubscriber
+    {
+        SmHwKeyboardIface *iface;
+    };
+    uint8_t mPoolSize;
+    SmHwKeyboardSubscriber *mPool;
 };
 
 #endif // SM_HW_KEYBOARD_H

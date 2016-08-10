@@ -73,9 +73,11 @@ int main(void)
     SmDisplay * display = new SmDisplay();
 
     SmHwKeyboard *keyboard = new SmHwKeyboard();
+    keyboard->initSubscribersPool(10);
 
     SmHwMotor * motor = new SmHwMotor();
-    SmHalSysTimer::subscribe(motor,1000,true);
+    keyboard->subscribe(motor);
+    SmHalSysTimer::subscribe(motor,2000,true);
 
     SmHwStorage::getInstance()->init();
 
