@@ -6,6 +6,10 @@
 #include <iomanip>
 #include <algorithm>
 
+#define PATH_RESOURCES      "../../Resources/Flash"
+#define PATH_STRINGS_TPL    "../../FW/inc/sm_strings.tpl"
+#define PATH_STRINGS_H      "../../FW/inc/sm_strings.h"
+
 // Include dirent.h (simple directory navigation)
 #if defined(WIN32)
     #include "dirent_win.h"
@@ -70,26 +74,8 @@ void fileSearch(int number, const std::vector<std::string> * fileList, std::vect
     }
 }
 
-/// @brief Print flash_packer usage instructions
-void usage(void)
+int main()
 {
-    std::cout << R"(Usage:
-    flash_packer ../path/to/resources ../sm_strings.tpl ../sm_strings.h
-    argument1 - path to the folder with resources
-    argument2 - path to the sm_strings.h template file
-    argument3 - path to the processed template (output file))" << std::endl;
-}
-
-int main(int argc, char** argv)
-{
-    // Check for the correct number of arguments
-    if (argc != 4)
-    {
-        std::cout << "Wrong number of arguments" << std::endl;
-        usage();
-        return EINVAL;
-    }
-
     // List of files in the resources folder
     std::vector<std::string> fileList;
     // List of parsed fonts
@@ -98,7 +84,7 @@ int main(int argc, char** argv)
     std::vector<FlashElement> flashElements;
 
     // Store resources folder path
-    resourcePath = argv[1];
+    resourcePath = PATH_RESOURCES;
 
     // Get file list in the resources folder
     DIR *dir;
@@ -329,8 +315,8 @@ int main(int argc, char** argv)
     updateFile.close();
 
     // Parse sm_strings template file and make sm_strings.h
-    std::ifstream inFile(argv[2], std::ios::in | std::ios::binary);
-    std::ofstream outFile(argv[3], std::ios::out | std::ios::binary | std::ios::trunc);
+    std::ifstream inFile(PATH_STRINGS_TPL, std::ios::in | std::ios::binary);
+    std::ofstream outFile(PATH_STRINGS_H, std::ios::out | std::ios::binary | std::ios::trunc);
 
     sm_strings_process(inFile,outFile,fontList);
 

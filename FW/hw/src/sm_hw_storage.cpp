@@ -1,8 +1,9 @@
 #include "sm_hw_storage.h"
+#include "sm_crc.h"
+
+#ifndef PC_SOFTWARE
 #include "sm_hal_gpio.h"
 #include "sm_hal_spi_hw.h"
-
-#include "sm_crc.h"
 
 #define MOSI_PORT_BASE  GPIOB_BASE
 #define MOSI_PIN        15
@@ -630,3 +631,83 @@ void SmHwStorage::onWake(void)
     for (uint32_t i = 0; i < 1000; i++)
         mSpi->setSs();
 }
+#else
+void SmHwStorage::init(void)
+{
+    inFile.open("../../Resources/Flash/update.bin", std::ios::in | std::ios::binary);
+
+    // Read total number of elements in the storage
+    readData(0, (uint8_t *)&mCount, sizeof(mCount));
+
+    // Verify CRC
+    uint32_t crc32 = SmCrc::calc32(0xFFFFFFFF, (uint8_t *)&mCount, sizeof(mCount));
+    uint32_t addr = sizeof(mCount);
+    SmHwStorageElementInfo elementInfo;
+    // Next element offset. We can check if it is correct
+    uint32_t nextOffset = sizeof(mCount) + sizeof(elementInfo)*mCount + sizeof(crc32);
+    for (uint32_t i = 0; i < mCount; ++i)
+    {
+        // Read element info
+        readData(addr, (uint8_t *)&elementInfo, sizeof(elementInfo));
+        crc32 = SmCrc::calc32(crc32, (uint8_t *)&elementInfo, sizeof(elementInfo));
+        addr += sizeof(elementInfo);
+
+        if(elementInfo.offset != nextOffset)
+        {
+            mCount = 0;
+            return;
+        }
+
+        // Calculate next element offset
+        nextOffset += elementInfo.size;
+    }
+    uint32_t crcStored;
+    readData(addr, (uint8_t *)&crcStored, sizeof(crcStored));
+    if (crcStored != crc32)
+        mCount = 0;
+}
+
+uint32_t SmHwStorage::getElementSize(uint8_t element)
+{
+    SmHwStorageElementInfo elementInfo;
+
+    if (getElementInfo(element, &elementInfo) == false)
+        return 0;
+
+    return elementInfo.size;
+}
+
+bool SmHwStorage::getElementInfo(uint8_t element, SmHwStorageElementInfo * info)
+{
+    if (element >= mCount)
+        return false;
+
+    // Read element info
+    readData(sizeof(mCount) + sizeof(SmHwStorageElementInfo)*element, (uint8_t *)info, sizeof(SmHwStorageElementInfo));
+
+    return true;
+}
+
+void SmHwStorage::readElement(uint8_t element, uint32_t offset, uint8_t * pData, uint32_t size)
+{
+    if (element >= mCount)
+        return;
+
+    // Read element info
+    SmHwStorageElementInfo elementInfo;
+    readData(sizeof(mCount) + sizeof(SmHwStorageElementInfo)*element, (uint8_t *)&elementInfo, sizeof(elementInfo));
+
+    // Read data
+    readData(elementInfo.offset + offset, pData, size);
+}
+
+/// @todo Rewrite
+void SmHwStorage::readData(uint32_t offset, uint8_t *pData, uint32_t size)
+{
+    // Reset text file to the beginning
+    inFile.seekg(offset, std::ios::beg);
+
+    // Read data
+    inFile.read((char *)pData,size);
+}
+#endif

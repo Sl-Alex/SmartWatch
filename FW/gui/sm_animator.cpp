@@ -52,7 +52,7 @@ bool SmAnimator::tick()
                 else
                     limit = mX + mLimit;
 
-                pDest->scrollArea(mX - limit,mY,mX - mTick,mY+mH-1,mSpeed,SmCanvas::DIR_LEFT,false);
+                pDest->scrollArea(mX - limit,mY,mX - mTick,mY+mH-1,mSpeed,SmCanvas::DIR_LEFT);
             }
             // Draw a part of the image
             pDest->drawCanvas(mX - mTick, mY, mXOff, mYOff, mTick  +1, mH, pSource);
@@ -73,7 +73,7 @@ bool SmAnimator::tick()
                 else
                     limit = mX + mLimit;
 
-                pDest->scrollArea(mX + mTick,mY,mX + limit,mY+mH-1,mSpeed,SmCanvas::DIR_RIGHT,false);
+                pDest->scrollArea(mX + mTick,mY,mX + limit,mY+mH-1,mSpeed,SmCanvas::DIR_RIGHT);
             }
             // Draw a part of the image
             pDest->drawCanvas(mX, mY, mW + mXOff - mTick - 1, mYOff, mTick  + 1, mH, pSource);
@@ -94,7 +94,7 @@ bool SmAnimator::tick()
                 else
                     limit = mY + mLimit;
 
-                pDest->scrollArea(mX,mY - limit,mX+mW-1,mY - mTick,mSpeed,SmCanvas::DIR_UP,false);
+                pDest->scrollArea(mX,mY - limit,mX+mW-1,mY - mTick,mSpeed,SmCanvas::DIR_UP);
             }
             // Draw a part of the image
             pDest->drawCanvas(mX, mY - mTick, mXOff, mYOff, mW, mTick  +1, pSource);
@@ -115,7 +115,7 @@ bool SmAnimator::tick()
                 else
                     limit = mY + mLimit;
 
-                pDest->scrollArea(mX,mY + mTick,mX+mW-1,mY + limit,mSpeed,SmCanvas::DIR_DOWN,false);
+                pDest->scrollArea(mX,mY + mTick,mX+mW-1,mY + limit,mSpeed,SmCanvas::DIR_DOWN);
             }
             // Draw a part of the image
             pDest->drawCanvas(mX, mY, mXOff, mH + mYOff - mTick - 1, mW, mTick  + 1, pSource);

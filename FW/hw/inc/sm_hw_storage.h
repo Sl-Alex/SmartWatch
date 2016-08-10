@@ -1,8 +1,14 @@
 #ifndef SM_HW_STORAGE_H
 #define SM_HW_STORAGE_H
 
+#include <cstdint>
+
+#ifndef PC_SOFTWARE
 #include "sm_hal_abstract_spi.h"
 #include "sm_hw_powermgr.h"
+#else
+#include <fstream>
+#endif
 
 /** @defgroup EXTERNAL_FLASH External flash
  *
@@ -57,12 +63,13 @@ enum SmHwStorageIndices {
     // Fixed part end, the rest is FW-dependent
     // First number should be equal to IDX_FW_DEPENDENT_START
     IDX_FW_FONT_SMALL = FONT_IDX_SMALL,   ///< Small font
-    IDX_FW_FONT_MEDIUM = FONT_IDX_MEDIUM, ///< Medium font
-    IDX_FW_FONT_DIGITS = FONT_IDX_DIGITS, ///< Large font
 };
 
 /// @brief External SPI flash class
-class SmHwStorage: public SmHwPowerMgrIface
+class SmHwStorage
+#ifndef PC_SOFTWARE
+    : public SmHwPowerMgrIface
+#endif
 {
 public:
     /// @brief Initialize HW access, verify checksum
@@ -77,8 +84,10 @@ public:
         return &instance;
     }
 
+    #ifndef PC_SOFTWARE
     /// @brief Read external flash ID
     uint32_t readId(void);
+    #endif
 
     /// @brief Read element size
     /// @param element: Element index
@@ -106,6 +115,7 @@ public:
 
 private:
     SmHwStorage() {}
+    #ifndef PC_SOFTWARE
     inline uint8_t sendByte(uint8_t data);
     void writeEnable(void);
     void waitForWriteEnd(void);
@@ -116,11 +126,14 @@ private:
 
     SmHalAbstractSpi *mSpi;
 
-    uint32_t mCount;    ///< Number of elements in the storage
-
     // SmHwPowerMgrIface
     void onSleep(void);
     void onWake(void);
+    #else
+    std::fstream inFile;
+    #endif
+
+    uint32_t mCount;    ///< Number of elements in the storage
 };
 
 /// @}

@@ -5,6 +5,25 @@
 #include "sm_hw_powermgr.h"
 #include "sm_hal_abstract_gpio.h"
 
+/// @brief Keyboard interface
+/// @details Provides pure virtual callbacks which should be defined in the derived classes
+class SmHwKeyboardIface
+{
+public:
+    /// @brief Trivial constructor
+    SmHwKeyboardIface(){}
+    /// @brief Virtual destructor
+    virtual ~SmHwKeyboardIface(){}
+    /// @brief onKey1 event. Should be redefined in the derived class
+    virtual void onKey1(void) = 0;
+    /// @brief onKey2 event. Should be redefined in the derived class
+    virtual void onKey2(void) = 0;
+    /// @brief onKey3 event. Should be redefined in the derived class
+    virtual void onKey3(void) = 0;
+    /// @brief onKey4 event. Should be redefined in the derived class
+    virtual void onKey4(void) = 0;
+};
+
 /// @brief Simple GPIO keyboard class
 class SmHwKeyboard: public SmHalSysTimerIface, public SmHwPowerMgrIface
 {

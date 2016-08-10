@@ -1,12 +1,11 @@
 #ifndef SM_STRINGS_H
 #define SM_STRINGS_H
 
-#define FONT_IDX_SMALL  8
-#define FONT_IDX_MEDIUM 3
-#define FONT_IDX_DIGITS 4
+#define FONT_IDX_SMALL  2
 
-// Do not include this file directly
-// It should be parsed with flash_packer
+// Do not include *.tpl file to the project
+// Do not edit *.h file, edit *.tpl instead
+// *.tpl should be parsed with flash_packer, *.h will be generated
 // Special comment:
 //     PACK is a flash_packer directive
 //     SM_STRING_HELLO is a string definition

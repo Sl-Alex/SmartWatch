@@ -108,7 +108,7 @@ int main(void)
     //SmHalI2c::getInstance()->transfer(I2C_ACC, &reg[0], 1, &data, 1);
 
     SmImage * pCanvas = new SmImage();
-    pCanvas->init(5);
+    pCanvas->init(3);
 
 //    SmCanvas * pCanvas = new SmCanvas();
 //    pCanvas->init(32,32);
@@ -152,7 +152,7 @@ int main(void)
             }
             if (step)
             {
-                pCanvas->init(0);
+                pCanvas->init(4);
                 //pCanvas->fill(0x00);
                 //pCanvas->drawRect(0,0,31,31,1);
             }
