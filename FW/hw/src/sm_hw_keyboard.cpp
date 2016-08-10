@@ -1,10 +1,15 @@
 #include <cstring>
 
 #include "sm_hw_keyboard.h"
+#ifndef PC_SOFTWARE
 #include "sm_hal_gpio.h"
+#endif
 
 SmHwKeyboard::SmHwKeyboard(void)
 {
+    mPool = 0;
+    mPoolSize = 0;
+#ifndef PC_SOFTWARE
     // Construct pins
     mGpioPins[0] = new SmHalGpio<GPIOA_BASE, 12>();
     mGpioPins[1] = new SmHalGpio<GPIOB_BASE, 3>();
@@ -16,12 +21,16 @@ SmHwKeyboard::SmHwKeyboard(void)
     {
         mGpioPins[i]->setModeSpeed(SM_HAL_GPIO_MODE_IN_PU, SM_HAL_GPIO_SPEED_2M);
     }
+#endif
     mLastState = 0;
 
     SmHalSysTimer::subscribe(this, DEBOUNCING_TIME, true);
+#ifndef PC_SOFTWARE
     SmHwPowerMgr::getInstance()->subscribe(this);
+#endif
 }
 
+#ifndef PC_SOFTWARE
 void SmHwKeyboard::onSleep(void)
 {
     //mLastState = 0;
@@ -32,16 +41,21 @@ void SmHwKeyboard::onWake(void)
     // Real timestamp does not matter in this case;
     onTimer(0);
 }
+#endif
 
 /// @todo Check subscribers notification
 void SmHwKeyboard::onTimer(uint32_t timeStamp)
 {
     uint8_t newState = 0;
     // Update values
+#ifndef PC_SOFTWARE
     for (uint8_t key = 0; key < 4; ++key)
     {
         newState |= (!mGpioPins[key]->readPin()) << key;
     }
+#else
+    newState = simulatedState;
+#endif
     // Notify only if there are some changes
     uint8_t changes = newState ^ mLastState;
     mLastState = newState;

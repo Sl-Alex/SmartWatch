@@ -47,6 +47,8 @@
 #include <QMainWindow>
 #include "sm_image.h"
 #include "sm_animator.h"
+#include "sm_hw_keyboard.h"
+#include "sm_font.h"
 
 QT_BEGIN_NAMESPACE
 class QCheckBox;
@@ -58,7 +60,7 @@ QT_END_NAMESPACE
 class RenderArea;
 
 //! [0]
-class Window : public QWidget
+class Window : public QWidget, public SmHwKeyboardIface
 {
     Q_OBJECT
 
@@ -67,17 +69,25 @@ public:
     void keyPressEvent(QKeyEvent * pEvent);
     void keyReleaseEvent(QKeyEvent * event);
 
+    void onKeyDown(uint8_t key);
+    void onKeyUp(uint8_t key);
+
 private slots:
     void onTimerEvent(void);
+    void onTimerMsEvent(void);
 
 private:
     RenderArea *renderArea;
     SmImage * pImage;
     SmAnimator * pAnimator;
+    SmHwKeyboard * keyboard;
+    SmFont * smallFont;
     QLabel * lbl1;
     QLabel * lbl2;
     QLabel * lbl3;
     QLabel * lbl4;
+
+    friend class SmHalSysTimer;
 };
 //! [0]
 

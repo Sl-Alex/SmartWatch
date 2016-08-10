@@ -1,7 +1,11 @@
 #ifndef SM_HAL_SYS_TIMER_H
 #define SM_HAL_SYS_TIMER_H
 
+#include <cstdint>
+
+#ifndef PC_SOFTWARE
 #include "stm32f10x.h"
+#endif
 
 extern "C" void SysTick_Handler(void);
 
@@ -46,6 +50,7 @@ private:
     static SmHalSysTimerSubscriber * mPool;
     static uint8_t mPoolSize;
     static uint32_t mTimeStamp;
+
     friend void SysTick_Handler(void); // We should be able to access timestamp in the IRQ
 };
 
