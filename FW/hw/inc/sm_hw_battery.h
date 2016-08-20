@@ -3,17 +3,25 @@
 
 #include <cstdint>
 #include "sm_hal_sys_timer.h"
+#ifndef PC_SOFTWARE
 #include "sm_hal_abstract_gpio.h"
 #include "sm_hw_powermgr.h"
 
 extern "C" void ADC1_2_IRQHandler(void);
+
+#endif
+
 
 /// @brief Battery status monitoring.
 /// @details Monitors battery voltage and charge status.
 /// This class is a singleton, because we have only one battery and exclusive ADC access.
 /// After \ref init is called, it subscribes to the timer and power manager events.
 /// By default, measurement interval is \ref MEAS_INTERVAL.
-class SmHwBattery: public SmHalSysTimerIface, public SmHwPowerMgrIface
+class SmHwBattery:
+    public SmHalSysTimerIface
+#ifndef PC_SOFTWARE
+    , public SmHwPowerMgrIface
+#endif
 {
 public:
     /// @brief ADC initialization and subscription to the timer and power manager events.
@@ -42,16 +50,20 @@ private:
     uint32_t mValue;    ///< Latest value
     uint8_t mMeasStep;  ///< Measurement step (delay/measurement)
 
+#ifndef PC_SOFTWARE
     friend void ADC1_2_IRQHandler(void);
 
     SmHalAbstractGpio * mGpioEn;    ///< Measurement circuit control pin
+#endif
 
     // SmHalSysTimerIface events
     void onTimer(uint32_t timeStamp);
 
+#ifndef PC_SOFTWARE
     // SmHalSysTimerIface events
     void onSleep(void);
     void onWake(void);
+#endif
 };
 
 

@@ -17,8 +17,10 @@ HEADERS       = \
     ../../FW/gui/sm_animator.h \
     ../../FW/gui/sm_font.h \
     ../../FW/gui/sm_image.h \
+    ../../FW/gui/sm_desktop.h \
     ../../FW/hw/inc/sm_hw_storage.h \
     ../../FW/hw/inc/sm_hw_keyboard.h \
+    ../../FW/hw/inc/sm_hw_battery.h \
     ../../FW/inc/sm_crc.h \
     ../../FW/hal/inc/sm_hal_sys_timer.h
 
@@ -31,8 +33,10 @@ SOURCES       = \
     ../../FW/gui/sm_animator.cpp \
     ../../FW/gui/sm_font.cpp \
     ../../FW/gui/sm_image.cpp \
+    ../../FW/gui/sm_desktop.cpp \
     ../../FW/hw/src/sm_hw_storage.cpp \
     ../../FW/hw/src/sm_hw_keyboard.cpp \
+    ../../FW/hw/src/sm_hw_battery.cpp \
     ../../FW/src/sm_crc.cpp \
     ../../FW/hal/src/sm_hal_sys_timer.cpp
 

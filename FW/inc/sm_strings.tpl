@@ -12,5 +12,6 @@
 //     FONT_IDX_SMALL is a font index (should be defined in this file above)
 //     The rest till the end of the line is just a string
 // PACK SM_STRING_HELL FONT_IDX_SMALL HELL
+// PACK SM_STRING_TEST_CYRILLIC FONT_IDX_SMALL цчшщьюя :)
 
 #endif // SM_STRINGS_H

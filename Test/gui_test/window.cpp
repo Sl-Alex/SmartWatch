@@ -104,7 +104,6 @@ Window::Window()
     setLayout(mainLayout);
 
     SmHwStorage::getInstance()->init();
-
     pImage = new SmImage();
     pImage->init(3);
 
@@ -137,6 +136,8 @@ Window::Window()
     keyboard = new SmHwKeyboard();
     keyboard->initSubscribersPool(10);
     keyboard->subscribe(this);
+
+    smallFont->drawText(renderArea->Canvas, 2, 54, SM_STRING_TEST_CYRILLIC, SM_STRING_TEST_CYRILLIC_SZ);
 }
 
 static bool bl = true;

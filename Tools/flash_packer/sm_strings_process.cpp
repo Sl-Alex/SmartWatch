@@ -132,7 +132,7 @@ void sm_strings_process(std::ifstream &inFile, std::ofstream &outFile, std::vect
                                 }
                             }
                             outFile << "\"" << std::endl;
-                            outFile << "#define " << strName << "_SZ " << sz << std::endl;
+                            outFile << "#define " << strName << "_SZ " << std::dec << sz << std::endl;
                             outFile << std::endl;
                             break;
                         }

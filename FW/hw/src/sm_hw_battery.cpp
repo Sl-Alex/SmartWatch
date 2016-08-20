@@ -3,6 +3,7 @@
 */
 #include "sm_hw_battery.h"
 
+#ifndef PC_SOFTWARE
 #include "stm32f10x.h"
 #include "sm_hal_gpio.h"
 
@@ -13,11 +14,13 @@
 
 #define GPIO_AIN_PORT   GPIOA_BASE  ///< Battery voltage input port
 #define GPIO_AIN_PIN    0           ///< Battery voltage input pin
+#endif
 
 void SmHwBattery::init()
 {
     mValue = 0;
 
+#ifndef PC_SOFTWARE
     mGpioEn = new SmHalGpio<GPIO_EN_PORT, GPIO_EN_PIN>();
     mGpioEn->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
     mGpioEn->setPin();
@@ -54,13 +57,15 @@ void SmHwBattery::init()
     // Start measurement
     ADC1->CR2 |= ADC_CR2_SWSTART;
 
-    mMeasStep = 0;
-
     SmHwPowerMgr::getInstance()->subscribe(this);
+
+    mMeasStep = 0;
+#endif
 }
 
 void SmHwBattery::onTimer(uint32_t timeStamp)
 {
+#ifndef PC_SOFTWARE
     if (mMeasStep == 0)
     {
         mGpioEn->setPin();
@@ -72,8 +77,12 @@ void SmHwBattery::onTimer(uint32_t timeStamp)
         mMeasStep = 0;
         ADC1->CR2 |= ADC_CR2_SWSTART;
     }
+#else
+    mValue = 55;
+#endif
 }
 
+#ifndef PC_SOFTWARE
 void SmHwBattery::onSleep(void)
 {
     ADC1->CR2 &= ~ADC_CR2_ADON;
@@ -100,3 +109,4 @@ void ADC1_2_IRQHandler (void)
 }
 
 }
+#endif
