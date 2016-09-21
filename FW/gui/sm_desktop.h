@@ -19,7 +19,7 @@ public:
     void operator=(SmDesktop const&) = delete;
 
     /// @brief Get a singleton instance
-    static SmDesktop* getInstances()
+    static SmDesktop* getInstance()
     {
         static SmDesktop    instance; // Guaranteed to be destroyed.
                               // Instantiated on first use.

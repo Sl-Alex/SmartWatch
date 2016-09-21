@@ -27,6 +27,7 @@
 #include "sm_hw_bmc150.h"
 #include "sm_hw_bmp180.h"
 
+#include "sm_desktop.h"
 #include "sm_canvas.h"
 #include "sm_image.h"
 #include "sm_font.h"
@@ -130,6 +131,8 @@ int main(void)
 
     SmFont * smallFont = new SmFont();
     smallFont->init(IDX_FW_FONT_SMALL);
+
+    SmDesktop::getInstance()->init();
     while (1)
     {
 //        xOff++;
