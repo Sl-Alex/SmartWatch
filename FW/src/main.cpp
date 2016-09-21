@@ -191,7 +191,7 @@ int main(void)
             SmHwBt::getInstance()->send(0x30+st);
         }
 
-        SmHwBattery::getInstance()->getValue();
+        SmHwBattery::getInstance()->getCharge();
         if (keyboard->getState(2) && keyboard->getState(3))
         {
             SmHwPowerMgr::getInstance()->sleep();

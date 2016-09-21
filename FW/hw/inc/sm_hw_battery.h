@@ -30,7 +30,9 @@ public:
 
     /// @brief Get latest battery value
     /// @todo Implement correct measurement instead of raw ADC data.
-    uint32_t getValue(void) { return mValue; }
+    uint32_t getRaw(void) { return mRaw; }
+    uint32_t getCharge(void) { return mCharge; }
+    uint32_t getVoltage(void) { return mVoltage; }
 
     /// @brief This class is a singleton, removing
     SmHwBattery(SmHwBattery const&) = delete;
@@ -47,7 +49,9 @@ public:
 private:
     SmHwBattery() {}    ///< Default constructor is hidden
 
-    uint32_t mValue;    ///< Latest value
+    uint32_t mRaw;      ///< Latest raw value
+    uint32_t mCharge;   ///< Latest charge percentage
+    uint32_t mVoltage;  ///< Latest voltage
     uint8_t mMeasStep;  ///< Measurement step (delay/measurement)
 
 #ifndef PC_SOFTWARE
@@ -64,6 +68,8 @@ private:
     void onSleep(void);
     void onWake(void);
 #endif
+
+    void updateValues(void);
 };
 
 

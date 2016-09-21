@@ -16,9 +16,16 @@
 #define GPIO_AIN_PIN    0           ///< Battery voltage input pin
 #endif
 
+#define BAT_MAX 2544    ///< Maximum raw ADC battery voltage
+#define BAT_MIN 2048    ///< Minimum raw ADC battery voltage
+
+#define VOLT_MAX 4100   ///< Maximum battery voltage
+#define VOLT_MIN 3300   ///< Minimum battery voltage
+
+
 void SmHwBattery::init()
 {
-    mValue = 0;
+    mRaw = 0;
 
 #ifndef PC_SOFTWARE
     mGpioEn = new SmHalGpio<GPIO_EN_PORT, GPIO_EN_PIN>();
@@ -61,6 +68,7 @@ void SmHwBattery::init()
 
     mMeasStep = 0;
 #endif
+    SmHalSysTimer::subscribe(this,1,false);
 }
 
 void SmHwBattery::onTimer(uint32_t timeStamp)
@@ -78,7 +86,8 @@ void SmHwBattery::onTimer(uint32_t timeStamp)
         ADC1->CR2 |= ADC_CR2_SWSTART;
     }
 #else
-    mValue = 55;
+    mRaw = 55;
+    updateValues();
 #endif
 }
 
@@ -103,10 +112,20 @@ extern "C"
 /// Measurement enable circuit is disabled after the measurement.
 void ADC1_2_IRQHandler (void)
 {
-    SmHwBattery::getInstance()->mValue = ADC1->DR;
+    SmHwBattery::getInstance()->mRaw = ADC1->DR;
     SmHwBattery::getInstance()->mGpioEn->resetPin();
     SmHalSysTimer::subscribe(SmHwBattery::getInstance(), MEAS_INTERVAL, false);
+    SmHwBattery::getInstance()->updateValues();
 }
 
 }
 #endif
+
+void SmHwBattery::updateValues(void)
+{
+    if (mRaw > BAT_MAX) mRaw = BAT_MAX;
+	if (mRaw < BAT_MIN) mRaw = BAT_MIN;
+
+    mCharge = (mRaw - BAT_MIN)*100/(BAT_MAX - BAT_MIN);
+	mVoltage = VOLT_MIN + (mRaw - BAT_MIN)*(VOLT_MAX - VOLT_MIN)/(BAT_MAX - BAT_MIN);
+}

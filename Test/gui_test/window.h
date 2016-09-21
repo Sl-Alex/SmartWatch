@@ -49,6 +49,7 @@
 #include "sm_animator.h"
 #include "sm_hw_keyboard.h"
 #include "sm_font.h"
+#include "sm_desktop.h"
 
 QT_BEGIN_NAMESPACE
 class QCheckBox;
@@ -78,6 +79,7 @@ private slots:
 
 private:
     RenderArea *renderArea;
+    SmDesktop * desktop;
     SmImage * pImage;
     SmAnimator * pAnimator;
     SmHwKeyboard * keyboard;

@@ -9,5 +9,5 @@ void SmDesktop::init(void)
 
 void SmDesktop::onTimer(uint32_t timeStamp)
 {
-    mBatteryLevel = SmHwBattery::getInstance()->getValue();
+    mBatteryLevel = SmHwBattery::getInstance()->getCharge();
 }

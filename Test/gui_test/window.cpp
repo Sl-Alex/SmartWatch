@@ -150,6 +150,9 @@ Window::Window()
     image.init(12);
     renderArea->Canvas->drawCanvas(128 - 6 * 7, 0, &image);
     renderArea->Canvas->setPix(127,63,1);
+
+    desktop = SmDesktop::getInstance();
+    desktop->init();
 }
 
 static bool bl = true;
