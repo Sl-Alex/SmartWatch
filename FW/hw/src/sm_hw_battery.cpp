@@ -144,7 +144,14 @@ void SmHwBattery::updateValues(void)
         mChargeStatus = true;
 #endif
     mRaw -= 10;
-    if (mRaw < BAT_MIN) mRaw = BAT_MAX;
+    if (mRaw < BAT_MIN)
+    {
+        mRaw = BAT_MAX;
+#ifdef PC_SOFTWARE
+        mChargeStatus = !mChargeStatus;
+#endif
+    }
+
 
     if (mRaw > BAT_MAX) mRaw = BAT_MAX;
 	if (mRaw < BAT_MIN) mRaw = BAT_MIN;

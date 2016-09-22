@@ -33,6 +33,7 @@ public:
     uint32_t getRaw(void) { return mRaw; }
     uint32_t getCharge(void) { return mCharge; }
     uint32_t getVoltage(void) { return mVoltage; }
+    bool getStatus(void) { return mChargeStatus; }
 
     /// @brief This class is a singleton, removing
     SmHwBattery(SmHwBattery const&) = delete;

@@ -144,14 +144,6 @@ Window::Window()
     keyboard->subscribe(this);
 
     smallFont->drawText(renderArea->getCanvas(), 2, 54, SM_STRING_TEST_CYRILLIC, SM_STRING_TEST_CYRILLIC_SZ);
-
-    SmImage image;
-    image.init(11);
-    renderArea->getCanvas()->drawCanvas(128 - 6 * 7 - 5, 0, &image);
-    image.init(12);
-    renderArea->getCanvas()->drawCanvas(128 - 6 * 7, 0, &image);
-    renderArea->getCanvas()->setPix(127,63,1);
-
 }
 
 static bool bl = true;

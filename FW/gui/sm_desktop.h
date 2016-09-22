@@ -30,7 +30,18 @@ public:
     void onTimer(uint32_t timeStamp);
 
 private:
+    static const uint8_t MAX_ICONS_COUNT = 10;
+    const uint8_t INVALID_ICON = UINT8_MAX;
+
+    const uint8_t ICON_POS_POWER = MAX_ICONS_COUNT - 1; ///< Last icon
+    const uint8_t ICON_POS_BATT = ICON_POS_POWER - 1;   ///< Right before the last
+    const uint8_t ICON_POS_BT = ICON_POS_BATT - 1;      ///< Before the battery
+
     SmDesktop() {}    ///< Default constructor is hidden
+
+    void setIcon(uint8_t pos, uint8_t icon);
+    void drawIcons(void);
+
 
     /// @brief BLE signal strength
     /// @todo Define values
@@ -39,10 +50,13 @@ private:
     /// @brief Battery level
     /// @todo Define values
     uint8_t mBatteryLevel;
+    bool mChargeStatus;
 
     SmHwBattery * pBattery;
 
     SmCanvas * pCanvas;
+
+    uint8_t icons[MAX_ICONS_COUNT];
 };
 
 #endif // SM_DESKTOP_H

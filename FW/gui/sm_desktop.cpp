@@ -8,15 +8,24 @@ void SmDesktop::init(SmCanvas * canvas)
     SmHalSysTimer::subscribe(this, 10, true);
 
     pCanvas = canvas;
+    mBatteryLevel = 100;
+    mChargeStatus= false;
+    for (uint8_t i = 0; i < MAX_ICONS_COUNT; ++i)
+    {
+        setIcon(i,INVALID_ICON);
+    }
 }
 
 void SmDesktop::onTimer(uint32_t timeStamp)
 {
     uint8_t newBatteryLevel = SmHwBattery::getInstance()->getCharge();
-    if (newBatteryLevel != mBatteryLevel)
+    bool newChargeStatus = SmHwBattery::getInstance()->getStatus();
+    if ((newBatteryLevel != mBatteryLevel) ||
+        (newChargeStatus != mChargeStatus))
     {
         mBatteryLevel = newBatteryLevel;
-        SmImage * pBatImage = new SmImage();
+        mChargeStatus = newChargeStatus;
+
         uint8_t iconNum = 5; // Base number
         if (mBatteryLevel <= 5)
         {
@@ -46,9 +55,40 @@ void SmDesktop::onTimer(uint32_t timeStamp)
         {
             iconNum += 6;
         }
+        setIcon(ICON_POS_BATT, iconNum);
 
-        pBatImage->init(iconNum);
-        pCanvas->drawCanvas(123, 0, pBatImage);
+        if (mChargeStatus)
+        {
+            setIcon(ICON_POS_POWER, 12);
+        }
+        else
+        {
+            setIcon(ICON_POS_POWER, INVALID_ICON);
+        }
+        drawIcons();
     }
-    mBatteryLevel = SmHwBattery::getInstance()->getCharge();
+}
+
+void SmDesktop::setIcon(uint8_t pos, uint8_t icon)
+{
+    icons[pos] = icon;
+}
+
+void SmDesktop::drawIcons(void)
+{
+    SmImage image;
+    uint8_t x_off = 128;
+
+    pCanvas->fillRect(64,0,127,7,0);
+
+    for (int8_t i = MAX_ICONS_COUNT - 1; i >= 0; --i)
+    {
+        if (icons[i] == INVALID_ICON)
+            continue;
+
+        image.init(icons[i]);
+        x_off -= image.getWidth();
+        pCanvas->drawCanvas(x_off,0,&image);
+        x_off--;
+    }
 }

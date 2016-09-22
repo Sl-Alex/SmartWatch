@@ -156,6 +156,17 @@ void SmCanvas::drawRect(int x1, int y1, int x2, int y2, char value)
     drawVLine(x2, y1, y2, value);
 }
 
+void SmCanvas::fillRect(int x1, int y1, int x2, int y2, char value)
+{
+    for (int x = x1; x <= x2; x++)
+    {
+        for (int y = y1; y <= y2; y++)
+        {
+            setPix(x,y,value);
+        }
+    }
+}
+
 void SmCanvas::scrollArea(int x1, int y1, int x2, int y2, int pixels, ScrollDirection dir)
 {
     int _x1, _y1;
