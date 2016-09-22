@@ -132,7 +132,7 @@ int main(void)
     SmFont * smallFont = new SmFont();
     smallFont->init(IDX_FW_FONT_SMALL);
 
-    SmDesktop::getInstance()->init();
+    SmDesktop::getInstance()->init(display->getCanvas());
     while (1)
     {
 //        xOff++;

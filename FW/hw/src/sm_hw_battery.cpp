@@ -81,7 +81,7 @@ void SmHwBattery::init()
 #ifdef PC_SOFTWARE
     mRaw = 2544;
     SmHalSysTimer::subscribe(this,100,true);
-#endif;
+#endif
 }
 
 void SmHwBattery::onTimer(uint32_t timeStamp)
