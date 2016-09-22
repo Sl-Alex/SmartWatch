@@ -51,6 +51,7 @@ private:
 
     uint32_t mRaw;      ///< Latest raw value
     uint32_t mCharge;   ///< Latest charge percentage
+    bool mChargeStatus; ///< Charge status
     uint32_t mVoltage;  ///< Latest voltage
     uint8_t mMeasStep;  ///< Measurement step (delay/measurement)
 
@@ -58,6 +59,7 @@ private:
     friend void ADC1_2_IRQHandler(void);
 
     SmHalAbstractGpio * mGpioEn;    ///< Measurement circuit control pin
+    SmHalAbstractGpio * mGpioStatus; ///< Charge status pin
 #endif
 
     // SmHalSysTimerIface events

@@ -22,7 +22,8 @@ HEADERS       = \
     ../../FW/hw/inc/sm_hw_keyboard.h \
     ../../FW/hw/inc/sm_hw_battery.h \
     ../../FW/inc/sm_crc.h \
-    ../../FW/hal/inc/sm_hal_sys_timer.h
+    ../../FW/hal/inc/sm_hal_sys_timer.h \
+    ../../FW/gui/sm_display.h
 
 SOURCES       = \
     main.cpp \
@@ -38,6 +39,7 @@ SOURCES       = \
     ../../FW/hw/src/sm_hw_keyboard.cpp \
     ../../FW/hw/src/sm_hw_battery.cpp \
     ../../FW/src/sm_crc.cpp \
-    ../../FW/hal/src/sm_hal_sys_timer.cpp
+    ../../FW/hal/src/sm_hal_sys_timer.cpp \
+    ../../FW/gui/sm_display.cpp
 
 RESOURCES     =

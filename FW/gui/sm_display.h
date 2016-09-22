@@ -2,12 +2,17 @@
 #define SM_DISPLAY_H
 
 #include "sm_canvas.h"
+#ifndef PC_SOFTWARE
 #include "sm_hal_abstract_gpio.h"
 #include "sm_hal_abstract_spi.h"
 #include "sm_hw_powermgr.h"
+#endif
 
 /// @brief Display class
-class SmDisplay: public SmHwPowerMgrIface
+class SmDisplay
+#ifndef PC_SOFTWARE
+    : public SmHwPowerMgrIface
+#endif
 {
 public:
     /// @brief Constructor
@@ -36,10 +41,12 @@ private:
     void onSleep(void);
     void onWake(void);
     SmCanvas * mCanvas;
+#ifndef PC_SOFTWARE
     SmHalAbstractSpi * mSpi;
     SmHalAbstractGpio * mDcPin;
     SmHalAbstractGpio * mPowerPin;
     SmHalAbstractGpio * mResetPin;
+#endif
 };
 
 #endif // SM_DISPLAY_H

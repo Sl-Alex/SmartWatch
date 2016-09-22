@@ -50,6 +50,7 @@
 #include "sm_hw_keyboard.h"
 #include "sm_font.h"
 #include "sm_desktop.h"
+#include "sm_display.h"
 
 QT_BEGIN_NAMESPACE
 class QCheckBox;
@@ -84,6 +85,7 @@ private:
     SmAnimator * pAnimator;
     SmHwKeyboard * keyboard;
     SmFont * smallFont;
+    SmDisplay * display;
     QLabel * lbl1;
     QLabel * lbl2;
     QLabel * lbl3;

@@ -1,7 +1,9 @@
 #include "sm_display.h"
 
+#ifndef PC_SOFTWARE
 #include "sm_hal_spi_sw.h"
 #include "sm_hal_gpio.h"
+#endif
 
 #include "sm_canvas.h"
 #include "sm_font.h"
@@ -63,7 +65,7 @@
 /// Set Page Start Address for Page Addressing Mode
 #define LCD_CMD_SET_PAGE                0xB0
 
-/// Set COM Output Scan Direction from COM0 to COM[N –1]
+/// Set COM Output Scan Direction from COM0 to COM[N-1]
 #define LCD_CMD_SCAN_DIR_PLUS           0xC0
 /// Set COM Output Scan Direction from COM[N-1] to COM0
 #define LCD_CMD_SCAN_DIR_MINUS          0xC8
@@ -83,11 +85,14 @@
 /// Set VCOMH Deselect Level
 #define LCD_CMD_SET_VCOMH               0xDB
 
+#ifndef PC_SOFTWARE
 typedef SmHalSpiSw<SM_HAL_SPI_MODE0, SM_HAL_SPI_CFG_OUT, SM_HAL_SPI_WIDTH_8> DisplaySpi;
+#endif
 
 SmDisplay::SmDisplay()
     :mCanvas(0)
 {
+#ifndef PC_SOFTWARE
     mSpi = new DisplaySpi();
     mSpi->setSsPin(new SmHalGpio<GPIOB_BASE,5>());
     ((DisplaySpi *)mSpi)->init(new SmHalGpio<GPIOB_BASE,8>(),   // SCK
@@ -108,6 +113,7 @@ SmDisplay::SmDisplay()
     onWake();
 
     SmHwPowerMgr::getInstance()->subscribe(this);
+#endif
 }
 
 void SmDisplay::init(int width, int height)
@@ -121,6 +127,7 @@ void SmDisplay::init(int width, int height)
 
 void SmDisplay::update(void)
 {
+#ifndef PC_SOFTWARE
     uint8_t m = 0;
     uint8_t n = 0;
 
@@ -137,8 +144,10 @@ void SmDisplay::update(void)
             sendData(pData++,1);
         }
     }
+#endif
 }
 
+#ifndef PC_SOFTWARE
 void SmDisplay::sendCommand(uint8_t cmd)
 {
     mDcPin->resetPin();
@@ -183,30 +192,38 @@ void SmDisplay::fill(uint8_t data)
         }
     }
 }
+#endif
 
 void SmDisplay::powerOn(void)
 {
+#ifndef PC_SOFTWARE
     mPowerPin->resetPin();
     mResetPin->setPin();
     mSpi->init();
+#endif
 }
 
 void SmDisplay::powerOff(void)
 {
+#ifndef PC_SOFTWARE
     mSpi->deInit();
     mDcPin->resetPin();
     mResetPin->resetPin();
     mPowerPin->setPin();
+#endif
 }
 
 void SmDisplay::onSleep(void)
 {
+#ifndef PC_SOFTWARE
     powerOff();
+#endif
 }
 
 void SmDisplay::onWake(void)
 {
     powerOn();
+#ifndef PC_SOFTWARE
 
     sendCommand(LCD_CMD_DISPLAY_OFF);//+ display off
 
@@ -248,4 +265,5 @@ void SmDisplay::onWake(void)
     fill(0x00);
 
     sendCommand(LCD_CMD_DISPLAY_ON);//+ --turn on oled panel
+#endif
 }

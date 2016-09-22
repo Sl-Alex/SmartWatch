@@ -59,7 +59,8 @@ public:
     QSize minimumSizeHint() const Q_DECL_OVERRIDE;
     QSize sizeHint() const Q_DECL_OVERRIDE;
 
-    SmCanvas * Canvas;
+    void setCanvas(SmCanvas * newCanvas) { canvas = newCanvas; }
+    SmCanvas * getCanvas(void) { return canvas; }
 
 public slots:
 
@@ -68,6 +69,7 @@ protected:
 
 private:
     QPixmap pixmap;
+    SmCanvas * canvas;
 };
 //! [0]
 

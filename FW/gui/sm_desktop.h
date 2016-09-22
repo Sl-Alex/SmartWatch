@@ -11,7 +11,7 @@ class SmDesktop: public SmHalSysTimerIface
 public:
 
     /// @brief Initialize desktop with its default values
-    void init(void);
+    void init(SmCanvas * canvas);
 
     /// @brief This class is a singleton, removing
     SmDesktop(SmDesktop const&) = delete;
@@ -41,6 +41,8 @@ private:
     uint8_t mBatteryLevel;
 
     SmHwBattery * pBattery;
+
+    SmCanvas * pCanvas;
 };
 
 #endif // SM_DESKTOP_H

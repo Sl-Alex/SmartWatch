@@ -46,9 +46,7 @@
 RenderArea::RenderArea(QWidget *parent)
     : QWidget(parent)
 {
-    Canvas = new SmCanvas();
-    Canvas->init(128,64);
-    Canvas->clear();
+    canvas = nullptr;
 
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
@@ -56,7 +54,8 @@ RenderArea::RenderArea(QWidget *parent)
 
 RenderArea::~RenderArea()
 {
-    delete Canvas;
+    if (canvas != nullptr)
+        delete canvas;
 }
 
 QSize RenderArea::minimumSizeHint() const
@@ -71,6 +70,8 @@ QSize RenderArea::sizeHint() const
 
 void RenderArea::paintEvent(QPaintEvent * /* event */)
 {
+    if (canvas == nullptr) return;
+
     QPainter painter(this);
 
     painter.save();
@@ -84,7 +85,7 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     {
         for (uint32_t y = 0; y < 64; ++y)
         {
-            if (Canvas->getPix(x, y))
+            if (canvas->getPix(x, y))
                 buffer[ y * 128 + x ] = 0xFF;
             else
                 buffer[ y * 128 + x ] = 0x00;

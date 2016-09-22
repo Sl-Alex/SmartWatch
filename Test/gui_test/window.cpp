@@ -50,7 +50,15 @@
 
 Window::Window()
 {
+    SmHalSysTimer::initSubscribersPool(10);
+
     renderArea = new RenderArea;
+    display = new SmDisplay();
+    display->init(128,64);
+    display->getCanvas()->clear();
+    renderArea->setCanvas(display->getCanvas());
+    desktop = SmDesktop::getInstance();
+    desktop->init(display->getCanvas());
 
     lbl1 = new QLabel();
     lbl1->setText("A");
@@ -109,10 +117,10 @@ Window::Window()
 
     pImage->clear();
     pImage->drawRect(0,0,31,31,1);
-    renderArea->Canvas->drawCanvas(0,0,pImage);
+    renderArea->getCanvas()->drawCanvas(0,0,pImage);
 
     pAnimator= new SmAnimator();
-    pAnimator->setDestSource(renderArea->Canvas,pImage);
+    pAnimator->setDestSource(renderArea->getCanvas(),pImage);
     pAnimator->setType(SmAnimator::AnimType::ANIM_TYPE_VIS_SLIDE);
     pAnimator->setDirection(SmAnimator::AnimDir::ANIM_DIR_LEFT);
     pAnimator->setSpeed(2);
@@ -131,28 +139,19 @@ Window::Window()
     connect(pTimerMs, SIGNAL(timeout()), this, SLOT(onTimerMsEvent()));
     pTimerMs->start(1);
 
-    SmHalSysTimer::initSubscribersPool(10);
-
     keyboard = new SmHwKeyboard();
     keyboard->initSubscribersPool(10);
     keyboard->subscribe(this);
 
-    smallFont->drawText(renderArea->Canvas, 2, 54, SM_STRING_TEST_CYRILLIC, SM_STRING_TEST_CYRILLIC_SZ);
+    smallFont->drawText(renderArea->getCanvas(), 2, 54, SM_STRING_TEST_CYRILLIC, SM_STRING_TEST_CYRILLIC_SZ);
 
     SmImage image;
-    for (uint8_t i = 0; i < 6; i++)
-    {
-        image.init(5 + i);
-        renderArea->Canvas->drawCanvas(128 + 1 - 6 * (i + 1), 0, &image);
-    }
     image.init(11);
-    renderArea->Canvas->drawCanvas(128 - 6 * 7 - 5, 0, &image);
+    renderArea->getCanvas()->drawCanvas(128 - 6 * 7 - 5, 0, &image);
     image.init(12);
-    renderArea->Canvas->drawCanvas(128 - 6 * 7, 0, &image);
-    renderArea->Canvas->setPix(127,63,1);
+    renderArea->getCanvas()->drawCanvas(128 - 6 * 7, 0, &image);
+    renderArea->getCanvas()->setPix(127,63,1);
 
-    desktop = SmDesktop::getInstance();
-    desktop->init();
 }
 
 static bool bl = true;
