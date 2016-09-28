@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include "sm_canvas.h"
+#include "sm_font.h"
 #include "sm_hw_battery.h"
 
 /// @brief Desktop class
@@ -17,6 +18,7 @@ public:
     SmDesktop(SmDesktop const&) = delete;
     /// @brief This class is a singleton, removing
     void operator=(SmDesktop const&) = delete;
+    ~SmDesktop();
 
     /// @brief Get a singleton instance
     static SmDesktop* getInstance()
@@ -57,6 +59,9 @@ private:
     SmCanvas * pCanvas;
 
     uint8_t icons[MAX_ICONS_COUNT];
+
+    SmFont * pFont7SegBig;
+    SmFont * pFont7SegSmall;
 };
 
 #endif // SM_DESKTOP_H

@@ -49,6 +49,7 @@ void SmFont::drawText(SmCanvas * canvas, int x, int y, uint16_t * text, uint16_t
     while (count--)
     {
         drawSymbol(canvas, x, y, *text);
+        canvas->fillRect(x + getWidth(), y, x+getWidth(),y+ mFontHeight,0);
         x += getWidth() + mSpacing;
         text++;
     }
@@ -59,6 +60,7 @@ void SmFont::drawText(SmCanvas * canvas, int x, int y, char * text)
     while (*text)
     {
         drawSymbol(canvas, x, y, *text - 0x20);
+        canvas->fillRect(x + getWidth(), y, x+getWidth(),y+ mFontHeight,0);
         x += getWidth() + mSpacing;
         text++;
     }

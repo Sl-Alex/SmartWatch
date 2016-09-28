@@ -17,6 +17,7 @@
 #include "sm_hal_spi_sw.h"
 #include "sm_hal_spi_hw.h"
 #include "sm_hal_rcc.h"
+#include "sm_hal_rtc.h"
 
 #include "sm_hw_keyboard.h"
 #include "sm_hw_motor.h"
@@ -104,6 +105,7 @@ int main(void)
 //    SmHalI2c::getInstance()->reset();
     SmHwBmc150::getInstance()->checkPresent();
     SmHwBmp180::getInstance()->checkPresent();
+    SmHalRtc::init();
 
 
     //reg[0] = 0x00;
@@ -164,7 +166,6 @@ int main(void)
             else
             {
                 pCanvas->fill(0x00);
-                uint16_t text[] = {2, 10, 9, 8};
                 smallFont->drawText(pCanvas, 4, 13, SM_STRING_HELL, SM_STRING_HELL_SZ);
 //                myFont->drawSymbol(pCanvas, 4,  13, 2);
 //                myFont->drawSymbol(pCanvas, 10,  13, 10);
@@ -178,6 +179,21 @@ int main(void)
 //        display->getCanvas()->drawCanvas(32,32,xOff,yOff,32,32,pCanvas);
 
         SmHalSysTimer::processEvents();
+        uint32_t rtc = SmHalRtc::getCounter();
+        uint16_t txt_time[10] = {0x10,0x58,0,0,0,0,0,0};
+        for (uint8_t i = 0; i < 8; i++)
+        {
+            uint32_t dig = rtc & 0x0F;
+            rtc >>= 4;
+            if (dig < 0x0A)
+                dig = 0x10 + dig;
+            else
+                dig = 0x21 + dig - 0x0A;
+
+            txt_time[9 - i] = dig;
+        }
+        display->getCanvas()->fillRect(0,56,127,63,0);
+        smallFont->drawText(display->getCanvas(), 0, 56, txt_time, 10);
         display->update();
 
         uint8_t st1 = keyboard->getState(1);
@@ -192,7 +208,7 @@ int main(void)
         }
 
         SmHwBattery::getInstance()->getCharge();
-        if (keyboard->getState(2) && keyboard->getState(3))
+        if (keyboard->getState(1) && keyboard->getState(2))
         {
             SmHwPowerMgr::getInstance()->sleep();
         }

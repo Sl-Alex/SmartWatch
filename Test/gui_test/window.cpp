@@ -51,6 +51,7 @@
 Window::Window()
 {
     SmHalSysTimer::initSubscribersPool(10);
+    SmHwStorage::getInstance()->init();
 
     renderArea = new RenderArea;
     display = new SmDisplay();
@@ -111,7 +112,7 @@ Window::Window()
 
     setLayout(mainLayout);
 
-    SmHwStorage::getInstance()->init();
+    /*
     pImage = new SmImage();
     pImage->init(3);
 
@@ -128,7 +129,7 @@ Window::Window()
 
     smallFont = new SmFont();
     smallFont->init(IDX_FW_FONT_SMALL);
-
+*/
     setWindowTitle(tr("SmartWatch GUI test"));
 
     QTimer * pTimer = new QTimer(this);
@@ -142,8 +143,9 @@ Window::Window()
     keyboard = new SmHwKeyboard();
     keyboard->initSubscribersPool(10);
     keyboard->subscribe(this);
-
+/*
     smallFont->drawText(renderArea->getCanvas(), 2, 54, SM_STRING_TEST_CYRILLIC, SM_STRING_TEST_CYRILLIC_SZ);
+*/
 }
 
 static bool bl = true;
@@ -151,6 +153,7 @@ static int del = 0;
 
 void Window::onTimerEvent(void)
 {
+    /*
     if (!pAnimator->tick())
     {
         static bool dir = true;
@@ -185,6 +188,7 @@ void Window::onTimerEvent(void)
         }
         pAnimator->start(48-dir,16,0,0,32,32);
     }
+    */
     renderArea->update();
 }
 
