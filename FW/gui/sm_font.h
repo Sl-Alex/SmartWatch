@@ -67,6 +67,9 @@ public:
     /// @params count: Number of symbols to output
     void drawText(SmCanvas * canvas, int x, int y, uint16_t * text, uint16_t count);
 
+    /// @brief Output ASCII text (symbols between 0x20 and 0x7E)
+    void drawText(SmCanvas * canvas, int x, int y, char * text);
+
 private:
     uint32_t mFontOffset;   ///< Start address of the font element in the external flash
     // These parameters are stored in external flash
