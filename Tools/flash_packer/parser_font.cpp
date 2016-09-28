@@ -22,6 +22,17 @@ bool parseFont(std::ifstream &inFileTxt, std::ifstream &inFilePbm, FlashElement 
     // Reset text file to the beginning
     inFileTxt.seekg(0, std::ios::beg);
 
+    // First symbol is a letter spacing (pixels, 0..9)
+    if ((end - begin) <= 2)
+        return false;
+
+    // Read a number of symbols
+    uint32_t spacing = 0;
+    inFileTxt.read((char *)&spacing, sizeof(uint16_t));
+    spacing -= 0x30;
+
+    begin = inFileTxt.tellg();
+
     // Check for the number of bytes, it must be even
     if (((end - begin) % 2) != 0)
         return false;
@@ -90,7 +101,8 @@ bool parseFont(std::ifstream &inFileTxt, std::ifstream &inFilePbm, FlashElement 
     // Calculate all offsets
     uint32_t offsetOffset = sizeof (symbolsCount) +
             sizeof(height) +
-            sizeof(baseLine);
+            sizeof(baseLine) +
+            sizeof(spacing);
     uint32_t symbolOffset = offsetOffset + sizeof(uint32_t)*symbolsCount;
     uint32_t dataOffset = symbolOffset + sizeof(uint16_t)*symbolsCount;
 
@@ -107,8 +119,9 @@ bool parseFont(std::ifstream &inFileTxt, std::ifstream &inFilePbm, FlashElement 
 
     // Write header
     *((uint32_t *)(element->data)) = symbolsCount;
-    *((uint32_t *)(element->data + sizeof(uint32_t))) = height;
+    *((uint32_t *)(element->data + 1*sizeof(uint32_t))) = height;
     *((uint32_t *)(element->data + 2*sizeof(uint32_t))) = baseLine;
+    *((uint32_t *)(element->data + 3*sizeof(uint32_t))) = spacing;
 
     // Write offsets, symbols and symbols data
     for (auto it = imageVector.begin(); it != imageVector.end(); ++it)

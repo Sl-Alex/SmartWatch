@@ -72,6 +72,7 @@ private:
     uint32_t mSymbolCount;
     uint32_t mFontHeight;
     uint32_t mBaseLine;
+    uint32_t mSpacing;
     // These parameters can be calculated from the parameters above
     uint32_t mDataTableOffset;
     uint32_t mSymbolTableOffset;

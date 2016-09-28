@@ -16,13 +16,15 @@ bool SmFont::init(int index)
     // Read font header
     SmHwStorage::getInstance()->readData(mFontOffset,
                                          (uint8_t *)&mSymbolCount, sizeof(mSymbolCount));
-    SmHwStorage::getInstance()->readData(mFontOffset + sizeof(uint32_t),
+    SmHwStorage::getInstance()->readData(mFontOffset + 1*sizeof(uint32_t),
                                          (uint8_t *)&mFontHeight, sizeof(mFontHeight));
     SmHwStorage::getInstance()->readData(mFontOffset + 2*sizeof(uint32_t),
                                          (uint8_t *)&mBaseLine, sizeof(mBaseLine));
+    SmHwStorage::getInstance()->readData(mFontOffset + 3*sizeof(uint32_t),
+                                         (uint8_t *)&mSpacing, sizeof(mSpacing));
 
     // Calculate offsets
-    mDataTableOffset = mFontOffset + 3*sizeof(uint32_t);
+    mDataTableOffset = mFontOffset + 4*sizeof(uint32_t);
     mSymbolTableOffset = mDataTableOffset + sizeof(uint32_t) * mSymbolCount;
 
     return true;
@@ -47,7 +49,7 @@ void SmFont::drawText(SmCanvas * canvas, int x, int y, uint16_t * symbol, uint16
     while (count--)
     {
         drawSymbol(canvas, x, y, *symbol);
-        x += getWidth() + 1;
+        x += getWidth() + mSpacing;
         symbol++;
     }
     /// @todo Implement
