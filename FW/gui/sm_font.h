@@ -27,8 +27,9 @@
  * 0x0000   | count     | 32   | Number of symbols in font
  * 0x0004   | height    | 32   | Font height
  * 0x0008   | baseLine  | 32   | Font base line
- * 0x000C   | offset1   | 32   | First symbol offset
- * 0x0010   | offset2   | 32   | Second symbol offset
+ * 0x000C   | spacing   | 32   | Letter spacing (pixels)
+ * 0x0010   | offset1   | 32   | First symbol offset
+ * 0x0014   | offset2   | 32   | Second symbol offset
  * ...      | ...       | 32   | ...
  * 0xNNNN   | symbol1   | 16   | Symbol1 (UCS-2LE)
  * 0xNNNN+2 | symbol2   | 16   | Symbol2 (UCS-2LE)
