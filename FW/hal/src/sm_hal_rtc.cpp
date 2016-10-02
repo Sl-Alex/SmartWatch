@@ -36,6 +36,11 @@
 #define PRLH_MSB_MASK    ((uint32_t)0x000F0000)  /*!< RTC Prescaler MSB Mask */
 #endif
 
+#ifdef PC_SOFTWARE
+#include <ctime>
+#endif
+
+#ifndef PC_SOFTWARE
 inline void RTC_WaitForLastTask(void)
 {
   /* Loop until RTOFF flag is set */
@@ -43,6 +48,7 @@ inline void RTC_WaitForLastTask(void)
   {
   }
 }
+#endif
 
 void SmHalRtc::init(void)
 {
@@ -163,9 +169,32 @@ void SmHalRtc::init(void)
 
 uint32_t SmHalRtc::getCounter(void)
 {
+#ifdef PC_SOFTWARE
+    time_t t = time(0);   // get time now
+    struct tm * now = localtime( & t );
+    return (now->tm_hour*3600 + now->tm_min*60 + now->tm_sec);
+#else
     uint32_t tmp = RTC->CNTL;
     return (((uint32_t)RTC->CNTH << 16 ) | tmp) ;
+#endif
 }
+
+void SmHalRtc::setCounter(uint32_t value)
+{
+#ifndef PC_SOFTWARE
+    /* Set the CNF flag to enter in the Configuration Mode */
+    RTC->CRL |= RTC_CRL_CNF;
+
+    /* Set RTC COUNTER MSB word */
+    RTC->CNTH = value >> 16;
+    /* Set RTC COUNTER LSB word */
+    RTC->CNTL = (value & RTC_LSB_MASK);
+
+    /* Reset the CNF flag to exit from the Configuration Mode */
+    RTC->CRL &= (uint16_t)~((uint16_t)RTC_CRL_CNF);
+#endif
+}
+
 
 /*
 extern "C" void SysTick_Handler(void)

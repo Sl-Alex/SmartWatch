@@ -40,6 +40,7 @@ SOURCES       = \
     ../../FW/hw/src/sm_hw_battery.cpp \
     ../../FW/src/sm_crc.cpp \
     ../../FW/hal/src/sm_hal_sys_timer.cpp \
-    ../../FW/gui/sm_display.cpp
+    ../../FW/gui/sm_display.cpp \
+    ../../FW/hal/src/sm_hal_rtc.cpp
 
 RESOURCES     =

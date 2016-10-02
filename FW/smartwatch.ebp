@@ -61,8 +61,6 @@
 		<Device>
 			<Add option="$device=cortex-m3" />
 			<Add option="$lscript=./stm32f103cb_flash.ld" />
-			<Add option="$stack=0x0100" />
-			<Add option="$heap=0x0000" />
 		</Device>
 		<Compiler>
 			<Add option="-mfloat-abi=soft" />

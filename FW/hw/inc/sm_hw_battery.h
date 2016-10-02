@@ -28,12 +28,18 @@ public:
     /// Should be done once after startup.
     void init(void);
 
+    enum BatteryStatus {
+        BATT_STATUS_DISCHARGING = 0,
+        BATT_STATUS_CHARGING,
+        BATT_STATUS_CHARGED
+    };
+
     /// @brief Get latest battery value
     /// @todo Implement correct measurement instead of raw ADC data.
     uint32_t getRaw(void) { return mRaw; }
     uint32_t getCharge(void) { return mCharge; }
     uint32_t getVoltage(void) { return mVoltage; }
-    bool getStatus(void) { return mChargeStatus; }
+    BatteryStatus getStatus(void) { return mStatus; }
 
     /// @brief This class is a singleton, removing
     SmHwBattery(SmHwBattery const&) = delete;
@@ -52,7 +58,9 @@ private:
 
     uint32_t mRaw;      ///< Latest raw value
     uint32_t mCharge;   ///< Latest charge percentage
-    bool mChargeStatus; ///< Charge status
+    bool mChargerConnected; ///< Charger status (connected/disconnected)
+    bool mCharging;     ///< Charge status (charging/discharging)
+    BatteryStatus mStatus;
     uint32_t mVoltage;  ///< Latest voltage
     uint8_t mMeasStep;  ///< Measurement step (delay/measurement)
 

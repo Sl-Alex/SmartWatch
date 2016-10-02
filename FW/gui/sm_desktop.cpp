@@ -1,5 +1,6 @@
 #include "sm_desktop.h"
 #include "sm_image.h"
+#include "sm_hal_rtc.h"
 
 /// @todo Implement all services initialization
 void SmDesktop::init(SmCanvas * canvas)
@@ -9,7 +10,7 @@ void SmDesktop::init(SmCanvas * canvas)
 
     pCanvas = canvas;
     mBatteryLevel = 50;
-    mChargeStatus= false;
+    mBatteryStatus = SmHwBattery::BATT_STATUS_DISCHARGING;
     for (uint8_t i = 0; i < MAX_ICONS_COUNT; ++i)
     {
         setIcon(i,INVALID_ICON);
@@ -30,12 +31,12 @@ SmDesktop::~SmDesktop()
 void SmDesktop::onTimer(uint32_t timeStamp)
 {
     uint8_t newBatteryLevel = SmHwBattery::getInstance()->getCharge();
-    bool newChargeStatus = SmHwBattery::getInstance()->getStatus();
+    SmHwBattery::BatteryStatus newChargeStatus = SmHwBattery::getInstance()->getStatus();
     if ((newBatteryLevel != mBatteryLevel) ||
-        (newChargeStatus != mChargeStatus))
+        (newChargeStatus != mBatteryStatus))
     {
         mBatteryLevel = newBatteryLevel;
-        mChargeStatus = newChargeStatus;
+        mBatteryStatus = newChargeStatus;
 
         uint8_t iconNum = 5; // Base number
         if (mBatteryLevel <= 5)
@@ -68,7 +69,7 @@ void SmDesktop::onTimer(uint32_t timeStamp)
         }
         setIcon(ICON_POS_BATT, iconNum);
 
-        if (mChargeStatus)
+        if (mBatteryStatus != SmHwBattery::BATT_STATUS_DISCHARGING)
         {
             setIcon(ICON_POS_POWER, 12);
         }
@@ -85,6 +86,22 @@ void SmDesktop::onTimer(uint32_t timeStamp)
 #define W1   21
 #define VSZ2 21
 #define W2   11
+    uint32_t rtc = SmHalRtc::getCounter();
+
+    uint32_t hour = (rtc / 3600) % 24;
+    uint32_t rest = rtc % 3600;
+    uint32_t minute = rest / 60;
+    uint32_t second = rest % 60;
+
+    txt[0] = 0x10 + hour / 10;
+    txt[1] = 0x10 + hour % 10;
+
+    txt[3] = 0x10 + minute / 10;
+    txt[4] = 0x10 + minute % 10;
+
+    txt2[0] = 0x10 + second / 10;
+    txt2[1] = 0x10 + second % 10;
+
     pFont7SegBig->drawText(this->pCanvas,0,64-OFFS-VSZ1,&txt[0],1);
     pFont7SegBig->drawText(this->pCanvas,21+3,64-OFFS-VSZ1,&txt[1],1);
     pFont7SegBig->drawText(this->pCanvas,21+3+21+3,64-OFFS-VSZ1,&txt[2],1);

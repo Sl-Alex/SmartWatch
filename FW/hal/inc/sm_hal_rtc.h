@@ -31,6 +31,7 @@ public:
     /// @brief Initialize system timer with given resolution
     static void init();
     static uint32_t getCounter(void);
+    static void setCounter(uint32_t value);
 private:
 //    friend void SysTick_Handler(void); // We should be able to access timestamp in the IRQ
 };

@@ -96,6 +96,14 @@ void SmHwBattery::onTimer(uint32_t timeStamp)
     }
     else
     {
+        if (mGpioStatus->readPin())
+        {
+            mCharging = false;
+        }
+        else
+        {
+            mCharging = true;
+        }
         mMeasStep = 0;
         ADC1->CR2 |= ADC_CR2_SWSTART;
         mGpioStatus->setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT, SM_HAL_GPIO_SPEED_2M);
@@ -139,16 +147,36 @@ void SmHwBattery::updateValues(void)
 {
 #ifndef PC_SOFTWARE
     if (mGpioStatus->readPin())
-        mChargeStatus = false;
+        mChargerConnected = false;
     else
-        mChargeStatus = true;
+        mChargerConnected = true;
+
+    if (!mChargerConnected)
+    {
+        mStatus = BATT_STATUS_DISCHARGING;
+    }
+    else if (mCharging)
+    {
+        mStatus = BATT_STATUS_CHARGING;
+    }
+    else
+    {
+        mStatus = BATT_STATUS_CHARGED;
+    }
 #endif
     mRaw -= 10;
     if (mRaw < BAT_MIN)
     {
         mRaw = BAT_MAX;
 #ifdef PC_SOFTWARE
-        mChargeStatus = !mChargeStatus;
+        if (mStatus != BATT_STATUS_CHARGED)
+        {
+            mStatus = (BatteryStatus)((int)mStatus + 1);
+        }
+        else
+        {
+            mStatus = (BatteryStatus)0;
+        }
 #endif
     }
 

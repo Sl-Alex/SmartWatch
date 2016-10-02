@@ -52,7 +52,7 @@ private:
     /// @brief Battery level
     /// @todo Define values
     uint8_t mBatteryLevel;
-    bool mChargeStatus;
+    SmHwBattery::BatteryStatus mBatteryStatus;
 
     SmHwBattery * pBattery;
 

@@ -112,75 +112,16 @@ int main(void)
     // 0b11111010;
     //SmHalI2c::getInstance()->transfer(I2C_ACC, &reg[0], 1, &data, 1);
 
-    SmImage * pCanvas = new SmImage();
-    pCanvas->init(3);
-
-//    SmCanvas * pCanvas = new SmCanvas();
-//    pCanvas->init(32,32);
-    pCanvas->clear();
-    pCanvas->drawRect(0,0,31,31,1);
-    display->getCanvas()->drawCanvas(0,0,pCanvas);
-
-    SmAnimator * pAnimator= new SmAnimator();
-    pAnimator->setDestSource(display->getCanvas(),pCanvas);
-    pAnimator->setType(SmAnimator::AnimType::ANIM_TYPE_VIS_SLIDE);
-    pAnimator->setDirection(SmAnimator::AnimDir::ANIM_DIR_LEFT);
-    pAnimator->setSpeed(2);
-    pAnimator->start(48,16,0,0,32,32);
-
-    int xOff = 0;
-    int yOff = 0;
-
     SmFont * smallFont = new SmFont();
     smallFont->init(IDX_FW_FONT_SMALL);
+
+    SmHalRtc::setCounter(17*3600 + 59*60 + 50);
 
     SmDesktop::getInstance()->init(display->getCanvas());
     while (1)
     {
-//        xOff++;
-//        yOff++;
-//        xOff &= 0x1F;
-//        yOff &= 0x1F;
-        if (!pAnimator->tick())
-        {
-            static bool dir = true;
-            static bool step = true;
-            dir = !dir;
-            if (dir)
-            {
-                pAnimator->setDirection(SmAnimator::AnimDir::ANIM_DIR_LEFT);
-                pAnimator->setSpeed(3);
-            }
-            else
-            {
-                pAnimator->setDirection(SmAnimator::AnimDir::ANIM_DIR_RIGHT);
-                pAnimator->setSpeed(1);
-                step = ! step;
-            }
-            if (step)
-            {
-                pCanvas->init(4);
-                //pCanvas->fill(0x00);
-                //pCanvas->drawRect(0,0,31,31,1);
-            }
-            else
-            {
-                pCanvas->fill(0x00);
-                smallFont->drawText(pCanvas, 4, 13, SM_STRING_HELL, SM_STRING_HELL_SZ);
-//                myFont->drawSymbol(pCanvas, 4,  13, 2);
-//                myFont->drawSymbol(pCanvas, 10,  13, 10);
-//                myFont->drawSymbol(pCanvas, 16, 13, 9);
-//                myFont->drawSymbol(pCanvas, 22, 13, 8);
-                pCanvas->drawRect(0,0,31,31,1);
-            }
-            pAnimator->start(48-dir,16,0,0,32,32);
-        }
-
-//        display->getCanvas()->drawCanvas(32,32,xOff,yOff,32,32,pCanvas);
-
         SmHalSysTimer::processEvents();
-        uint32_t rtc = SmHalRtc::getCounter();
-        uint16_t txt_time[10] = {0x10,0x58,0,0,0,0,0,0};
+/*        uint16_t txt_time[10] = {0x10,0x58,0,0,0,0,0,0};
         for (uint8_t i = 0; i < 8; i++)
         {
             uint32_t dig = rtc & 0x0F;
@@ -194,6 +135,7 @@ int main(void)
         }
         display->getCanvas()->fillRect(0,56,127,63,0);
         smallFont->drawText(display->getCanvas(), 0, 56, txt_time, 10);
+*/
         display->update();
 
         uint8_t st1 = keyboard->getState(1);

@@ -38,7 +38,7 @@
 /*!< Write In Progress (WIP) flag */
 #define FLASH_FLAG_WIP                  0x01
 
-#include "update.inc"
+//#include "update.inc"
 
 void SmHwStorage::init(void)
 {

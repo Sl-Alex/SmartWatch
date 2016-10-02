@@ -27,6 +27,7 @@ template <uint32_t GPIO_BASE, uint8_t PIN>
 void SmHalGpio<GPIO_BASE, PIN>::setModeSpeed(GpioMode mode, GpioSpeed speed)
 {
     uint32_t currentmode = mode & 0x0F;
+
     // If it's an output pin
     if ((mode & 0x10) != 0)
     {
