@@ -23,6 +23,27 @@ public:
     inline uint8_t readPin(void);
 };
 
+template <bool lowerPins>
+static inline void SetCR(uint32_t gpio, uint8_t pin, uint32_t mode);
+
+template <>
+inline void SetCR<true>(uint32_t gpio, uint8_t pin, uint32_t mode)
+{
+    // Clear config
+    ((GPIO_TypeDef *)gpio)->CRL &= ~(0xFUL << (pin << 2));
+    // Set config
+    ((GPIO_TypeDef *)gpio)->CRL |= (mode << (pin << 2));
+}
+
+template <>
+inline void SetCR<false>(uint32_t gpio, uint8_t pin, uint32_t mode)
+{
+    // Clear config
+    ((GPIO_TypeDef *)gpio)->CRH &= ~(0xFUL << ((pin - 8) << 2));
+    // Set config
+    ((GPIO_TypeDef *)gpio)->CRH |= (mode << ((pin - 8) << 2));
+}
+
 template <uint32_t GPIO_BASE, uint8_t PIN>
 void SmHalGpio<GPIO_BASE, PIN>::setModeSpeed(GpioMode mode, GpioSpeed speed)
 {
@@ -34,20 +55,7 @@ void SmHalGpio<GPIO_BASE, PIN>::setModeSpeed(GpioMode mode, GpioSpeed speed)
         /* Output mode - can set speed*/
         currentmode |= speed;
     }
-    if (PIN < 8)
-    {
-        // Clear config
-        ((GPIO_TypeDef *)GPIO_BASE)->CRL &= ~(0xFUL << (PIN << 2));
-        // Set config
-        ((GPIO_TypeDef *)GPIO_BASE)->CRL |= (currentmode << (PIN << 2));
-    }
-    else
-    {
-        // Clear config
-        ((GPIO_TypeDef *)GPIO_BASE)->CRH &= ~(0xFUL << ((PIN - 8) << 2));
-        // Set config
-        ((GPIO_TypeDef *)GPIO_BASE)->CRH |= (currentmode << ((PIN - 8) << 2));
-    }
+    SetCR< PIN < 8 >(GPIO_BASE, PIN, currentmode);
 
     // Set pull-up/down
     if (mode == SM_HAL_GPIO_MODE_IN_PD)

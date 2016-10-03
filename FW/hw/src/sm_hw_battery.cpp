@@ -11,19 +11,19 @@
 #define GPIO_EN_PIN     2           ///< Battery measurement enable pin
 #define GPIO_ST_PORT    GPIOA_BASE  ///< Charge status port
 #define GPIO_ST_PIN     15          ///< Charge status pin
-#define MEAS_DELAY      2           ///< Delay between enabling and measurement
+#define MEAS_DELAY      5           ///< Delay between enabling and measurement
 #define MEAS_INTERVAL   500         ///< Battery voltage update interval
 
 #define GPIO_AIN_PORT   GPIOA_BASE  ///< Battery voltage input port
 #define GPIO_AIN_PIN    0           ///< Battery voltage input pin
 #endif
 
-#define BAT_MAX 2544    ///< Maximum raw ADC battery voltage
-#define BAT_MIN 2048    ///< Minimum raw ADC battery voltage
+#define VREF    3300                ///< ADC Reference voltage (mV)
+#define VOLT_MAX 4100               ///< Maximum battery voltage
+#define VOLT_MIN 3500               ///< Minimum battery voltage
 
-#define VOLT_MAX 4100   ///< Maximum battery voltage
-#define VOLT_MIN 3300   ///< Minimum battery voltage
-
+#define BAT_MAX ((VOLT_MAX/2)*4096/VREF)    ///< Maximum raw ADC battery voltage
+#define BAT_MIN ((VOLT_MIN/2)*4096/VREF)    ///< Minimum raw ADC battery voltage
 
 void SmHwBattery::init()
 {
@@ -134,10 +134,19 @@ extern "C"
 /// Measurement enable circuit is disabled after the measurement.
 void ADC1_2_IRQHandler (void)
 {
-    SmHwBattery::getInstance()->mRaw = ADC1->DR;
+    static uint8_t cnt = 3;
+    SmHwBattery::getInstance()->mRaw += ADC1->DR;
     SmHwBattery::getInstance()->mGpioEn->resetPin();
     SmHalSysTimer::subscribe(SmHwBattery::getInstance(), MEAS_INTERVAL, false);
-    SmHwBattery::getInstance()->updateValues();
+    if (--cnt == 0)
+    {
+        cnt = 3;
+
+        SmHwBattery::getInstance()->mRaw /= 3;
+
+        SmHwBattery::getInstance()->updateValues();
+        SmHwBattery::getInstance()->mRaw = 0;
+    }
 }
 
 }
@@ -164,11 +173,11 @@ void SmHwBattery::updateValues(void)
         mStatus = BATT_STATUS_CHARGED;
     }
 #endif
+#ifdef PC_SOFTWARE
     mRaw -= 10;
     if (mRaw < BAT_MIN)
     {
         mRaw = BAT_MAX;
-#ifdef PC_SOFTWARE
         if (mStatus != BATT_STATUS_CHARGED)
         {
             mStatus = (BatteryStatus)((int)mStatus + 1);
@@ -177,9 +186,8 @@ void SmHwBattery::updateValues(void)
         {
             mStatus = (BatteryStatus)0;
         }
-#endif
     }
-
+#endif
 
     if (mRaw > BAT_MAX) mRaw = BAT_MAX;
 	if (mRaw < BAT_MIN) mRaw = BAT_MIN;
