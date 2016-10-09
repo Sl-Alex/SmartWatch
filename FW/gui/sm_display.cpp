@@ -85,14 +85,11 @@
 /// Set VCOMH Deselect Level
 #define LCD_CMD_SET_VCOMH               0xDB
 
-#ifndef PC_SOFTWARE
-typedef SmHalSpiSw<SM_HAL_SPI_MODE0, SM_HAL_SPI_CFG_OUT, SM_HAL_SPI_WIDTH_8> DisplaySpi;
-#endif
-
 SmDisplay::SmDisplay()
     :mCanvas(0)
 {
 #ifndef PC_SOFTWARE
+    using DisplaySpi = SmHalSpiSw<SM_HAL_SPI_MODE0, SM_HAL_SPI_CFG_OUT, SM_HAL_SPI_WIDTH_8>;
     mSpi = new DisplaySpi();
     mSpi->setSsPin(new SmHalGpio<GPIOB_BASE,5>());
     ((DisplaySpi *)mSpi)->init(new SmHalGpio<GPIOB_BASE,8>(),   // SCK
@@ -109,8 +106,6 @@ SmDisplay::SmDisplay()
 
     mDcPin->resetPin();
     mResetPin->setPin();
-    
-    onWake();
 
     SmHwPowerMgr::getInstance()->subscribe(this);
 #endif
@@ -129,7 +124,6 @@ void SmDisplay::update(void)
 {
 #ifndef PC_SOFTWARE
     uint8_t m = 0;
-    uint8_t n = 0;
 
     uint8_t *pData = mCanvas->getPData();
 
@@ -138,11 +132,8 @@ void SmDisplay::update(void)
         sendCommand(LCD_CMD_SET_PAGE + m);    // page0-page1
         sendCommand(LCD_CMD_SET_COL_L);         // low column start address
         sendCommand(LCD_CMD_SET_COL_H);        // high column start address
-
-        for(n=0; n<128; n++)
-        {
-            sendData(pData++,1);
-        }
+        sendData(pData,128);
+        pData += 128;
     }
 #endif
 }
@@ -161,8 +152,6 @@ void SmDisplay::sendCommand(uint8_t cmd, uint8_t data)
     mDcPin->resetPin();
     mSpi->resetSs();
     mSpi->transfer(0, &cmd, 1);
-    mSpi->setSs();
-    mSpi->resetSs();
     mSpi->transfer(0, &data, 1);
     mSpi->setSs();
 }
@@ -174,24 +163,6 @@ void SmDisplay::sendData(uint8_t * data, uint8_t size)
     mSpi->transfer(0, data, size);
     mSpi->setSs();
 }
-
-void SmDisplay::fill(uint8_t data)
-{
-    char m = 0;
-    char n = 0;
-    for(m=0; m<8; m++)
-    {
-        sendCommand(LCD_CMD_SET_PAGE + m);
-        sendCommand(LCD_CMD_SET_COL_L);     // low column start address
-        sendCommand(LCD_CMD_SET_COL_H);     // high column start address
-
-        /// @todo Send all 128 bytes in one touch
-        for(n=0; n<128; n++)
-        {
-            sendData(&data,1);
-        }
-    }
-}
 #endif
 
 void SmDisplay::powerOn(void)
@@ -200,6 +171,44 @@ void SmDisplay::powerOn(void)
     mPowerPin->resetPin();
     mResetPin->setPin();
     mSpi->init();
+
+    sendCommand(LCD_CMD_DISPLAY_OFF);
+
+    sendCommand(LCD_CMD_SET_COL_L);
+    sendCommand(LCD_CMD_SET_COL_H);
+    sendCommand(LCD_CMD_START_LINE);
+
+    sendCommand(LCD_CMD_CONTRAST, 0xFF);
+
+    sendCommand(LCD_CMD_SEGMENT_MAP_1);
+    sendCommand(LCD_CMD_SCAN_DIR_MINUS);
+    sendCommand(LCD_CMD_NORMAL_DISPLAY);
+
+    // Set multiplex ratio(1 to 64)
+    sendCommand(LCD_CMD_MULTIPLEX_RATIO, 63);
+    // Set display offset
+    sendCommand(LCD_CMD_DISPLAY_OFFSET, 0x00);
+
+    // Set display clock divide ratio/oscillator frequency
+    sendCommand(LCD_CMD_SET_CLOCK_DIVIDE, 0xF0);//
+
+    sendCommand(LCD_CMD_SET_PRE_CHARGE_PERIOD, 0xF1);
+
+    sendCommand(LCD_CMD_SET_PIN_CONF, 0x12);
+
+    sendCommand(LCD_CMD_SET_VCOMH, 0x40);
+
+    // Set Memory Addressing Mode
+    sendCommand(LCD_CMD_ADDR_MODE, LCD_CMD_ADDR_MODE_PAGE);
+    // Enable Charge Pump
+    sendCommand(LCD_CMD_SET_CHARGE_BUMP, 0x14);
+
+    sendCommand(LCD_CMD_ALL_OFF);
+    sendCommand(LCD_CMD_NORMAL_DISPLAY);
+
+    update();
+
+    sendCommand(LCD_CMD_DISPLAY_ON);
 #endif
 }
 
@@ -222,48 +231,7 @@ void SmDisplay::onSleep(void)
 
 void SmDisplay::onWake(void)
 {
-    powerOn();
 #ifndef PC_SOFTWARE
-
-    sendCommand(LCD_CMD_DISPLAY_OFF);//+ display off
-
-    sendCommand(LCD_CMD_SET_COL_L);
-    sendCommand(LCD_CMD_SET_COL_H);
-    sendCommand(LCD_CMD_START_LINE);//+ Set Page Start Address for Page Addressing Mode,0-7
-
-    sendCommand(LCD_CMD_CONTRAST, 0xFF); ///~~~0xCF);
-
-    sendCommand(LCD_CMD_SEGMENT_MAP_1);
-    sendCommand(LCD_CMD_SCAN_DIR_MINUS);
-    sendCommand(LCD_CMD_NORMAL_DISPLAY);
-
-//--set multiplex ratio(1 to 64)
-    sendCommand(LCD_CMD_MULTIPLEX_RATIO, 63);
-//-set display offset    (not offset)
-    sendCommand(LCD_CMD_DISPLAY_OFFSET, 0x00);
-
-//--set display clock divide ratio/oscillator frequency
-//   set divide ratio
-    sendCommand(LCD_CMD_SET_CLOCK_DIVIDE, 0xF0);//
-
-    sendCommand(LCD_CMD_SET_PRE_CHARGE_PERIOD, 0xF1);
-
-    sendCommand(LCD_CMD_SET_PIN_CONF, 0x12);//--  0x02???
-
-    sendCommand(LCD_CMD_SET_VCOMH, 0x40);//--
-//    LCDCommand_param(LCD_CMD_SET_VCOMH, 0x20);  // 0.77 * VCC
-//    LCDCommand_param(LCD_CMD_SET_VCOMH, 0x10);  // 0.77 * VCC
-
-// Set Memory Addressing Mode
-    sendCommand(LCD_CMD_ADDR_MODE, LCD_CMD_ADDR_MODE_PAGE);
-
-    sendCommand(LCD_CMD_SET_CHARGE_BUMP, 0x14); // Enable Charge Pump
-
-    sendCommand(LCD_CMD_ALL_OFF);
-    sendCommand(LCD_CMD_NORMAL_DISPLAY);
-    
-    fill(0x00);
-
-    sendCommand(LCD_CMD_DISPLAY_ON);//+ --turn on oled panel
+    powerOn();
 #endif
 }

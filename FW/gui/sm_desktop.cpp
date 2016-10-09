@@ -1,6 +1,8 @@
 #include "sm_desktop.h"
 #include "sm_image.h"
 #include "sm_hal_rtc.h"
+#include "sm_hw_storage.h"
+#include <cstdio>
 
 /// @todo Implement all services initialization
 void SmDesktop::init(SmCanvas * canvas)
@@ -20,12 +22,15 @@ void SmDesktop::init(SmCanvas * canvas)
     pFont7SegBig->init(17);
     pFont7SegSmall = new SmFont();
     pFont7SegSmall->init(18);
+    pFontSmall = new SmFont();
+    pFontSmall->init(IDX_FW_FONT_SMALL);
 }
 
 SmDesktop::~SmDesktop()
 {
     delete pFont7SegBig;
     delete pFont7SegSmall;
+    delete pFontSmall;
 }
 
 void SmDesktop::onTimer(uint32_t timeStamp)
@@ -77,38 +82,46 @@ void SmDesktop::onTimer(uint32_t timeStamp)
         {
             setIcon(ICON_POS_POWER, INVALID_ICON);
         }
+        if (mBatteryStatus == SmHwBattery::BATT_STATUS_CHARGED)
+        {
+            setIcon(ICON_POS_BATT-1, 12);
+        }
+        else
+        {
+            setIcon(ICON_POS_BATT-1, INVALID_ICON);
+        }
         drawIcons();
     }
     uint16_t txt[] = {0x12, 0x13, 0x1A, 0x14, 0x15};
     uint16_t txt2[] = {0x15,0x19};
-#define OFFS 5
+#define OFFS 0
 #define VSZ1 41
 #define W1   21
 #define VSZ2 21
 #define W2   11
-    uint32_t rtc = SmHalRtc::getCounter();
+    SmHalRtc::SmHalRtcTime rtc = SmHalRtc::getInstance()->getDateTime();
 
-    uint32_t hour = (rtc / 3600) % 24;
-    uint32_t rest = rtc % 3600;
-    uint32_t minute = rest / 60;
-    uint32_t second = rest % 60;
+    txt[0] = 0x10 + rtc.hour / 10;
+    txt[1] = 0x10 + rtc.hour % 10;
 
-    txt[0] = 0x10 + hour / 10;
-    txt[1] = 0x10 + hour % 10;
+    txt[3] = 0x10 + rtc.minute / 10;
+    txt[4] = 0x10 + rtc.minute % 10;
 
-    txt[3] = 0x10 + minute / 10;
-    txt[4] = 0x10 + minute % 10;
+    txt2[0] = 0x10 + rtc.second / 10;
+    txt2[1] = 0x10 + rtc.second % 10;
 
-    txt2[0] = 0x10 + second / 10;
-    txt2[1] = 0x10 + second % 10;
+    char date[11];
+    sprintf(date,"%2u/%02u/%04u",rtc.day,rtc.month,rtc.year);
+    pCanvas->fillRect(0, 0, 80, 8, 0);
+    pFontSmall->drawText(pCanvas,0,0,date);
 
-    pFont7SegBig->drawText(this->pCanvas,0,64-OFFS-VSZ1,&txt[0],1);
-    pFont7SegBig->drawText(this->pCanvas,21+3,64-OFFS-VSZ1,&txt[1],1);
-    pFont7SegBig->drawText(this->pCanvas,21+3+21+3,64-OFFS-VSZ1,&txt[2],1);
-    pFont7SegBig->drawText(this->pCanvas,21+3+21+3+3+3,64-OFFS-VSZ1,&txt[3],1);
-    pFont7SegBig->drawText(this->pCanvas,21+3+21+3+3+3+21+3,64-OFFS-VSZ1,&txt[4],1);
-    pFont7SegSmall->drawText(this->pCanvas,21+3+21+3+3+3+21+3+21+3,64-OFFS-VSZ2,&txt2[0],1);
-    pFont7SegSmall->drawText(this->pCanvas,21+3+21+3+3+3+21+3+21+3+11+3,64-OFFS-VSZ2,&txt2[1],1);
+    pFont7SegBig->drawText(pCanvas,0,64-OFFS-VSZ1,&txt[0],1);
+    pFont7SegBig->drawText(pCanvas,21+3,64-OFFS-VSZ1,&txt[1],1);
+    pFont7SegBig->drawText(pCanvas,21+3+21+3,64-OFFS-VSZ1,&txt[2],1);
+    pFont7SegBig->drawText(pCanvas,21+3+21+3+3+3,64-OFFS-VSZ1,&txt[3],1);
+    pFont7SegBig->drawText(pCanvas,21+3+21+3+3+3+21+3,64-OFFS-VSZ1,&txt[4],1);
+    pFont7SegSmall->drawText(pCanvas,21+3+21+3+3+3+21+3+21+3,64-OFFS-VSZ2,&txt2[0],1);
+    pFont7SegSmall->drawText(pCanvas,21+3+21+3+3+3+21+3+21+3+11+3,64-OFFS-VSZ2,&txt2[1],1);
 }
 
 void SmDesktop::setIcon(uint8_t pos, uint8_t icon)

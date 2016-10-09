@@ -25,19 +25,18 @@ public:
     /// @brief Output display buffer to the display
     void update(void);
 
-    /// @brief Fill display directly with a pattern (useful for clearing it before enable)
-    /// @todo Move it to private section
-    void fill(uint8_t data);
-
     /// @brief Get a pointer to the built-in SmCanvas
     inline SmCanvas * getCanvas(void) { return mCanvas; }
+
+    /// @brief Turn power on and update display
+    void powerOn(void);
+    /// @brief Turn power off
+    void powerOff(void);
 
 private:
     void sendCommand(uint8_t cmd);
     void sendCommand(uint8_t cmd, uint8_t data);
     void sendData(uint8_t * data, uint8_t size);
-    void powerOn(void);
-    void powerOff(void);
     void onSleep(void);
     void onWake(void);
     SmCanvas * mCanvas;

@@ -62,6 +62,7 @@ private:
 
     SmFont * pFont7SegBig;
     SmFont * pFont7SegSmall;
+    SmFont * pFontSmall;
 };
 
 #endif // SM_DESKTOP_H

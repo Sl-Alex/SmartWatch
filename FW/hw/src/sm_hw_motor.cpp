@@ -11,6 +11,7 @@ SmHwMotor::SmHwMotor()
     mGpio->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
     mGpio->resetPin();
     SmHwPowerMgr::getInstance()->subscribe(this);
+    SmHalSysTimer::subscribe(this,2000,false);
 }
 
 void SmHwMotor::onSleep(void)
@@ -34,6 +35,7 @@ void SmHwMotor::onTimer(uint32_t timeStamp)
     else
         mGpio->resetPin();
 
+    SmHalSysTimer::subscribe(this,2000,false);
 }
 
 void SmHwMotor::onKeyDown(uint8_t key)

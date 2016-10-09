@@ -71,27 +71,26 @@ int main(void)
 
     SmHwBattery::getInstance()->init();
 
-    // Initialize display memory
-    SmDisplay * display = new SmDisplay();
-
     SmHwKeyboard *keyboard = new SmHwKeyboard();
     keyboard->initSubscribersPool(10);
 
     SmHwMotor * motor = new SmHwMotor();
     keyboard->subscribe(motor);
-    SmHalSysTimer::subscribe(motor,2000,true);
+    //SmHalSysTimer::subscribe(motor,2000,true);
 
     SmHwStorage::getInstance()->init();
 
-    // Apply display interface
+    // Initialize display
+    SmDisplay * display = new SmDisplay();
     display->init(128,64);
     display->getCanvas()->clear();
+    display->powerOn();
+    display->update();
+
+    SmHwPowerMgr::getInstance()->blockSleep(display);
 
     SmHalI2c::getInstance()->reset(false);
 
-    // Do something
-//    display->setPix(20,20,1);
-    display->update();
 
     uint8_t data = 1;
     uint8_t reg[2] = {0x4b, 0x01};
@@ -102,41 +101,24 @@ int main(void)
     // 0b00110010;
     SmHalI2c::getInstance()->transfer(I2C_MAGN, &reg[0], 1, &data, 1);
 
-//    SmHalI2c::getInstance()->reset();
     SmHwBmc150::getInstance()->checkPresent();
     SmHwBmp180::getInstance()->checkPresent();
-    SmHalRtc::init();
-
-
-    //reg[0] = 0x00;
-    // 0b11111010;
-    //SmHalI2c::getInstance()->transfer(I2C_ACC, &reg[0], 1, &data, 1);
+    SmHalRtc::getInstance()->init();
 
     SmFont * smallFont = new SmFont();
     smallFont->init(IDX_FW_FONT_SMALL);
 
-    SmHalRtc::setCounter(17*3600 + 59*60 + 50);
+    SmHalRtc::SmHalRtcTime rtc{2015,12,30,23,59,50};
+    SmHalRtc::getInstance()->setDateTime(rtc);
+
+    //SmHalRtc::getInstance()->setAlarm(18*3600 + 0*60 + 0);
 
     SmDesktop::getInstance()->init(display->getCanvas());
     while (1)
     {
         SmHalSysTimer::processEvents();
-/*        uint16_t txt_time[10] = {0x10,0x58,0,0,0,0,0,0};
-        for (uint8_t i = 0; i < 8; i++)
-        {
-            uint32_t dig = rtc & 0x0F;
-            rtc >>= 4;
-            if (dig < 0x0A)
-                dig = 0x10 + dig;
-            else
-                dig = 0x21 + dig - 0x0A;
-
-            txt_time[9 - i] = dig;
-        }
-        display->getCanvas()->fillRect(0,56,127,63,0);
-        smallFont->drawText(display->getCanvas(), 0, 56, txt_time, 10);
-*/
         display->update();
+        SmHwPowerMgr::getInstance()->updateState();
 
         uint8_t st1 = keyboard->getState(1);
         uint8_t st2 = keyboard->getState(2) << 1;
@@ -148,8 +130,6 @@ int main(void)
         {
             SmHwBt::getInstance()->send(0x30+st);
         }
-
-        SmHwBattery::getInstance()->getCharge();
         if (keyboard->getState(1) && keyboard->getState(2))
         {
             SmHwPowerMgr::getInstance()->sleep();

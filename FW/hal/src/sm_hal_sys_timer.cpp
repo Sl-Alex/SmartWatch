@@ -12,8 +12,20 @@ bool SmHalSysTimer::subscribe(SmHalSysTimerIface *iface, uint32_t period, bool r
     {
         if (mPool[i].iface == iface)
         {
-            mPool[i].period = period;
-            mPool[i].starttime = mTimeStamp;
+            if (repeat == false)
+            {
+                // one-shot events can be only extended
+                if ((mPool[i].starttime + mPool[i].period) < (mTimeStamp + period))
+                {
+                    mPool[i].starttime = mTimeStamp;
+                    mPool[i].period = period;
+                }
+            }
+            else
+            {
+                mPool[i].period = period;
+                mPool[i].starttime = mTimeStamp;
+            }
             mPool[i].repeat = repeat;
             return true;
         }
@@ -98,14 +110,12 @@ void SmHalSysTimer::processEvents(void)
                 {
                     mPool[i].iface = 0;
                 }
-
-                iface->onTimer(timeStamp);
-
-                // Check if we have to stop notifications for this subscriber
-                if (mPool[i].repeat)
+                else
                 {
                     mPool[i].starttime = timeStamp;
                 }
+
+                iface->onTimer(timeStamp);
             }
         }
     }

@@ -29,6 +29,8 @@
 #define PIN_AIRQ3  7UL
 #define PIN_ARDY   0UL
 
+#define PIN_ALARM  17UL
+
 // Potential EXTI conflicts:
 // S2 <=> BTST  ==> Both signals use pin1, BTRX can be used for waking instead of BT
 // S3 <=> AI2   ==> AI2 can be disabled. @todo: Check BMC150 datasheet
@@ -47,10 +49,16 @@
 //  (1UL << PIN_BTRX) | \
 //  (1UL << PIN_AIRQ3) | \
 //  (1UL << PIN_ARDY))
-#define EXTI_LINES (\
+
+#define EVENTS_RISING (\
+  (1UL << PIN_ALARM))
+
+#define EVENTS_FALLING (\
   (1UL << PIN_S1) | \
   (1UL << PIN_S4) | \
   (1UL << PIN_AIRQ1))
+
+#define EVENTS_COMMON (EVENTS_RISING | EVENTS_FALLING)
 
 /// @todo Enable wake up on any button (temporary disabled).
 /// Just uncomment commented lines in this function
@@ -71,13 +79,23 @@ void SmHwPowerMgr::init(void)
     // Pins 12 to 15 (any port)
     AFIO->EXTICR[3] = 0;
 
-    // Initialize EXTI events
-    // Add to event mode register
-    EXTI->IMR &= ~EXTI_LINES;
-    EXTI->EMR |= EXTI_LINES;
-    // Set falling edge
-    EXTI->RTSR &= ~EXTI_LINES;
-    EXTI->FTSR |= EXTI_LINES;
+    // Disable interrupts
+    EXTI->IMR &= ~EVENTS_COMMON;
+    // Disable events
+    EXTI->EMR &= ~EVENTS_COMMON;
+
+    // Set rising edges
+    EXTI->RTSR &= ~EVENTS_COMMON;
+    EXTI->RTSR |=  EVENTS_RISING;
+
+    // Set falling edges
+    EXTI->FTSR &= ~EVENTS_COMMON;
+    EXTI->FTSR |=  EVENTS_FALLING;
+
+    // Enable events
+    EXTI->EMR |=  EVENTS_COMMON;
+    // Enable interrupts
+    EXTI->IMR |= (1UL << PIN_ALARM);
 }
 
 void SmHwPowerMgr::initSubscribersPool(uint8_t max)
@@ -106,6 +124,7 @@ bool SmHwPowerMgr::subscribe(SmHwPowerMgrIface *iface)
     {
         if (mPool[i].iface == iface)
         {
+            mPool[i].canSleep = true;
             return true;
         }
     }
@@ -115,6 +134,7 @@ bool SmHwPowerMgr::subscribe(SmHwPowerMgrIface *iface)
         if (mPool[i].iface == 0)
         {
             mPool[i].iface = iface;
+            mPool[i].canSleep = true;
             return true;
         }
     }
@@ -176,4 +196,45 @@ void SmHwPowerMgr::sleep(void)
             mPool[i].iface->onWake();
         }
     }
+}
+
+void SmHwPowerMgr::blockSleep(SmHwPowerMgrIface * iface)
+{
+    for (uint32_t i = 0; i < mPoolSize; ++i)
+    {
+        if (iface == mPool[i].iface)
+        {
+            mPool[i].canSleep = false;
+        }
+    }
+}
+
+void SmHwPowerMgr::unblockSleep(SmHwPowerMgrIface * iface)
+{
+    for (uint32_t i = 0; i < mPoolSize; ++i)
+    {
+        if (iface == mPool[i].iface)
+        {
+            mPool[i].canSleep = true;
+        }
+    }
+}
+
+void SmHwPowerMgr::updateState(void)
+{
+    bool canSleep = true;
+    for (uint32_t i = 0; i < mPoolSize; ++i)
+    {
+        if (mPool[i].iface)
+        {
+            if (!mPool[i].canSleep)
+                return;
+        }
+    }
+    sleep();
+}
+
+void SmHwPowerMgr::onTimer(uint32_t timeStamp)
+{
+    sleep();
 }

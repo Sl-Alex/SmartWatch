@@ -89,13 +89,6 @@ void SmHwBattery::onTimer(uint32_t timeStamp)
 #ifndef PC_SOFTWARE
     if (mMeasStep == 0)
     {
-        mGpioEn->setPin();
-        SmHalSysTimer::subscribe(this, MEAS_DELAY, false);
-        mMeasStep = 1;
-        mGpioStatus->setModeSpeed(SM_HAL_GPIO_MODE_IN_PU, SM_HAL_GPIO_SPEED_2M);
-    }
-    else
-    {
         if (mGpioStatus->readPin())
         {
             mCharging = false;
@@ -104,9 +97,26 @@ void SmHwBattery::onTimer(uint32_t timeStamp)
         {
             mCharging = true;
         }
+        mGpioStatus->setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT, SM_HAL_GPIO_SPEED_2M);
+        mGpioEn->setPin();
+        SmHalSysTimer::subscribe(this, MEAS_DELAY, false);
+        mMeasStep = 1;
+    }
+    else
+    {
+        if (mGpioStatus->readPin())
+        {
+            mChargerConnected = false;
+        }
+        else
+        {
+            mChargerConnected = true;
+        }
+        //mGpioStatus->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
+        mGpioStatus->setPin();
+        mGpioStatus->setModeSpeed(SM_HAL_GPIO_MODE_IN_PU, SM_HAL_GPIO_SPEED_2M);
         mMeasStep = 0;
         ADC1->CR2 |= ADC_CR2_SWSTART;
-        mGpioStatus->setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT, SM_HAL_GPIO_SPEED_2M);
     }
 #else
     updateValues();
@@ -146,6 +156,7 @@ void ADC1_2_IRQHandler (void)
 
         SmHwBattery::getInstance()->updateValues();
         SmHwBattery::getInstance()->mRaw = 0;
+        //SmHwBattery::getInstance()->mGpioStatus->setModeSpeed(SM_HAL_GPIO_MODE_IN_PU, SM_HAL_GPIO_SPEED_2M);
     }
 }
 
@@ -155,11 +166,6 @@ void ADC1_2_IRQHandler (void)
 void SmHwBattery::updateValues(void)
 {
 #ifndef PC_SOFTWARE
-    if (mGpioStatus->readPin())
-        mChargerConnected = false;
-    else
-        mChargerConnected = true;
-
     if (!mChargerConnected)
     {
         mStatus = BATT_STATUS_DISCHARGING;

@@ -11,8 +11,6 @@
 //     SM_STRING_HELLO is a string definition
 //     FONT_IDX_SMALL is a font index (should be defined in this file above)
 //     The rest till the end of the line is just a string
-// PACK SM_STRING_HELL FONT_IDX_SMALL HELL
-// PACK SM_STRING_TEST_CYRILLIC FONT_IDX_SMALL цчшщьюя :)
-// PACK SM_STRING_0x FONT_IDX_SMALL 0x
+// PACK SM_STRING_DAYS FONT_IDX_SMALL MoTuWeThFrSaSu
 
 #endif // SM_STRINGS_H
