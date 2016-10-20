@@ -10,9 +10,11 @@ class SmAnimator
 public:
     /// @brief Animation type
     typedef enum {
-        ANIM_TYPE_SHIFT,    ///< Shift background image and replace with foreground
-        ANIM_TYPE_SLIDE,    ///< Slide foreground image over background
-        ANIM_TYPE_VIS_SLIDE ///< Slide foreground image over bckground and hightlight transition
+        ANIM_TYPE_SHIFT,        ///< Shift background image and replace with foreground
+        ANIM_TYPE_SLIDE,        ///< Slide foreground image over background
+        ANIM_TYPE_VIS_SLIDE,    ///< Slide foreground image over background and hightlight transition
+        ANIM_TYPE_APPEAR,       ///< Appear foreground image over background
+        ANIM_TYPE_VIS_APPEAR    ///< Appear foreground image over background and hightlight transition
     } AnimType;
 
     /// @brief Animation direction

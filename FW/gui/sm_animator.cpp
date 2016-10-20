@@ -24,8 +24,9 @@ bool SmAnimator::tick()
             return false;
         if ((mTick + mSpeed) >= mW)
         {
+            mTick -= mSpeed;
+            mSpeed = mW - mTick;
             mTick = mW - 1;
-            mSpeed = 1;
         }
     }
     else if ((mDir == ANIM_DIR_UP) || (mDir == ANIM_DIR_DOWN))
@@ -34,8 +35,9 @@ bool SmAnimator::tick()
             return false;
         if ((mTick + mSpeed) >= mH)
         {
+            mTick -= mSpeed;
+            mSpeed = mH - mTick;
             mTick = mH - 1;
-            mSpeed = 1;
         }
     }
 
@@ -55,9 +57,17 @@ bool SmAnimator::tick()
                 pDest->scrollArea(mX - limit,mY,mX - mTick,mY+mH-1,mSpeed,SmCanvas::DIR_LEFT);
             }
             // Draw a part of the image
-            pDest->drawCanvas(mX - mTick, mY, mXOff, mYOff, mTick  +1, mH, pSource);
+            if ((mType != ANIM_TYPE_APPEAR) && (mType != ANIM_TYPE_VIS_APPEAR))
+            {
+                pDest->drawCanvas(mX - mTick, mY, mXOff, mYOff, mTick  +1, mH, pSource);
+            }
+            else
+            {
+                if (mTick > 0)
+                    pDest->drawCanvas(mX - mTick, mY, mXOff + mW - mTick - 1, mYOff, mSpeed  + 1, mH, pSource);
+            }
             // Draw line in case of visual slide
-            if ((mType == ANIM_TYPE_VIS_SLIDE) && (mTick != mW - 1))
+            if (((mType == ANIM_TYPE_VIS_SLIDE) || (mType == ANIM_TYPE_VIS_APPEAR)) && (mTick != mW - 1))
             {
                 pDest->drawVLine(mX - mTick,mY, mY + mH - 1, 255);
             }
@@ -76,9 +86,17 @@ bool SmAnimator::tick()
                 pDest->scrollArea(mX + mTick,mY,mX + limit,mY+mH-1,mSpeed,SmCanvas::DIR_RIGHT);
             }
             // Draw a part of the image
-            pDest->drawCanvas(mX, mY, mW + mXOff - mTick - 1, mYOff, mTick  + 1, mH, pSource);
+            if ((mType != ANIM_TYPE_APPEAR) && (mType != ANIM_TYPE_VIS_APPEAR))
+            {
+                pDest->drawCanvas(mX, mY, mW + mXOff - mTick - 1, mYOff, mTick  + 1, mH, pSource);
+            }
+            else
+            {
+                if (mTick > 0)
+                    pDest->drawCanvas(mX + mTick - mSpeed, mY, mXOff + mTick - mSpeed, mYOff, mSpeed + 1, mH, pSource);
+            }
             // Draw line in case of visual slide
-            if ((mType == ANIM_TYPE_VIS_SLIDE) && (mTick != mW - 1))
+            if (((mType == ANIM_TYPE_VIS_SLIDE) || (mType == ANIM_TYPE_VIS_APPEAR))&& (mTick != mW - 1))
             {
                 pDest->drawVLine(mX + mTick, mY, mY + mH - 1, 255);
             }
@@ -97,9 +115,17 @@ bool SmAnimator::tick()
                 pDest->scrollArea(mX,mY - limit,mX+mW-1,mY - mTick,mSpeed,SmCanvas::DIR_UP);
             }
             // Draw a part of the image
-            pDest->drawCanvas(mX, mY - mTick, mXOff, mYOff, mW, mTick  +1, pSource);
+            if ((mType != ANIM_TYPE_APPEAR) && (mType != ANIM_TYPE_VIS_APPEAR))
+            {
+                pDest->drawCanvas(mX, mY - mTick, mXOff, mYOff, mW, mTick  +1, pSource);
+            }
+            else
+            {
+                if (mTick > 0)
+                    pDest->drawCanvas(mX, mY - mTick, mXOff, mYOff + mH - mTick - 1, mW, mSpeed  + 1, pSource);
+            }
             // Draw line in case of visual slide
-            if ((mType == ANIM_TYPE_VIS_SLIDE) && (mTick != mH - 1))
+            if (((mType == ANIM_TYPE_VIS_SLIDE) || (mType == ANIM_TYPE_VIS_APPEAR)) && (mTick != mH - 1))
             {
                 pDest->drawHLine(mX, mX + mW - 1, mY - mTick, 255);
             }
@@ -118,9 +144,17 @@ bool SmAnimator::tick()
                 pDest->scrollArea(mX,mY + mTick,mX+mW-1,mY + limit,mSpeed,SmCanvas::DIR_DOWN);
             }
             // Draw a part of the image
-            pDest->drawCanvas(mX, mY, mXOff, mH + mYOff - mTick - 1, mW, mTick  + 1, pSource);
+            if ((mType != ANIM_TYPE_APPEAR) && (mType != ANIM_TYPE_VIS_APPEAR))
+            {
+                pDest->drawCanvas(mX, mY, mXOff, mH + mYOff - mTick - 1, mW, mTick  + 1, pSource);
+            }
+            else
+            {
+                if (mTick > 0)
+                    pDest->drawCanvas(mX, mY + mTick - mSpeed, mXOff, mYOff + mTick - mSpeed, mW, mSpeed + 1, pSource);
+            }
             // Draw line in case of visual slide
-            if ((mType == ANIM_TYPE_VIS_SLIDE) && (mTick != mH - 1))
+            if (((mType == ANIM_TYPE_VIS_SLIDE) || (mType == ANIM_TYPE_VIS_APPEAR)) && (mTick != mH - 1))
             {
                 pDest->drawHLine(mX, mX + mW - 1, mY + mTick, 255);
             }
