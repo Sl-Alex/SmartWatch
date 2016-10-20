@@ -35,6 +35,9 @@ public:
     /// @brief Init image by offset in the @ref EXTERNAL_FLASH
     virtual void initOffset(uint32_t offset);
 
+    /// @brief Init only header, not the data;
+    virtual void initHeaderOffset(uint32_t offset);
+
 private:
     struct ImageHeader {
         int width;

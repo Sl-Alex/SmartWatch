@@ -29,3 +29,9 @@ void SmImage::initOffset(uint32_t offset)
     // Read image data
     SmHwStorage::getInstance()->readData(offset + sizeof(header), (uint8_t *)getPData(), header.size);
 }
+
+void SmImage::initHeaderOffset(uint32_t offset)
+{
+    // Read image header
+    SmHwStorage::getInstance()->readData(offset, (uint8_t *)&header, sizeof(header));
+}

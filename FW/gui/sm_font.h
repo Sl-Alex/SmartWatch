@@ -70,6 +70,12 @@ public:
     /// @brief Output ASCII text (symbols between 0x20 and 0x7E)
     void drawText(SmCanvas * canvas, int x, int y, char * text);
 
+    /// @brief Get symbol width
+    uint32_t getSymbolWidth(uint16_t symbol);
+    /// @brief Get text width
+    uint32_t getStringWidth(uint16_t * text, uint16_t count);
+    /// @brief Get ASCII text width
+    uint32_t getStringWidth(char * text);
 private:
     uint32_t mFontOffset;   ///< Start address of the font element in the external flash
     // These parameters are stored in external flash

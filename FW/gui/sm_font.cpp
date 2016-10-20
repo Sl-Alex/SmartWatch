@@ -1,5 +1,6 @@
 #include "sm_font.h"
 #include "sm_hw_storage.h"
+#include "sm_strings.h"
 
 bool SmFont::init(int index)
 {
@@ -44,6 +45,17 @@ void SmFont::drawSymbol(SmCanvas * canvas, int x, int y, uint16_t symbol)
     canvas->drawCanvas(x,y,this);
 }
 
+uint32_t SmFont::getSymbolWidth(uint16_t symbol)
+{
+    uint32_t offset;
+
+    SmHwStorage::getInstance()->readData(mDataTableOffset + symbol * sizeof(offset),
+                                         (uint8_t *)&offset, sizeof(offset));
+
+    SmImage::initHeaderOffset(offset);
+    return this->getWidth();
+}
+
 void SmFont::drawText(SmCanvas * canvas, int x, int y, uint16_t * text, uint16_t count)
 {
     while (count--)
@@ -64,4 +76,34 @@ void SmFont::drawText(SmCanvas * canvas, int x, int y, char * text)
         x += getWidth() + mSpacing;
         text++;
     }
+}
+
+uint32_t SmFont::getStringWidth(uint16_t * text, uint16_t count)
+{
+    uint32_t res = 0;
+    while (count--)
+    {
+        res += getSymbolWidth(*text);
+        res += mSpacing;
+        text++;
+    }
+    if (res)
+        res -= mSpacing;
+
+    return res;
+}
+
+uint32_t SmFont::getStringWidth(char * text)
+{
+    uint32_t res = 0;
+    while (*text)
+    {
+        res += getSymbolWidth(*text - 0x20);
+        res += mSpacing;
+        text++;
+    }
+    if (res)
+        res -= mSpacing;
+
+    return res;
 }
