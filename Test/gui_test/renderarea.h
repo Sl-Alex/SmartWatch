@@ -47,7 +47,6 @@
 #include <QWidget>
 #include "sm_canvas.h"
 
-//! [0]
 class RenderArea : public QWidget
 {
     Q_OBJECT
@@ -71,6 +70,5 @@ private:
     QPixmap pixmap;
     SmCanvas * canvas;
 };
-//! [0]
 
 #endif // RENDERAREA_H

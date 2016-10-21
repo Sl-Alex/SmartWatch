@@ -5,14 +5,16 @@
 #include "sm_canvas.h"
 #include "sm_font.h"
 #include "sm_hw_battery.h"
+#include "sm_hw_keyboard.h"
+#include "sm_main_menu.h"
 
 /// @brief Desktop class
-class SmDesktop: public SmHalSysTimerIface
+class SmDesktop: public SmHalSysTimerIface, public SmHwKeyboardIface
 {
 public:
 
     /// @brief Initialize desktop with its default values
-    void init(SmCanvas * canvas);
+    void init(void);
 
     /// @brief This class is a singleton, removing
     SmDesktop(SmDesktop const&) = delete;
@@ -30,6 +32,11 @@ public:
 
     /// @brief System timer event
     void onTimer(uint32_t timeStamp);
+
+    /// @brief onKeyDown event.
+    void onKeyDown(SmHwButtons key);
+    /// @brief onKeyUp event.
+    void onKeyUp(SmHwButtons key);
 
 private:
     static const uint8_t MAX_ICONS_COUNT = 10;
@@ -50,7 +57,6 @@ private:
     uint8_t mSignalStrength;
 
     /// @brief Battery level
-    /// @todo Define values
     uint8_t mBatteryLevel;
     SmHwBattery::BatteryStatus mBatteryStatus;
 
@@ -63,6 +69,10 @@ private:
     SmFont * pFont7SegBig;
     SmFont * pFont7SegSmall;
     SmFont * pFontSmall;
+    SmMainMenu * pMainMenu;
+
+    SmAnimator menuAnimator;
+
 };
 
 #endif // SM_DESKTOP_H

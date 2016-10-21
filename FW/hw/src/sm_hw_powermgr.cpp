@@ -60,6 +60,9 @@
 
 #define EVENTS_COMMON (EVENTS_RISING | EVENTS_FALLING)
 
+#define SHORT_TIMEOUT   2000
+#define LONG_TIMEOUT    5000
+
 /// @todo Enable wake up on any button (temporary disabled).
 /// Just uncomment commented lines in this function
 void SmHwPowerMgr::init(void)
@@ -96,6 +99,8 @@ void SmHwPowerMgr::init(void)
     EXTI->EMR |=  EVENTS_COMMON;
     // Enable interrupts
     EXTI->IMR |= (1UL << PIN_ALARM);
+
+    sleepBlockers = 0;
 }
 
 void SmHwPowerMgr::initSubscribersPool(uint8_t max)
@@ -124,7 +129,6 @@ bool SmHwPowerMgr::subscribe(SmHwPowerMgrIface *iface)
     {
         if (mPool[i].iface == iface)
         {
-            mPool[i].canSleep = true;
             return true;
         }
     }
@@ -134,7 +138,6 @@ bool SmHwPowerMgr::subscribe(SmHwPowerMgrIface *iface)
         if (mPool[i].iface == 0)
         {
             mPool[i].iface = iface;
-            mPool[i].canSleep = true;
             return true;
         }
     }
@@ -188,6 +191,9 @@ void SmHwPowerMgr::sleep(void)
 
     SystemInit();
 
+    canSleep = false;
+    SmHalSysTimer::subscribe(this, 2000,false);
+
     // Call onWake() for all subscribers
     for (uint32_t i = 0; i < mPoolSize; ++i)
     {
@@ -198,43 +204,32 @@ void SmHwPowerMgr::sleep(void)
     }
 }
 
-void SmHwPowerMgr::blockSleep(SmHwPowerMgrIface * iface)
-{
-    for (uint32_t i = 0; i < mPoolSize; ++i)
-    {
-        if (iface == mPool[i].iface)
-        {
-            mPool[i].canSleep = false;
-        }
-    }
-}
-
-void SmHwPowerMgr::unblockSleep(SmHwPowerMgrIface * iface)
-{
-    for (uint32_t i = 0; i < mPoolSize; ++i)
-    {
-        if (iface == mPool[i].iface)
-        {
-            mPool[i].canSleep = true;
-        }
-    }
-}
-
 void SmHwPowerMgr::updateState(void)
 {
-    bool canSleep = true;
-    for (uint32_t i = 0; i < mPoolSize; ++i)
-    {
-        if (mPool[i].iface)
-        {
-            if (!mPool[i].canSleep)
-                return;
-        }
-    }
+    if (!canSleep)
+        return;
+
     sleep();
 }
 
 void SmHwPowerMgr::onTimer(uint32_t timeStamp)
 {
-    sleep();
+    if (sleepBlockers == 0)
+        canSleep = true;
+}
+
+void SmHwPowerMgr::blockSleep(void)
+{
+    sleepBlockers++;
+    canSleep = false;
+}
+
+void SmHwPowerMgr::allowSleep(uint32_t timeout)
+{
+    if (sleepBlockers)
+        sleepBlockers--;
+    else
+        return;
+
+    SmHalSysTimer::subscribe(this, timeout,false);
 }

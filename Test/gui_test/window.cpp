@@ -54,12 +54,12 @@ Window::Window()
     SmHwStorage::getInstance()->init();
 
     renderArea = new RenderArea;
-    display = new SmDisplay();
+    display = SmDisplay::getInstance();
     display->init(128,64);
     display->getCanvas()->clear();
     renderArea->setCanvas(display->getCanvas());
     desktop = SmDesktop::getInstance();
-    desktop->init(display->getCanvas());
+    desktop->init();
 
     lbl1 = new QLabel();
     lbl1->setText("A");
@@ -70,23 +70,23 @@ Window::Window()
     lbl4 = new QLabel();
     lbl4->setText("K");
 
-    lbl1->setMaximumWidth(20);
-    lbl1->setMinimumWidth(20);
+    lbl1->setMaximumWidth(40);
+    lbl1->setMinimumWidth(40);
     lbl1->setMaximumHeight(500);
     lbl1->setMinimumHeight(32);
 
-    lbl2->setMaximumWidth(20);
-    lbl2->setMinimumWidth(20);
+    lbl2->setMaximumWidth(40);
+    lbl2->setMinimumWidth(40);
     lbl2->setMaximumHeight(500);
     lbl2->setMinimumHeight(32);
 
-    lbl3->setMaximumWidth(20);
-    lbl3->setMinimumWidth(20);
+    lbl3->setMaximumWidth(40);
+    lbl3->setMinimumWidth(40);
     lbl3->setMaximumHeight(500);
     lbl3->setMinimumHeight(32);
 
-    lbl4->setMaximumWidth(20);
-    lbl4->setMinimumWidth(20);
+    lbl4->setMaximumWidth(40);
+    lbl4->setMinimumWidth(40);
     lbl4->setMaximumHeight(500);
     lbl4->setMinimumHeight(32);
 
@@ -112,24 +112,6 @@ Window::Window()
 
     setLayout(mainLayout);
 
-    /*
-    pImage = new SmImage();
-    pImage->init(3);
-
-    pImage->clear();
-    pImage->drawRect(0,0,31,31,1);
-    renderArea->getCanvas()->drawCanvas(0,0,pImage);
-
-    pAnimator= new SmAnimator();
-    pAnimator->setDestSource(renderArea->getCanvas(),pImage);
-    pAnimator->setType(SmAnimator::AnimType::ANIM_TYPE_VIS_SLIDE);
-    pAnimator->setDirection(SmAnimator::AnimDir::ANIM_DIR_LEFT);
-    pAnimator->setSpeed(2);
-    pAnimator->start(48,16,0,0,32,32);
-
-    smallFont = new SmFont();
-    smallFont->init(IDX_FW_FONT_SMALL);
-*/
     setWindowTitle(tr("SmartWatch GUI test"));
 
     QTimer * pTimer = new QTimer(this);
@@ -139,56 +121,10 @@ Window::Window()
     QTimer * pTimerMs = new QTimer(this);
     connect(pTimerMs, SIGNAL(timeout()), this, SLOT(onTimerMsEvent()));
     pTimerMs->start(1);
-
-    keyboard = new SmHwKeyboard();
-    keyboard->initSubscribersPool(10);
-    keyboard->subscribe(this);
-/*
-    smallFont->drawText(renderArea->getCanvas(), 2, 54, SM_STRING_TEST_CYRILLIC, SM_STRING_TEST_CYRILLIC_SZ);
-*/
 }
-
-static bool bl = true;
-static int del = 0;
 
 void Window::onTimerEvent(void)
 {
-    /*
-    if (!pAnimator->tick())
-    {
-        static bool dir = true;
-        static bool step = true;
-        dir = !dir;
-        if (dir)
-        {
-            pAnimator->setDirection(SmAnimator::AnimDir::ANIM_DIR_LEFT);
-            pAnimator->setSpeed(3);
-        }
-        else
-        {
-            pAnimator->setDirection(SmAnimator::AnimDir::ANIM_DIR_RIGHT);
-            pAnimator->setSpeed(1);
-            step = ! step;
-        }
-        if (step)
-        {
-            pImage->init(4);
-            //pCanvas->fill(0x00);
-            //pCanvas->drawRect(0,0,31,31,1);
-        }
-        else
-        {
-            pImage->fill(0x00);
-            smallFont->drawText(pImage, 4, 13, SM_STRING_HELL, SM_STRING_HELL_SZ);
-//                myFont->drawSymbol(pCanvas, 4,  13, 2);
-//                myFont->drawSymbol(pCanvas, 10,  13, 10);
-//                myFont->drawSymbol(pCanvas, 16, 13, 9);
-//                myFont->drawSymbol(pCanvas, 22, 13, 8);
-            pImage->drawRect(0,0,31,31,1);
-        }
-        pAnimator->start(48-dir,16,0,0,32,32);
-    }
-    */
     renderArea->update();
 }
 
@@ -197,22 +133,22 @@ void Window::keyPressEvent(QKeyEvent *pEvent)
     if (Qt::Key_A == pEvent->key())
     {
         lbl1->setStyleSheet(LABEL_STYLE_PRESSED);
-        keyboard->simulatedState |= 0x01;
+        SmHwKeyboard::getInstance()->simulatedState |= 0x01;
     }
     if (Qt::Key_Z == pEvent->key())
     {
         lbl2->setStyleSheet(LABEL_STYLE_PRESSED);
-        keyboard->simulatedState |= 0x02;
+        SmHwKeyboard::getInstance()->simulatedState |= 0x02;
     }
     if (Qt::Key_M == pEvent->key())
     {
         lbl3->setStyleSheet(LABEL_STYLE_PRESSED);
-        keyboard->simulatedState |= 0x04;
+        SmHwKeyboard::getInstance()->simulatedState |= 0x04;
     }
     if (Qt::Key_K == pEvent->key())
     {
         lbl4->setStyleSheet(LABEL_STYLE_PRESSED);
-        keyboard->simulatedState |= 0x08;
+        SmHwKeyboard::getInstance()->simulatedState |= 0x08;
     }
 
     QWidget::keyPressEvent(pEvent);
@@ -223,22 +159,22 @@ void Window::keyReleaseEvent(QKeyEvent *pEvent)
     if (Qt::Key_A == pEvent->key())
     {
         lbl1->setStyleSheet(LABEL_STYLE_DEFAULT);
-        keyboard->simulatedState &=~0x01;
+        SmHwKeyboard::getInstance()->simulatedState &=~0x01;
     }
     if (Qt::Key_Z == pEvent->key())
     {
         lbl2->setStyleSheet(LABEL_STYLE_DEFAULT);
-        keyboard->simulatedState &=~0x02;
+        SmHwKeyboard::getInstance()->simulatedState &=~0x02;
     }
     if (Qt::Key_M == pEvent->key())
     {
         lbl3->setStyleSheet(LABEL_STYLE_DEFAULT);
-        keyboard->simulatedState &=~0x04;
+        SmHwKeyboard::getInstance()->simulatedState &=~0x04;
     }
     if (Qt::Key_K == pEvent->key())
     {
         lbl4->setStyleSheet(LABEL_STYLE_DEFAULT);
-        keyboard->simulatedState &=~0x08;
+        SmHwKeyboard::getInstance()->simulatedState &=~0x08;
     }
 
     QWidget::keyReleaseEvent(pEvent);
@@ -249,14 +185,4 @@ void Window::onTimerMsEvent(void)
 {
     SysTick_Handler();
     SmHalSysTimer::processEvents();
-}
-
-/// @todo Implement action
-void Window::onKeyDown(uint8_t key)
-{
-}
-
-/// @todo Implement action
-void Window::onKeyUp(uint8_t key)
-{
 }

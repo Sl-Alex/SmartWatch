@@ -9,19 +9,27 @@ void SmAnimator::start(int x, int y, int xOff, int yOff, int w, int h)
     mW = w;
     mH = h;
     mTick = 0;
+    mRunning = true;
 }
 
 bool SmAnimator::tick()
 {
-    if (mW == 0)
-        return false;
-    if (mH == 0)
-        return false;
+    if (! mRunning)
+        return mRunning;
+
+    if ((mW == 0) || (mH == 0))
+    {
+        mRunning = false;
+        return mRunning;
+    }
 
     if ((mDir == ANIM_DIR_LEFT) || (mDir == ANIM_DIR_RIGHT))
     {
         if (mTick >= mW)
-            return false;
+        {
+            mRunning = false;
+            return mRunning;
+        }
         if ((mTick + mSpeed) >= mW)
         {
             mTick -= mSpeed;
@@ -32,7 +40,10 @@ bool SmAnimator::tick()
     else if ((mDir == ANIM_DIR_UP) || (mDir == ANIM_DIR_DOWN))
     {
         if (mTick >= mH)
-            return false;
+        {
+            mRunning = false;
+            return mRunning;
+        }
         if ((mTick + mSpeed) >= mH)
         {
             mTick -= mSpeed;
@@ -172,6 +183,39 @@ bool SmAnimator::tick()
 //        if (mTick >= mH)
 //            return false;
     }
+    mRunning = true;
 
-    return true;
+    return mRunning;
+}
+
+void SmAnimator::finish(void)
+{
+    if (! mRunning)
+        return;
+
+    if ((mW == 0) || (mH == 0))
+    {
+        mRunning = false;
+        return;
+    }
+
+    if ((mDir == ANIM_DIR_LEFT) || (mDir == ANIM_DIR_RIGHT))
+    {
+        if (mTick > 0)
+        {
+            mTick -= mSpeed;
+            mSpeed = mW - mTick;
+            mTick = mW - 1;
+        }
+    }
+    else if ((mDir == ANIM_DIR_UP) || (mDir == ANIM_DIR_DOWN))
+    {
+        if (mTick > 0)
+        {
+            mTick -= mSpeed;
+            mSpeed = mH - mTick;
+            mTick = mH - 1;
+        }
+    }
+    tick();
 }

@@ -80,7 +80,9 @@ void SmHalSysTimer::deinitSubscribersPool(void)
 
 void SmHalSysTimer::init(uint32_t ms)
 {
-#ifndef PC_SOFTWARE
+#ifdef PC_SOFTWARE
+    Q_UNUSED(ms)
+#else
     uint32_t TimerTick = SystemCoreClock/1000UL - 1;
     ms *= TimerTick;
 

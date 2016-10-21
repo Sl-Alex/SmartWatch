@@ -43,8 +43,7 @@ void SmHwKeyboard::onWake(void)
 }
 #endif
 
-/// @todo Check subscribers notification
-void SmHwKeyboard::onTimer(uint32_t timeStamp)
+void SmHwKeyboard::onTimer(uint32_t)
 {
     uint8_t newState = 0;
     // Update values
@@ -74,11 +73,11 @@ void SmHwKeyboard::onTimer(uint32_t timeStamp)
                     {
                         if (newState & bit)
                         {
-                            mPool[i].iface->onKeyDown(key);
+                            mPool[i].iface->onKeyDown(static_cast<SmHwButtons>(1 << key));
                         }
                         else
                         {
-                            mPool[i].iface->onKeyUp(key);
+                            mPool[i].iface->onKeyUp(static_cast<SmHwButtons>(1 << key));
                         }
                     }
                 }
@@ -109,6 +108,19 @@ bool SmHwKeyboard::subscribe(SmHwKeyboardIface *iface)
     }
     // Can not update existing or create new
     return false;
+}
+
+void SmHwKeyboard::unsubscribe(SmHwKeyboardIface *iface)
+{
+    // Search for existing, delete if found
+    for (uint32_t i = 0; i < mPoolSize; ++i)
+    {
+        if (mPool[i].iface == iface)
+        {
+            mPool[i].iface = 0;
+            return;
+        }
+    }
 }
 
 void SmHwKeyboard::initSubscribersPool(uint8_t max)

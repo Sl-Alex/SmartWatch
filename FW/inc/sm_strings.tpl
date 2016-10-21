@@ -12,5 +12,7 @@
 //     FONT_IDX_SMALL is a font index (should be defined in this file above)
 //     The rest till the end of the line is just a string
 // PACK SM_STRING_DAYS FONT_IDX_SMALL MoTuWeThFrSaSu
+// PACK SM_STRING_BLUETOOTH FONT_IDX_SMALL Bluetooth
+// PACK SM_STRING_BRIGHTNESS FONT_IDX_SMALL Brightness
 
 #endif // SM_STRINGS_H

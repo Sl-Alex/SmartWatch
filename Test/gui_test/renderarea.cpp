@@ -42,7 +42,6 @@
 
 #include <QPainter>
 
-//! [0]
 RenderArea::RenderArea(QWidget *parent)
     : QWidget(parent)
 {
@@ -60,7 +59,7 @@ RenderArea::~RenderArea()
 
 QSize RenderArea::minimumSizeHint() const
 {
-    return QSize(128, 64);
+    return QSize(128*2, 64*2);
 }
 
 QSize RenderArea::sizeHint() const

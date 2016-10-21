@@ -71,26 +71,18 @@ int main(void)
 
     SmHwBattery::getInstance()->init();
 
-    SmHwKeyboard *keyboard = new SmHwKeyboard();
-    keyboard->initSubscribersPool(10);
-
     SmHwMotor * motor = new SmHwMotor();
-    keyboard->subscribe(motor);
-    //SmHalSysTimer::subscribe(motor,2000,true);
 
     SmHwStorage::getInstance()->init();
 
     // Initialize display
-    SmDisplay * display = new SmDisplay();
+    SmDisplay * display = SmDisplay::getInstance();
     display->init(128,64);
     display->getCanvas()->clear();
     display->powerOn();
     display->update();
 
-    SmHwPowerMgr::getInstance()->blockSleep(display);
-
     SmHalI2c::getInstance()->reset(false);
-
 
     uint8_t data = 1;
     uint8_t reg[2] = {0x4b, 0x01};
@@ -108,29 +100,29 @@ int main(void)
     SmFont * smallFont = new SmFont();
     smallFont->init(IDX_FW_FONT_SMALL);
 
-    SmHalRtc::SmHalRtcTime rtc{2015,12,30,23,59,50};
+    SmHalRtc::SmHalRtcTime rtc{2016,10,11,23,55,50};
     SmHalRtc::getInstance()->setDateTime(rtc);
 
     //SmHalRtc::getInstance()->setAlarm(18*3600 + 0*60 + 0);
 
-    SmDesktop::getInstance()->init(display->getCanvas());
+    SmDesktop::getInstance()->init();
     while (1)
     {
         SmHalSysTimer::processEvents();
         display->update();
         SmHwPowerMgr::getInstance()->updateState();
 
-        uint8_t st1 = keyboard->getState(1);
-        uint8_t st2 = keyboard->getState(2) << 1;
-        uint8_t st3 = keyboard->getState(3) << 2;
-        uint8_t st4 = keyboard->getState(4) << 3;
+        uint8_t st1 = SmHwKeyboard::getInstance()->getState(1);
+        uint8_t st2 = SmHwKeyboard::getInstance()->getState(2) << 1;
+        uint8_t st3 = SmHwKeyboard::getInstance()->getState(3) << 2;
+        uint8_t st4 = SmHwKeyboard::getInstance()->getState(4) << 3;
 
         uint8_t st = st1|st2|st3|st4;
         if (st)
         {
             SmHwBt::getInstance()->send(0x30+st);
         }
-        if (keyboard->getState(1) && keyboard->getState(2))
+        if (SmHwKeyboard::getInstance()->getState(1) && SmHwKeyboard::getInstance()->getState(2))
         {
             SmHwPowerMgr::getInstance()->sleep();
         }

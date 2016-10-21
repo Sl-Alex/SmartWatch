@@ -35,7 +35,6 @@ public:
     };
 
     /// @brief Get latest battery value
-    /// @todo Implement correct measurement instead of raw ADC data.
     uint32_t getRaw(void) { return mRaw; }
     uint32_t getCharge(void) { return mCharge; }
     uint32_t getVoltage(void) { return mVoltage; }

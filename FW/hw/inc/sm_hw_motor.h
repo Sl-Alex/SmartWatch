@@ -18,9 +18,9 @@ private:
     void onWake(void);
 
     /// @todo Remove after testing
-    void onKeyDown(uint8_t key);
+    void onKeyDown(SmHwButtons key);
     /// @todo Remove after testing
-    void onKeyUp(uint8_t key);
+    void onKeyUp(SmHwButtons key);
 
     SmHalAbstractGpio * mGpio;
 };

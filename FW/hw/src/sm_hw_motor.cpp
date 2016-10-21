@@ -26,24 +26,15 @@ void SmHwMotor::onWake(void)
 
 void SmHwMotor::onTimer(uint32_t timeStamp)
 {
-    /// @todo Implement correct behaviour
-    static uint8_t tmp = 0;
-    tmp = 1 - tmp;
-
-    if (tmp)
-        mGpio->setPin();
-    else
-        mGpio->resetPin();
-
     SmHalSysTimer::subscribe(this,2000,false);
 }
 
-void SmHwMotor::onKeyDown(uint8_t key)
+void SmHwMotor::onKeyDown(SmHwButtons key)
 {
     mGpio->setPin();
 }
 
-void SmHwMotor::onKeyUp(uint8_t key)
+void SmHwMotor::onKeyUp(SmHwButtons key)
 {
     mGpio->resetPin();
 }

@@ -28,12 +28,11 @@ public:
     /// @brief Constructor
     SmAnimator()
         :mTick(0),
-        mX(0),
-        mY(0),
-        mXOff(0),
-        mYOff(0),
-        mW(0),
-        mH(0) {}
+        mX(0),    mY(0),
+        mXOff(0), mYOff(0),
+        mW(0),    mH(0),
+        mRunning(false)
+    {}
 
     /// @brief Set source (foreground) and destination canvas
     inline void setDestSource(SmCanvas * dest, SmCanvas * source) {pDest = dest; pSource = source;}
@@ -58,9 +57,10 @@ public:
     /// @brief Display a single animation tick
     /// @returns False when animation is done
     bool tick(void);
-    /// @brief Finish animation immediately
-    /// @todo Implement
-    void finish();
+    /// @brief Finalize animation immediately
+    void finish(void);
+    /// @brief Returns true when animation is running
+    inline bool isRunning(void) { return mRunning; }
 
 private:
     SmCanvas * pDest;
@@ -69,10 +69,12 @@ private:
     AnimType mType;
     AnimDir mDir;
 
-    int mSpeed; /// @todo Implement
+    int mSpeed;
     int mTick;
     int mLimit;
     int mX, mY, mXOff, mYOff, mW, mH;
+
+    bool mRunning;
 };
 
 #endif // SM_ANIMATOR_H

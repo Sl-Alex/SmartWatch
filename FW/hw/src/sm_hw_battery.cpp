@@ -84,7 +84,7 @@ void SmHwBattery::init()
 #endif
 }
 
-void SmHwBattery::onTimer(uint32_t timeStamp)
+void SmHwBattery::onTimer(uint32_t)
 {
 #ifndef PC_SOFTWARE
     if (mMeasStep == 0)

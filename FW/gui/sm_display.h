@@ -15,10 +15,6 @@ class SmDisplay
 #endif
 {
 public:
-    /// @brief Constructor
-    /// @details Initializes display and subscribes to SmHwPowerMgr events
-    SmDisplay();
-
     /// @brief Initializes display buffer (built-in SmCanvas)
     void init(int width, int height);
 
@@ -33,7 +29,23 @@ public:
     /// @brief Turn power off
     void powerOff(void);
 
+    /// @brief This class is a singleton, removing
+    SmDisplay(SmDisplay const&) = delete;
+    /// @brief This class is a singleton, removing
+    void operator=(SmDisplay const&) = delete;
+    ~SmDisplay(){}
+
+    /// @brief Get a singleton instance
+    static SmDisplay* getInstance()
+    {
+        static SmDisplay    instance; // Guaranteed to be destroyed.
+                              // Instantiated on first use.
+        return &instance;
+    }
+
 private:
+    SmDisplay();    ///< Default constructor is hidden
+
     void sendCommand(uint8_t cmd);
     void sendCommand(uint8_t cmd, uint8_t data);
     void sendData(uint8_t * data, uint8_t size);

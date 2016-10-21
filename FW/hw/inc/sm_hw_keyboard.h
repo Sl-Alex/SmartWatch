@@ -8,6 +8,16 @@
 #include "sm_hal_abstract_gpio.h"
 #endif
 
+enum SmHwButtons
+{
+    SM_HW_BUTTON_EXIT    = 0x01,
+    SM_HW_BUTTON_SELECT  = 0x02,
+    SM_HW_BUTTON_UP      = 0x04,
+    SM_HW_BUTTON_DOWN    = 0x08,
+    SM_HW_BUTTON_VIRT_EXIT = 0x10 ///< Virtual button (can be used by object to inform host object that all tasks are done)
+};
+
+
 /// @brief Keyboard interface
 /// @details Provides pure virtual callbacks which should be defined in the derived classes
 class SmHwKeyboardIface
@@ -18,9 +28,9 @@ public:
     /// @brief Virtual destructor
     virtual ~SmHwKeyboardIface(){}
     /// @brief onKeyDown event. Should be redefined in the derived class
-    virtual void onKeyDown(uint8_t key) = 0;
+    virtual void onKeyDown(SmHwButtons key) = 0;
     /// @brief onKeyUp event. Should be redefined in the derived class
-    virtual void onKeyUp(uint8_t key) = 0;
+    virtual void onKeyUp(SmHwButtons key) = 0;
 };
 
 /// @brief Simple GPIO keyboard class
@@ -30,12 +40,6 @@ class SmHwKeyboard: public SmHalSysTimerIface
 #endif
 {
 public:
-
-    /// @brief Constructor
-    /// @details Initializes inputs and subscribes for the system timer notifications for debouncing
-    /// Subscribes also for the power manager notifications
-    SmHwKeyboard();
-
     /// @brief get button state
     /// @param button: number from 1 to 4
     bool getState(uint8_t button) { return (mLastState >> button) & 0x01; }
@@ -54,7 +58,24 @@ public:
     uint8_t simulatedState;
 #endif
 
+    /// @brief This class is a singleton, removing
+    SmHwKeyboard(SmHwKeyboard const&) = delete;
+    /// @brief This class is a singleton, removing
+    void operator=(SmHwKeyboard const&) = delete;
+    ~SmHwKeyboard(){}
+
+    /// @brief Get a singleton instance
+    static SmHwKeyboard * getInstance()
+    {
+        static SmHwKeyboard    instance; // Guaranteed to be destroyed.
+                              // Instantiated on first use.
+        return &instance;
+    }
+
 private:
+    // Default constructor is hidden
+    SmHwKeyboard();
+
     const uint8_t DEBOUNCING_TIME = 30;
     void onTimer(uint32_t timeStamp);
 #ifndef PC_SOFTWARE

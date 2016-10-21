@@ -3,7 +3,9 @@
 
 #include <cstdint>
 
-#ifndef PC_SOFTWARE
+#ifdef PC_SOFTWARE
+#include "qglobal.h"
+#else
 #include "stm32f10x.h"
 #endif
 

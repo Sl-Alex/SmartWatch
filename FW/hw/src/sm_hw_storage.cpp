@@ -489,7 +489,6 @@ void SmHwStorage::readElement(uint8_t element, uint32_t offset, uint8_t * pData,
     readData(elementInfo.offset + offset, pData, size);
 }
 
-/// @todo Rewrite
 void SmHwStorage::readData(uint32_t offset, uint8_t *pData, uint32_t size)
 {
     // Reset text file to the beginning

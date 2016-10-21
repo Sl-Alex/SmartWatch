@@ -1,16 +1,21 @@
 #include "sm_desktop.h"
 #include "sm_image.h"
+#include "sm_animator.h"
+#include "sm_display.h"
 #include "sm_hal_rtc.h"
 #include "sm_hw_storage.h"
+#include "sm_hw_keyboard.h"
 #include <cstdio>
 
 /// @todo Implement all services initialization
-void SmDesktop::init(SmCanvas * canvas)
+void SmDesktop::init(void)
 {
     SmHwBattery::getInstance()->init();
     SmHalSysTimer::subscribe(this, 10, true);
+    SmHwKeyboard::getInstance()->initSubscribersPool(10);
+    SmHwKeyboard::getInstance()->subscribe(this);
 
-    pCanvas = canvas;
+    pCanvas = SmDisplay::getInstance()->getCanvas();
     mBatteryLevel = 50;
     mBatteryStatus = SmHwBattery::BATT_STATUS_DISCHARGING;
     for (uint8_t i = 0; i < MAX_ICONS_COUNT; ++i)
@@ -24,6 +29,11 @@ void SmDesktop::init(SmCanvas * canvas)
     pFont7SegSmall->init(18);
     pFontSmall = new SmFont();
     pFontSmall->init(IDX_FW_FONT_SMALL);
+    pMainMenu = nullptr;
+#ifndef PC_SOFTWARE
+    SmHwPowerMgr::getInstance()->blockSleep();
+    SmHwPowerMgr::getInstance()->allowSleep(5000);
+#endif
 }
 
 SmDesktop::~SmDesktop()
@@ -33,8 +43,21 @@ SmDesktop::~SmDesktop()
     delete pFontSmall;
 }
 
-void SmDesktop::onTimer(uint32_t timeStamp)
+void SmDesktop::onTimer(uint32_t)
 {
+    if (menuAnimator.isRunning())
+    {
+        menuAnimator.tick();
+        if (menuAnimator.isRunning() == false)
+        {
+            // Delete temporary and restore original canvas
+            delete pCanvas;
+            pCanvas = SmDisplay::getInstance()->getCanvas();
+            // Clear battery level (icons will be updated)
+            mBatteryLevel = 0;
+        }
+    }
+
     uint8_t newBatteryLevel = SmHwBattery::getInstance()->getCharge();
     SmHwBattery::BatteryStatus newChargeStatus = SmHwBattery::getInstance()->getStatus();
     if ((newBatteryLevel != mBatteryLevel) ||
@@ -92,6 +115,7 @@ void SmDesktop::onTimer(uint32_t timeStamp)
         }
         drawIcons();
     }
+
     uint16_t txt[] = {0x12, 0x13, 0x1A, 0x14, 0x15};
     uint16_t txt2[] = {0x15,0x19};
 #define OFFS 0
@@ -114,6 +138,8 @@ void SmDesktop::onTimer(uint32_t timeStamp)
     sprintf(date,"%2u/%02u/%04u",rtc.day,rtc.month,rtc.year);
     pCanvas->fillRect(0, 0, 80, 8, 0);
     pFontSmall->drawText(pCanvas,0,0,date);
+    if (pMainMenu != nullptr)
+        return;
 
     pFont7SegBig->drawText(pCanvas,0,64-OFFS-VSZ1,&txt[0],1);
     pFont7SegBig->drawText(pCanvas,21+3,64-OFFS-VSZ1,&txt[1],1);
@@ -146,4 +172,56 @@ void SmDesktop::drawIcons(void)
         pCanvas->drawCanvas(x_off,0,&image);
         x_off--;
     }
+}
+
+void SmDesktop::onKeyDown(SmHwButtons key)
+{
+    if (key == SM_HW_BUTTON_SELECT)
+    {
+        if (pMainMenu == nullptr)
+        {
+            // Check if pCanvas is different, delete and set default then
+            menuAnimator.finish();
+            if (pCanvas != SmDisplay::getInstance()->getCanvas())
+            {
+                delete pCanvas;
+                pCanvas = SmDisplay::getInstance()->getCanvas();
+            }
+            SmHwKeyboard::getInstance()->unsubscribe(this);
+            SmHalSysTimer::unsubscribe(this);
+            pMainMenu = new SmMainMenu(this);
+        }
+    }
+    if (key == SM_HW_BUTTON_VIRT_EXIT)
+    {
+        if (pMainMenu != nullptr)
+        {
+            delete pMainMenu;
+            pMainMenu = nullptr;
+            // Replace drawing canvas with this
+            pCanvas = new SmCanvas();
+            pCanvas->init(128,64);
+            pCanvas->clear();
+
+            menuAnimator.setDestSource(SmDisplay::getInstance()->getCanvas(), pCanvas);
+            menuAnimator.setDirection(SmAnimator::ANIM_DIR_DOWN);
+            menuAnimator.setShiftLimit(128);
+            menuAnimator.setSpeed(2);
+            menuAnimator.setType(SmAnimator::ANIM_TYPE_VIS_APPEAR);
+            menuAnimator.start(0,0,0,0,128,64);
+
+            SmHwKeyboard::getInstance()->subscribe(this);
+            SmHalSysTimer::subscribe(this,10,true);
+        }
+    }
+#ifndef PC_SOFTWARE
+    SmHwPowerMgr::getInstance()->blockSleep();
+#endif
+}
+
+void SmDesktop::onKeyUp(SmHwButtons)
+{
+#ifndef PC_SOFTWARE
+    SmHwPowerMgr::getInstance()->allowSleep(2000);
+#endif
 }

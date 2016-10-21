@@ -53,6 +53,7 @@
 
 #ifdef PC_SOFTWARE
 #include <ctime>
+#include <qglobal.h>
 #endif
 
 #ifndef PC_SOFTWARE
@@ -213,12 +214,16 @@ uint32_t SmHalRtc::getAlarm(void)
 #ifndef PC_SOFTWARE
     uint32_t tmp = RTC->ALRL;
     return (((uint32_t)RTC->ALRH << 16 ) | tmp) ;
+#else
+    return 0;
 #endif
 }
 
 void SmHalRtc::setCounter(uint32_t value)
 {
-#ifndef PC_SOFTWARE
+#ifdef PC_SOFTWARE
+    Q_UNUSED (value)
+#else
     RTC_WaitForLastTask();
     RTC_EnterConfigMode();
 
@@ -234,7 +239,9 @@ void SmHalRtc::setCounter(uint32_t value)
 
 void SmHalRtc::setAlarm(uint32_t value)
 {
-#ifndef PC_SOFTWARE
+#ifdef PC_SOFTWARE
+    Q_UNUSED (value)
+#else
     RTC_WaitForLastTask();
     RTC_EnterConfigMode();
 
@@ -253,7 +260,9 @@ void SmHalRtc::setAlarm(uint32_t value)
 
 void SmHalRtc::setDateTime(SmHalRtcTime &time)
 {
-#ifndef PC_SOFTWARE
+#ifdef PC_SOFTWARE
+    Q_UNUSED (time)
+#else
     setDate(time);
     setTime(time);
     updateAlarm();
@@ -289,7 +298,9 @@ SmHalRtc::SmHalRtcTime SmHalRtc::getDateTime(void)
 
 void SmHalRtc::setDate(SmHalRtcTime &time)
 {
-#ifndef PC_SOFTWARE
+#ifdef PC_SOFTWARE
+    Q_UNUSED(time)
+#else
     BKP_YEAR  = time.year;
     BKP_MONTH = time.month;
     BKP_DAY   = time.day;
@@ -334,7 +345,6 @@ void SmHalRtc::updateAlarm(void)
 
 extern "C" void RTCAlarm_IRQHandler(void)
 {
-    SmHalRtc::getInstance()->setCounter(23*3600 + 59*60 + 55);
     SmHalRtc::getInstance()->updateAlarm();
 
     BKP_DAY++;

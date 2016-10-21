@@ -32,7 +32,6 @@ public:
     inline int getSize(void) { return mSize; }
 
     /// @brief Calc size
-    /// @todo Do we really need this function?
     static int calcSize(int width, int height);
     
     /// @brief Get a pointer to the texture data

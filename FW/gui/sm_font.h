@@ -44,7 +44,6 @@
  */
 
 /// @brief Font class
-/// @todo Implement properly
 class SmFont: public SmImage
 {
 public:

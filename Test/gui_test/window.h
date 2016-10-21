@@ -61,8 +61,7 @@ class QPushButton;
 QT_END_NAMESPACE
 class RenderArea;
 
-//! [0]
-class Window : public QWidget, public SmHwKeyboardIface
+class Window : public QWidget
 {
     Q_OBJECT
 
@@ -71,8 +70,8 @@ public:
     void keyPressEvent(QKeyEvent * pEvent);
     void keyReleaseEvent(QKeyEvent * event);
 
-    void onKeyDown(uint8_t key);
-    void onKeyUp(uint8_t key);
+    void onKeyDown(SmHwButtons key);
+    void onKeyUp(SmHwButtons key);
 
 private slots:
     void onTimerEvent(void);
@@ -83,7 +82,6 @@ private:
     SmDesktop * desktop;
     SmImage * pImage;
     SmAnimator * pAnimator;
-    SmHwKeyboard * keyboard;
     SmFont * smallFont;
     SmDisplay * display;
     QLabel * lbl1;
@@ -93,6 +91,5 @@ private:
 
     friend class SmHalSysTimer;
 };
-//! [0]
 
 #endif // WINDOW_H

@@ -20,6 +20,11 @@ public:
 class SmHwPowerMgr: public SmHalSysTimerIface
 {
 public:
+    enum SleepTimeout {
+        SM_HW_SLEEP_SHORT = 2000,
+        SM_HW_SLEEP_LONG = 5000
+    };
+
     /// @brief Initialize wakeup lines
     void init(void);
 
@@ -48,9 +53,9 @@ public:
     void unsubscribe(SmHwPowerMgrIface *iface);
 
     /// @brief Block device from falling asleep
-    void blockSleep(SmHwPowerMgrIface * iface);
-    /// @brief Allow device to falling asleep
-    void unblockSleep(SmHwPowerMgrIface * iface);
+    void blockSleep(void);
+    /// @brief Allow device to fall asleep
+    void allowSleep(uint32_t timeout);
 
     /// @brief Update power manager state (e.g. sleep timeout)
     void updateState(void);
@@ -59,13 +64,15 @@ private:
     struct SmHwPowerMgrSubscriber
     {
         SmHwPowerMgrIface *iface;
-        bool canSleep;
     };
     SmHwPowerMgr() {}
     uint8_t mPoolSize;
     SmHwPowerMgrSubscriber *mPool;
     // SmHalSysTimerIface events
     void onTimer(uint32_t timeStamp);
+
+    uint32_t sleepBlockers;
+    bool canSleep;
 };
 
 #endif // SM_HW_POWERMGR_H
