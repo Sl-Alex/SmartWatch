@@ -147,7 +147,7 @@ bool SmAnimator::tick()
             {
                 int limit;
 
-                if (mLimit > 0)
+                if (mLimit >= 0)
                     limit = mH - 1 + mLimit;
                 else
                     limit = mY + mLimit;

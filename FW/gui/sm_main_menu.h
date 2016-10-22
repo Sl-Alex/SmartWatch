@@ -7,6 +7,7 @@
 #include "sm_strings.h"
 #include "sm_hal_sys_timer.h"
 #include "sm_hw_keyboard.h"
+#include "sm_hw_storage.h"
 
 class SmMainMenu: public SmHalSysTimerIface, public SmHwKeyboardIface
 {
@@ -22,22 +23,29 @@ public:
     /// @brief onKeyUp event.
     void onKeyUp(SmHwButtons key);
 private:
+
+    void gotoNext(void);
+    void gotoPrev(void);
+    void drawItem(void);
+
     struct SmMenuItem {
         uint8_t imageIndex;
         uint16_t * pText;
         uint16_t symbolsCount;
     };
+    const int ITEMS_COUNT = 2;
 
     SmCanvas * pCanvas;
-    SmCanvas menuForeground;
     uint16_t * pMenuText;
     SmHwKeyboardIface * pParent;
     SmAnimator menuAnimator;
     SmImage * pNewImage;
 
-    SmMenuItem cnt[2]{
-        {3, SM_STRING_BLUETOOTH, SM_STRING_BLUETOOTH_SZ},
-        {4, SM_STRING_BRIGHTNESS, SM_STRING_BRIGHTNESS_SZ}
+    uint8_t selected;
+
+    SmMenuItem items[2]{
+        {IDX_ICON_BLUETOOTH, SM_STRING_BLUETOOTH, SM_STRING_BLUETOOTH_SZ},
+        {IDX_ICON_BRIGHTNESS, SM_STRING_BRIGHTNESS, SM_STRING_BRIGHTNESS_SZ}
     };
 };
 

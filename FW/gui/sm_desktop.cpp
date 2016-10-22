@@ -24,9 +24,9 @@ void SmDesktop::init(void)
     }
 
     pFont7SegBig = new SmFont();
-    pFont7SegBig->init(17);
+    pFont7SegBig->init(IDX_FW_FONT_CLOCK_BIG);
     pFont7SegSmall = new SmFont();
-    pFont7SegSmall->init(18);
+    pFont7SegSmall->init(IDX_FW_FONT_CLOCK_SMALL);
     pFontSmall = new SmFont();
     pFontSmall->init(IDX_FW_FONT_SMALL);
     pMainMenu = nullptr;
@@ -66,7 +66,7 @@ void SmDesktop::onTimer(uint32_t)
         mBatteryLevel = newBatteryLevel;
         mBatteryStatus = newChargeStatus;
 
-        uint8_t iconNum = 5; // Base number
+        uint8_t iconNum = 7; // Base number
         if (mBatteryLevel <= 5)
         {
             // Do nothing
@@ -99,7 +99,7 @@ void SmDesktop::onTimer(uint32_t)
 
         if (mBatteryStatus != SmHwBattery::BATT_STATUS_DISCHARGING)
         {
-            setIcon(ICON_POS_POWER, 12);
+            setIcon(ICON_POS_POWER, 14);
         }
         else
         {
@@ -107,7 +107,7 @@ void SmDesktop::onTimer(uint32_t)
         }
         if (mBatteryStatus == SmHwBattery::BATT_STATUS_CHARGED)
         {
-            setIcon(ICON_POS_BATT-1, 12);
+            setIcon(ICON_POS_BATT-1, 14);
         }
         else
         {

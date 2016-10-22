@@ -57,12 +57,14 @@ struct SmHwStorageElementInfo
 /// @brief HW storage elements indices
 enum SmHwStorageIndices {
     // Fixed part begin
-    IDX_FW_VERSION = 0,         ///< FW version
-    IDX_FW_UPDATE  = 1,         ///< FW itself
-    IDX_FW_DEPENDENT_START = 2, ///< Beginning of the FW-dependent indices
+    IDX_FW_VERSION = 0,     ///< FW version
+    IDX_FW_UPDATE,          ///< FW itself
     // Fixed part end, the rest is FW-dependent
-    // First number should be equal to IDX_FW_DEPENDENT_START
-    IDX_FW_FONT_SMALL = FONT_IDX_SMALL,   ///< Small font
+    IDX_FW_FONT_SMALL,      ///< Small font
+    IDX_FW_FONT_CLOCK_BIG,  ///< Big clock font
+    IDX_FW_FONT_CLOCK_SMALL,///< Small clock font
+    IDX_ICON_BLUETOOTH,
+    IDX_ICON_BRIGHTNESS
 };
 
 /// @brief External SPI flash class
