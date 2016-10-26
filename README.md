@@ -20,4 +20,4 @@ Project is created in [EmBitz](http://www.emblocks.org/web/)<br />
 **Status**: Partially works. See [issues list](https://github.com/Sl-Alex/SmartWatch/issues) for details.<br />
 
 # Licensing
-The whole project is available under GPL v3 license (see [./LICENSE](LICENSE) file), except of files, which clearly mention other license type in the file header.
+The whole project is available under GPL v3 license (see [LICENSE](LICENSE) file), except of files, which clearly mention other license type in the file header.
