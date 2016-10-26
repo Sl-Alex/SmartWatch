@@ -61,10 +61,15 @@ enum SmHwStorageIndices {
     IDX_FW_UPDATE,          ///< FW itself
     // Fixed part end, the rest is FW-dependent
     IDX_FW_FONT_SMALL,      ///< Small font
-    IDX_FW_FONT_CLOCK_BIG,  ///< Big clock font
-    IDX_FW_FONT_CLOCK_SMALL,///< Small clock font
+    IDX_FW_FONT_1_LARGE,    ///< Big clock font
+    IDX_FW_FONT_1_MEDIUM,   ///< Small clock font
+    IDX_FW_FONT_2_LARGE,    ///< Big clock font
+    IDX_FW_FONT_2_MEDIUM,   ///< Small clock font
     IDX_ICON_BLUETOOTH,
-    IDX_ICON_BRIGHTNESS
+    IDX_ICON_DATE,
+    IDX_ICON_TIME,
+    IDX_ICON_ARROW_DOWN,
+    IDX_ICON_ARROW_UP
 };
 
 /// @brief External SPI flash class

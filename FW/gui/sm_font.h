@@ -75,6 +75,8 @@ public:
     uint32_t getStringWidth(uint16_t * text, uint16_t count);
     /// @brief Get ASCII text width
     uint32_t getStringWidth(char * text);
+    uint32_t getFontHeight(void) { return mFontHeight; }
+    uint32_t getBaseLine(void) {return mBaseLine; }
 private:
     uint32_t mFontOffset;   ///< Start address of the font element in the external flash
     // These parameters are stored in external flash

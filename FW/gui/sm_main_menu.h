@@ -8,6 +8,7 @@
 #include "sm_hal_sys_timer.h"
 #include "sm_hw_keyboard.h"
 #include "sm_hw_storage.h"
+#include "sm_edit_menu.h"
 
 class SmMainMenu: public SmHalSysTimerIface, public SmHwKeyboardIface
 {
@@ -33,19 +34,20 @@ private:
         uint16_t * pText;
         uint16_t symbolsCount;
     };
-    const int ITEMS_COUNT = 2;
+    static const int ITEMS_COUNT = 3;
 
     SmCanvas * pCanvas;
-    uint16_t * pMenuText;
     SmHwKeyboardIface * pParent;
     SmAnimator menuAnimator;
-    SmImage * pNewImage;
+
+    SmEditMenu * pEditMenu;
 
     uint8_t selected;
 
-    SmMenuItem items[2]{
+    SmMenuItem items[ITEMS_COUNT]{
         {IDX_ICON_BLUETOOTH, SM_STRING_BLUETOOTH, SM_STRING_BLUETOOTH_SZ},
-        {IDX_ICON_BRIGHTNESS, SM_STRING_BRIGHTNESS, SM_STRING_BRIGHTNESS_SZ}
+        {IDX_ICON_DATE, SM_STRING_DATE, SM_STRING_DATE_SZ},
+        {IDX_ICON_TIME, SM_STRING_TIME, SM_STRING_TIME_SZ}
     };
 };
 

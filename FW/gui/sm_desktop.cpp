@@ -24,9 +24,9 @@ void SmDesktop::init(void)
     }
 
     pFont7SegBig = new SmFont();
-    pFont7SegBig->init(IDX_FW_FONT_CLOCK_BIG);
+    pFont7SegBig->init(IDX_FW_FONT_1_LARGE);
     pFont7SegSmall = new SmFont();
-    pFont7SegSmall->init(IDX_FW_FONT_CLOCK_SMALL);
+    pFont7SegSmall->init(IDX_FW_FONT_1_MEDIUM);
     pFontSmall = new SmFont();
     pFontSmall->init(IDX_FW_FONT_SMALL);
     pMainMenu = nullptr;
@@ -48,7 +48,7 @@ void SmDesktop::onTimer(uint32_t)
     if (menuAnimator.isRunning())
     {
         menuAnimator.tick();
-        if (menuAnimator.isRunning() == false)
+        if (!menuAnimator.isRunning())
         {
             // Delete temporary and restore original canvas
             delete pCanvas;
@@ -66,7 +66,7 @@ void SmDesktop::onTimer(uint32_t)
         mBatteryLevel = newBatteryLevel;
         mBatteryStatus = newChargeStatus;
 
-        uint8_t iconNum = 7; // Base number
+        uint8_t iconNum = 12; // Base number
         if (mBatteryLevel <= 5)
         {
             // Do nothing
@@ -99,7 +99,7 @@ void SmDesktop::onTimer(uint32_t)
 
         if (mBatteryStatus != SmHwBattery::BATT_STATUS_DISCHARGING)
         {
-            setIcon(ICON_POS_POWER, 14);
+            setIcon(ICON_POS_POWER, 19);
         }
         else
         {
@@ -107,7 +107,7 @@ void SmDesktop::onTimer(uint32_t)
         }
         if (mBatteryStatus == SmHwBattery::BATT_STATUS_CHARGED)
         {
-            setIcon(ICON_POS_BATT-1, 14);
+            setIcon(ICON_POS_BATT-1, 19);
         }
         else
         {
@@ -118,10 +118,9 @@ void SmDesktop::onTimer(uint32_t)
 
     uint16_t txt[] = {0x12, 0x13, 0x1A, 0x14, 0x15};
     uint16_t txt2[] = {0x15,0x19};
-#define OFFS 0
-#define VSZ1 41
+    uint32_t V1 = 64 - pFont7SegBig->getFontHeight();
 #define W1   21
-#define VSZ2 21
+    uint32_t V2 = 64 - pFont7SegSmall->getFontHeight();
 #define W2   11
     SmHalRtc::SmHalRtcTime rtc = SmHalRtc::getInstance()->getDateTime();
 
@@ -141,13 +140,13 @@ void SmDesktop::onTimer(uint32_t)
     if (pMainMenu != nullptr)
         return;
 
-    pFont7SegBig->drawText(pCanvas,0,64-OFFS-VSZ1,&txt[0],1);
-    pFont7SegBig->drawText(pCanvas,21+3,64-OFFS-VSZ1,&txt[1],1);
-    pFont7SegBig->drawText(pCanvas,21+3+21+3,64-OFFS-VSZ1,&txt[2],1);
-    pFont7SegBig->drawText(pCanvas,21+3+21+3+3+3,64-OFFS-VSZ1,&txt[3],1);
-    pFont7SegBig->drawText(pCanvas,21+3+21+3+3+3+21+3,64-OFFS-VSZ1,&txt[4],1);
-    pFont7SegSmall->drawText(pCanvas,21+3+21+3+3+3+21+3+21+3,64-OFFS-VSZ2,&txt2[0],1);
-    pFont7SegSmall->drawText(pCanvas,21+3+21+3+3+3+21+3+21+3+11+3,64-OFFS-VSZ2,&txt2[1],1);
+    pFont7SegBig->drawText(pCanvas,0,V1,&txt[0],1);
+    pFont7SegBig->drawText(pCanvas,21+3,V1,&txt[1],1);
+    pFont7SegBig->drawText(pCanvas,21+3+21+3,V1,&txt[2],1);
+    pFont7SegBig->drawText(pCanvas,21+3+21+3+3+3,V1,&txt[3],1);
+    pFont7SegBig->drawText(pCanvas,21+3+21+3+3+3+21+3,V1,&txt[4],1);
+    pFont7SegSmall->drawText(pCanvas,21+3+21+3+3+3+21+3+21+3,V2,&txt2[0],1);
+    pFont7SegSmall->drawText(pCanvas,21+3+21+3+3+3+21+3+21+3+11+3,V2,&txt2[1],1);
 }
 
 void SmDesktop::setIcon(uint8_t pos, uint8_t icon)
@@ -181,9 +180,9 @@ void SmDesktop::onKeyDown(SmHwButtons key)
         if (pMainMenu == nullptr)
         {
             // Check if pCanvas is different, delete and set default then
-            menuAnimator.finish();
-            if (pCanvas != SmDisplay::getInstance()->getCanvas())
+            if (menuAnimator.isRunning())
             {
+                menuAnimator.finish();
                 delete pCanvas;
                 pCanvas = SmDisplay::getInstance()->getCanvas();
             }

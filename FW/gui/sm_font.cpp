@@ -52,8 +52,8 @@ uint32_t SmFont::getSymbolWidth(uint16_t symbol)
     SmHwStorage::getInstance()->readData(mDataTableOffset + symbol * sizeof(offset),
                                          (uint8_t *)&offset, sizeof(offset));
 
-    SmImage::initHeaderOffset(offset);
-    return this->getWidth();
+    SmImage::initHeaderOffset(offset + mFontOffset);
+    return SmImage::getHeader()->width;
 }
 
 void SmFont::drawText(SmCanvas * canvas, int x, int y, uint16_t * text, uint16_t count)

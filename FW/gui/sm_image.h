@@ -28,6 +28,11 @@
 class SmImage: public SmCanvas
 {
 public:
+    struct SmImageHeader {
+        int width;
+        int height;
+        int size;
+    };
 
     /// @brief Init image by index (see @ref EXTERNAL_FLASH)
     virtual bool init(int imageIndex);
@@ -38,14 +43,10 @@ public:
     /// @brief Init only header, not the data;
     virtual void initHeaderOffset(uint32_t offset);
 
-private:
-    struct ImageHeader {
-        int width;
-        int height;
-        int size;
-    };
+    virtual SmImageHeader * getHeader(void) { return &header; }
 
-    ImageHeader header;
+private:
+    SmImageHeader header;
 };
 
 #endif // SM_IMAGE_H

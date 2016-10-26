@@ -218,4 +218,5 @@ void SmAnimator::finish(void)
         }
     }
     tick();
+    mRunning = false;
 }

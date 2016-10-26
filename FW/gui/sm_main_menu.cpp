@@ -23,25 +23,45 @@ SmMainMenu::SmMainMenu(SmHwKeyboardIface * parent)
 
 SmMainMenu::~SmMainMenu()
 {
-    if (pCanvas != 0)
+    if (menuAnimator.isRunning())
+    {
+        menuAnimator.finish();
         delete pCanvas;
+    }
+
     SmHwKeyboard::getInstance()->unsubscribe(this);
     SmHalSysTimer::unsubscribe(this);
 }
 
 void SmMainMenu::onTimer(uint32_t)
 {
-    menuAnimator.tick();
+    if (menuAnimator.isRunning())
+    {
+        menuAnimator.tick();
+        if (!menuAnimator.isRunning())
+        {
+            delete pCanvas;
+            pCanvas = SmDisplay::getInstance()->getCanvas();
+        }
+    }
 }
 
 void SmMainMenu::gotoNext(void)
 {
+    if (menuAnimator.isRunning())
+    {
+        menuAnimator.finish();
+        delete pCanvas;
+        pCanvas = SmDisplay::getInstance()->getCanvas();
+    }
+
+    pCanvas = new SmCanvas();
+    pCanvas->init(128,64);
+
     if (selected < ITEMS_COUNT - 1)
         selected++;
     else
         selected = 0;
-
-    menuAnimator.finish();
 
     drawItem();
 
@@ -55,12 +75,20 @@ void SmMainMenu::gotoNext(void)
 
 void SmMainMenu::gotoPrev(void)
 {
+    if (menuAnimator.isRunning())
+    {
+        menuAnimator.finish();
+        delete pCanvas;
+        pCanvas = SmDisplay::getInstance()->getCanvas();
+    }
+
+    pCanvas = new SmCanvas();
+    pCanvas->init(128,64);
+
     if (selected > 0)
         selected--;
     else
         selected = ITEMS_COUNT - 1;
-
-    menuAnimator.finish();
 
     drawItem();
 
@@ -96,13 +124,48 @@ void SmMainMenu::onKeyDown(SmHwButtons key)
     {
         gotoPrev();
     }
+    if (key == SM_HW_BUTTON_SELECT)
+    {
+        // Finalize animation if it is active
+        if (menuAnimator.isRunning())
+        {
+            menuAnimator.finish();
+            delete pCanvas;
+            pCanvas = SmDisplay::getInstance()->getCanvas();
+        }
+        // Unsubscribe from all notifications
+        SmHalSysTimer::unsubscribe(this);
+        SmHwKeyboard::getInstance()->unsubscribe(this);
+        // Create "Edit" menu
+        pEditMenu = new SmEditMenu(this);
+    }
+    if (key == SM_HW_BUTTON_VIRT_EXIT)
+    {
+        delete pEditMenu;
+
+        pCanvas = new SmCanvas();
+        pCanvas->init(128,64);
+
+        drawItem();
+        menuAnimator.setDirection(SmAnimator::ANIM_DIR_RIGHT);
+        menuAnimator.setDestSource(SmDisplay::getInstance()->getCanvas(),pCanvas);
+        menuAnimator.setShiftLimit(128);
+        menuAnimator.setSpeed(4);
+        menuAnimator.setType(SmAnimator::ANIM_TYPE_VIS_APPEAR);
+        menuAnimator.start(0,0,0,0,128,64);
+
+        SmHwKeyboard::getInstance()->subscribe(this);
+        SmHalSysTimer::subscribe(this, 10, true);
+    }
     if (key == SM_HW_BUTTON_EXIT)
     {
         // Finalize animation if it is active
-        menuAnimator.finish();
-        // Cleanup canvas
-        delete pCanvas;
-        pCanvas = 0;
+        if (menuAnimator.isRunning())
+        {
+            menuAnimator.finish();
+            delete pCanvas;
+            pCanvas = SmDisplay::getInstance()->getCanvas();
+        }
         // Inform parent that we are done
         // Do nothing after this step because we will be destroyed here
         pParent->onKeyDown(SM_HW_BUTTON_VIRT_EXIT);

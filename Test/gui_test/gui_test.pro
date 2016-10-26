@@ -24,7 +24,9 @@ HEADERS       = \
     ../../FW/inc/sm_crc.h \
     ../../FW/hal/inc/sm_hal_sys_timer.h \
     ../../FW/gui/sm_display.h \
-    ../../FW/gui/sm_main_menu.h
+    ../../FW/gui/sm_main_menu.h \
+    ../../FW/gui/sm_edit_menu.h \
+    ../../FW/gui/sm_editor.h
     ../../FW/gui/sm_main_menu.h
 
 SOURCES       = \
@@ -44,6 +46,8 @@ SOURCES       = \
     ../../FW/hal/src/sm_hal_sys_timer.cpp \
     ../../FW/gui/sm_display.cpp \
     ../../FW/gui/sm_main_menu.cpp \
-    ../../FW/hal/src/sm_hal_rtc.cpp
+    ../../FW/hal/src/sm_hal_rtc.cpp \
+    ../../FW/gui/sm_edit_menu.cpp \
+    ../../FW/gui/sm_editor.cpp
 
 RESOURCES     =
