@@ -19,7 +19,7 @@ SmEditor::~SmEditor()
 
 void SmEditor::init(const std::vector<SmEditorItem> &items)
 {
-    uint32_t maxWidth = 0;
+    uint32_t maxWidth = mArrowUp.getWidth();
     // Copy vector
     mItems.clear();
     mItems.reserve(items.size());
