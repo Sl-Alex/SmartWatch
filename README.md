@@ -9,7 +9,7 @@ This project aims to create an open-source smartwatch with the following functio
 - BMP180 barometer/thermometer (just because there is a plenty of space).
 - 320mAh battery allowing more than 1 week standby time (with BLE active).
 - PCB size: 37*25, complete assembled height should be about 10mm.
-- 3D models for all parts are in my [KiCAD_libs](https://github.com/Sl-Alex/KiCAD_libs) repository, case will be available a later, so the whole project can be easily reproduced.
+- 3D models for all parts are in my [KiCAD_libs](https://github.com/Sl-Alex/KiCAD_libs) repository, case will be available a bit later, so the whole project can be easily reproduced.
 
 # Hardware
 Both schematic and PCB were created with KiCAD. KiCAD project is located in the PCB subfolder. Project uses components from my [KiCAD_libs](https://github.com/Sl-Alex/KiCAD_libs) repository.<br />
