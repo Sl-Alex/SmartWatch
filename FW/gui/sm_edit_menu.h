@@ -13,7 +13,14 @@
 class SmEditMenu: public SmHalSysTimerIface, public SmHwKeyboardIface
 {
 public:
-    SmEditMenu(SmHwKeyboardIface * parent);
+    enum EditGroup
+    {
+        EG_BLUETOOTH = 0,
+        EG_DATE,
+        EG_TIME
+    };
+
+    SmEditMenu(SmHwKeyboardIface * parent, EditGroup group );
     ~SmEditMenu();
 
     /// @brief System timer event
@@ -23,18 +30,26 @@ public:
     void onKeyDown(SmHwButtons key);
     /// @brief onKeyUp event.
     void onKeyUp(SmHwButtons key);
+
+    /// @brief get Result for the specified editor
+    uint8_t getResult(uint8_t editorNum);
 private:
 
     void gotoNext(void);
     void drawItems(void);
 
-    static const int ITEMS_COUNT = 4;
+    static const int ITEMS_COUNT_MAX = 6;
 
     SmCanvas * pCanvas;
     SmHwKeyboardIface * pParent;
     SmAnimator menuAnimator;
+    EditGroup mGroup;
+    uint8_t itemsCount;
 
-    SmEditor mEditors[ITEMS_COUNT];
+    SmEditor mEditors[ITEMS_COUNT_MAX];
+
+    uint16_t * mHint;
+    uint8_t mHintLen;
 
     uint8_t mSelected;
 };

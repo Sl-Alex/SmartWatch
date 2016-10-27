@@ -137,11 +137,28 @@ void SmMainMenu::onKeyDown(SmHwButtons key)
         SmHalSysTimer::unsubscribe(this);
         SmHwKeyboard::getInstance()->unsubscribe(this);
         // Create "Edit" menu
-        pEditMenu = new SmEditMenu(this);
+        switch(items[selected].imageIndex)
+        {
+            case IDX_ICON_BLUETOOTH:
+                pEditMenu = new SmEditMenu(this, SmEditMenu::EG_BLUETOOTH);
+            break;
+            case IDX_ICON_DATE:
+                pEditMenu = new SmEditMenu(this, SmEditMenu::EG_DATE);
+            break;
+            case IDX_ICON_TIME:
+                pEditMenu = new SmEditMenu(this, SmEditMenu::EG_TIME);
+            break;
+            default:
+                pEditMenu = nullptr;
+        }
+
     }
     if (key == SM_HW_BUTTON_VIRT_EXIT)
     {
-        delete pEditMenu;
+        if (pEditMenu != nullptr)
+            delete pEditMenu;
+
+        pEditMenu = nullptr;
 
         pCanvas = new SmCanvas();
         pCanvas->init(128,64);

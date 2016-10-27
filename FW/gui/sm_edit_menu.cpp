@@ -4,10 +4,11 @@
 #include "sm_hw_storage.h"
 #include "sm_strings.h"
 
-SmEditMenu::SmEditMenu(SmHwKeyboardIface * parent)
+SmEditMenu::SmEditMenu(SmHwKeyboardIface * parent, EditGroup group)
     :pParent(parent)
 {
     mSelected = 0;
+    mGroup = group;
     pCanvas = new SmCanvas();
     pCanvas->init(128,64);
     pCanvas->clear();
@@ -22,13 +23,47 @@ SmEditMenu::SmEditMenu(SmHwKeyboardIface * parent)
         {SM_STRING_6,SM_STRING_6_SZ},
         {SM_STRING_7,SM_STRING_7_SZ},
         {SM_STRING_8,SM_STRING_8_SZ},
-        {SM_STRING_9,SM_STRING_9_SZ},
+        {SM_STRING_9,SM_STRING_9_SZ}
+    };
+    std::vector<SmEditor::SmEditorItem> onOff = std::vector<SmEditor::SmEditorItem>{
+        {SM_STRING_ON_SYMB,SM_STRING_ON_SYMB_SZ},
+        {SM_STRING_OFF_SYMB,SM_STRING_OFF_SYMB_SZ},
     };
 
-    mEditors[0].init(numbers);
-    mEditors[1].init(numbers);
-    mEditors[2].init(numbers);
-    mEditors[3].init(numbers);
+    switch (mGroup) {
+    case EG_BLUETOOTH:
+        mEditors[0].init(onOff);
+        mEditors[1].init(numbers);
+        mEditors[2].init(numbers);
+        mEditors[3].init(numbers);
+        mEditors[4].init(numbers);
+        itemsCount = 5;
+        mHint = SM_STRING_BT_HINT;
+        mHintLen = SM_STRING_BT_HINT_SZ;
+        break;
+    case EG_DATE:
+        mEditors[0].init(numbers);
+        mEditors[1].init(numbers);
+        mEditors[2].init(numbers);
+        mEditors[3].init(numbers);
+        mEditors[4].init(numbers);
+        mEditors[5].init(numbers);
+        itemsCount = 6;
+        mHint = SM_STRING_DATE_HINT;
+        mHintLen = SM_STRING_DATE_HINT_SZ;
+        break;
+    case EG_TIME:
+        mEditors[0].init(numbers);
+        mEditors[1].init(numbers);
+        mEditors[2].init(numbers);
+        mEditors[3].init(numbers);
+        itemsCount = 4;
+        mHint = SM_STRING_TIME_HINT;
+        mHintLen = SM_STRING_TIME_HINT_SZ;
+        break;
+    default:
+        break;
+    }
 
     mEditors[0].setFocus();
 
@@ -78,12 +113,12 @@ void SmEditMenu::gotoNext(void)
         pCanvas = SmDisplay::getInstance()->getCanvas();
     }
 
-    if (mSelected < ITEMS_COUNT - 1)
+    if (mSelected < itemsCount - 1)
         mSelected++;
     else
         mSelected = 0;
 
-    for (uint32_t i = 0; i < ITEMS_COUNT; i++)
+    for (uint32_t i = 0; i < itemsCount; i++)
     {
         if (i != mSelected)
             mEditors[i].clearFocus();
@@ -106,18 +141,31 @@ void SmEditMenu::gotoNext(void)
 void SmEditMenu::drawItems(void)
 {
 //    menuAnimator.finish();
+    switch (mGroup) {
+    case EG_BLUETOOTH:
+        pCanvas->drawCanvas(10, 10,&mEditors[0]);
+        pCanvas->drawCanvas(40, 10,&mEditors[1]);
+        pCanvas->drawCanvas(60, 10,&mEditors[2]);
+        pCanvas->drawCanvas(80, 10,&mEditors[3]);
+        pCanvas->drawCanvas(100,10,&mEditors[4]);
+        break;
+    case EG_DATE:
+        break;
+    case EG_TIME:
+        break;
+    default:
+        break;
+    }
 
-    pCanvas->drawCanvas(30,16,&mEditors[0]);
-    pCanvas->drawCanvas(50,16,&mEditors[1]);
-    pCanvas->drawCanvas(70,16,&mEditors[2]);
-    pCanvas->drawCanvas(90,16,&mEditors[3]);
 
+    SmFont font;
+    font.init(IDX_FW_FONT_SMALL);
+    uint32_t len = font.getStringWidth(mHint, mHintLen);
+    font.drawText(pCanvas, 64 - len/2, 55, mHint, mHintLen);
 /*
     SmImage image;
-    SmFont font;
 
     image.init(items[selected].imageIndex);
-    font.init(IDX_FW_FONT_SMALL);
 
     pCanvas->clear();
     pCanvas->drawCanvas(16,10,&image);
