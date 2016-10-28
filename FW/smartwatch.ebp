@@ -73,11 +73,10 @@
 			<Add symbol="PACK_VERT" />
 			<Add directory=".\inc" />
 			<Add directory=".\src" />
-			<Add directory=".\cmsis" />
-			<Add directory=".\SPL\inc" />
-			<Add directory=".\SPL\src" />
+			<Add directory=".\thirdparty" />
 			<Add directory=".\hal\inc" />
 			<Add directory=".\hw\inc" />
+			<Add directory=".\gui" />
 		</Compiler>
 		<Cpp>
 			<Add option="-fno-exceptions" />
@@ -89,9 +88,6 @@
 			<Add option="-lstdc++" />
 			<Add option="-eb_start_files" />
 		</Linker>
-		<Unit filename="cmsis\core_cm3.h" />
-		<Unit filename="cmsis\core_cmFunc.h" />
-		<Unit filename="cmsis\core_cmInstr.h" />
 		<Unit filename="gui\sm_animator.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -105,6 +101,12 @@
 		</Unit>
 		<Unit filename="gui\sm_desktop.h" />
 		<Unit filename="gui\sm_display.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="gui\sm_edit_menu.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="gui\sm_editor.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="gui\sm_font.cpp">
@@ -178,8 +180,6 @@
 		</Unit>
 		<Unit filename="inc\sm_crc.h" />
 		<Unit filename="inc\sm_strings.h" />
-		<Unit filename="inc\stm32f10x.h" />
-		<Unit filename="inc\system_stm32f10x.h" />
 		<Unit filename="readme.txt" />
 		<Unit filename="src\main.cpp">
 			<Option compilerVar="CC" />
@@ -195,6 +195,11 @@
 		</Unit>
 		<Unit filename="stm32f103cb_flash.ld" />
 		<Unit filename="stm32f103cb_sram.ld" />
+		<Unit filename="thirdparty\core_cm3.h" />
+		<Unit filename="thirdparty\core_cmFunc.h" />
+		<Unit filename="thirdparty\core_cmInstr.h" />
+		<Unit filename="thirdparty\stm32f10x.h" />
+		<Unit filename="thirdparty\system_stm32f10x.h" />
 		<Extensions>
 			<code_completion />
 			<debugger>

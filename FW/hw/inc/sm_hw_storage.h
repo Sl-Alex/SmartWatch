@@ -52,6 +52,11 @@ struct SmHwStorageElementInfo
     uint32_t size;      ///< Element size (bytes)
 };
 
+struct SmHwStorageSettings
+{
+    uint32_t BtPin;
+};
+
 #include "sm_strings.h"
 
 /// @brief HW storage elements indices
@@ -117,9 +122,19 @@ public:
     /// @param size: Number of bytes to read
     void readData(uint32_t offset, uint8_t *pData, uint32_t size);
 
+    /// @brief Read user settings structure
+    void readSettings(SmHwStorageSettings * settings);
+    /// @brief Write user settings structure
+    void writeSettings(const SmHwStorageSettings * const settings);
+
     /// @brief Get elements count
     inline uint32_t elementsCount(void) { return mCount; }
 
+    void startFwDataErase(void);
+    bool isFwDataErased(void);
+
+    void startSettingsErase(void);
+    bool isSettingsErased(void);
 private:
     SmHwStorage() {}
     #ifndef PC_SOFTWARE

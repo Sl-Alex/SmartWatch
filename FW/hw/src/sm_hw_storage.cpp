@@ -16,7 +16,10 @@
 
 #define SPI_BASE        SPI2_BASE
 
-
+// Flash layout
+#define FW_DATA_SECTOR_START    0
+#define FW_DATA_SECTOR_END      6
+#define USER_SETTINGS_SECTOR    7
 
 #define FLASH_DUMMY_BYTE                0xA5
 
@@ -190,6 +193,16 @@ void SmHwStorage::readData(uint32_t offset, uint8_t *pData, uint32_t size)
 
     // Deselect the FLASH: Chip Select high
     mSpi->setSs();
+}
+
+void readSettings(SmHwStorageSettings * settings)
+{
+
+}
+
+void writeSettings(const SmHwStorageSettings * const settings)
+{
+
 }
 
 /// @brief Enable write.

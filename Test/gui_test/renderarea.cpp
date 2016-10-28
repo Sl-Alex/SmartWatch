@@ -64,7 +64,7 @@ QSize RenderArea::minimumSizeHint() const
 
 QSize RenderArea::sizeHint() const
 {
-    return QSize(128*3, 64*3);
+    return QSize(128*1, 64*1);
 }
 
 void RenderArea::paintEvent(QPaintEvent * /* event */)
