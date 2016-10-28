@@ -187,18 +187,18 @@
 		<Unit filename="src\sm_crc.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="src\startup_stm32f10x_md.S">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src\system_stm32f10x.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="stm32f103cb_flash.ld" />
 		<Unit filename="stm32f103cb_sram.ld" />
 		<Unit filename="thirdparty\core_cm3.h" />
 		<Unit filename="thirdparty\core_cmFunc.h" />
 		<Unit filename="thirdparty\core_cmInstr.h" />
+		<Unit filename="thirdparty\startup_stm32f10x_md.S">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="thirdparty\stm32f10x.h" />
+		<Unit filename="thirdparty\system_stm32f10x.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="thirdparty\system_stm32f10x.h" />
 		<Extensions>
 			<code_completion />
