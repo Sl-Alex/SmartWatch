@@ -21,6 +21,10 @@ public:
     void setFocus(void);
     void clearFocus(void);
 
+    void setMinMax(uint32_t min, uint32_t max);
+    uint32_t getSelection(void) { return mSelected; }
+    void setSelection(uint32_t selection);
+
     void onKeyDown(SmHwButtons key);
     void onKeyUp(SmHwButtons key);
 
@@ -29,9 +33,12 @@ private:
     std::vector<SmEditorItem> mItems;
     SmFont mFont;
     bool mFocused;
-    uint32_t mSelected;
     SmImage mArrowUp;
     SmImage mArrowDown;
+
+    uint32_t mSelected;
+    uint32_t mSelMin;
+    uint32_t mSelMax;
 };
 
 #endif // SM_EDITOR_H

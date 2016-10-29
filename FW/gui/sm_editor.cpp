@@ -3,7 +3,7 @@
 
 SmEditor::SmEditor()
 {
-    mFont.init(IDX_FW_FONT_1_MEDIUM);
+    mFont.init(IDX_FW_FONT_2_MEDIUM);
     mFocused = false;
     mArrowDown.init(IDX_ICON_ARROW_DOWN);
     mArrowUp.init(IDX_ICON_ARROW_UP);
@@ -42,6 +42,8 @@ void SmEditor::init(const std::vector<SmEditorItem> &items)
                    + 4);
 
     mSelected = 0;
+    mSelMin = 0;
+    mSelMax = mItems.size() - 1;
     refreshImage();
 }
 
@@ -85,21 +87,63 @@ void SmEditor::onKeyDown(SmHwButtons key)
 {
     if (key == SM_HW_BUTTON_DOWN)
     {
-        if (mSelected < mItems.size() - 1)
+        if (mSelected < mSelMax)
             mSelected++;
         else
-            mSelected = 0;
+            mSelected = mSelMin;
     }
     if (key == SM_HW_BUTTON_UP)
     {
-        if (mSelected > 0)
+        if (mSelected > mSelMin)
             mSelected--;
         else
-            mSelected = mItems.size() - 1;
+            mSelected = mSelMax;
     }
     refreshImage();
 }
 
 void SmEditor::onKeyUp(SmHwButtons)
 {
+}
+
+void SmEditor::setMinMax(uint32_t min, uint32_t max)
+{
+    bool refresh;
+
+    if (min >= mItems.size())
+        min = mItems.size() - 1;
+    if (max >= mItems.size())
+        max = mItems.size() - 1;
+
+    mSelMin = min;
+    mSelMax = max;
+
+    if (mSelected < mSelMin)
+    {
+        refresh = true;
+        mSelected = mSelMin;
+    }
+    if (mSelected > mSelMax)
+    {
+        refresh = true;
+        mSelected = mSelMax;
+    }
+
+    if (refresh)
+        refreshImage();
+}
+
+void SmEditor::setSelection(uint32_t selection)
+{
+    if (selection > mSelMax)
+        selection = mSelMax;
+    if (selection < mSelMin)
+        selection = mSelMin;
+
+    if (selection == mSelected)
+        return;
+
+    mSelected = selection;
+
+    refreshImage();
 }

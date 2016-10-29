@@ -52,6 +52,8 @@ private:
     uint8_t mHintLen;
 
     uint8_t mSelected;
+
+    bool mModified;
 };
 
 #endif // SM_EDIT_MENU_H
