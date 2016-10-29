@@ -184,7 +184,7 @@ void SmHwBattery::updateValues(void)
     if (mRaw < BAT_MIN)
     {
         mRaw = BAT_MAX;
-        if (mStatus != BATT_STATUS_CHARGED)
+        if (mStatus != BATT_STATUS_CHARGING)
         {
             mStatus = (BatteryStatus)((int)mStatus + 1);
         }

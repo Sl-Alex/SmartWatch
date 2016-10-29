@@ -59,7 +59,7 @@ RenderArea::~RenderArea()
 
 QSize RenderArea::minimumSizeHint() const
 {
-    return QSize(128*2, 64*2);
+    return QSize(128*1, 64*1);
 }
 
 QSize RenderArea::sizeHint() const

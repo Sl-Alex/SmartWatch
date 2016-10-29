@@ -3,7 +3,7 @@
 
 SmEditor::SmEditor()
 {
-    mFont.init(IDX_FW_FONT_2_MEDIUM);
+    mFont.init(IDX_FW_FONT_1_MEDIUM);
     mFocused = false;
     mArrowDown.init(IDX_ICON_ARROW_DOWN);
     mArrowUp.init(IDX_ICON_ARROW_UP);

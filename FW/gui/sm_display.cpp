@@ -232,6 +232,6 @@ void SmDisplay::onSleep(void)
 void SmDisplay::onWake(void)
 {
 #ifndef PC_SOFTWARE
-    powerOn();
+//    powerOn();
 #endif
 }

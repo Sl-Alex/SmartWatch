@@ -1,6 +1,7 @@
 #include <cstring>
 
 #include "sm_hw_keyboard.h"
+#include "sm_display.h"
 #ifndef PC_SOFTWARE
 #include "sm_hal_gpio.h"
 #endif
@@ -60,6 +61,7 @@ void SmHwKeyboard::onTimer(uint32_t)
     mLastState = newState;
     if (changes)
     {
+        SmDisplay::getInstance()->powerOn();
         uint8_t bit = 0x01;
         // Check each key
         for (uint8_t key = 0; key < 4; ++key)
