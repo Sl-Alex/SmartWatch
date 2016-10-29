@@ -13,11 +13,11 @@ This project aims to create an open-source smartwatch with the following functio
 
 # Hardware
 Both schematic and PCB were created with KiCAD. KiCAD project is located in the PCB subfolder. Project uses components from my [KiCAD_libs](https://github.com/Sl-Alex/KiCAD_libs) repository.<br />
-**Status**: Finished. PCB is assembled, all HW features are tested and work as expected. Standby current (without BLE) is about 250uA, active mode (display and all peripherals are on) consumes about 65mA. BLE module itself consumes about 1mA average current.
+**Status**: Finished. PCB is assembled, all HW features are tested and work as expected. Standby time seems to be about 3 weeks (with BLE active).
 
 # Software
 Project is created in [EmBitz](http://www.emblocks.org/web/)<br />
-**Status**: Partially works. See [issues list](https://github.com/Sl-Alex/SmartWatch/issues) for details.<br />
+**Status**: Can be used as a standalone watch (BT sync is not implemented yet). See [issues list](https://github.com/Sl-Alex/SmartWatch/issues) for details.<br />
 
 # Licensing
 The whole project is available under GPL v3 license (see [LICENSE](LICENSE) file), except of files, which clearly mention other license type in the file header.
