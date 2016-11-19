@@ -76,7 +76,7 @@ private:
 #ifndef PC_SOFTWARE
     // SmHalSysTimerIface events
     void onSleep(void);
-    void onWake(void);
+    void onWake(uint32_t wakeSource);
 #endif
 
     void updateValues(void);

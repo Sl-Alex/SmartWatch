@@ -130,7 +130,7 @@ void SmHwBattery::onSleep(void)
     mGpioEn->resetPin();
 }
 
-void SmHwBattery::onWake(void)
+void SmHwBattery::onWake(uint32_t wakeSource)
 {
     ADC1->CR2 |= ADC_CR2_ADON;
     mMeasStep = 0;

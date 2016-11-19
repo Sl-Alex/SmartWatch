@@ -3,7 +3,7 @@
 
 SmHalSysTimer::SmHalSysTimerSubscriber *SmHalSysTimer::mPool = 0;
 uint8_t SmHalSysTimer::mPoolSize = 0;
-uint32_t SmHalSysTimer::mTimeStamp = 0;
+volatile uint32_t SmHalSysTimer::mTimeStamp = 0;
 
 bool SmHalSysTimer::subscribe(SmHalSysTimerIface *iface, uint32_t period, bool repeat)
 {

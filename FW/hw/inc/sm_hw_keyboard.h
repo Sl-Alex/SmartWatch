@@ -80,7 +80,7 @@ private:
     void onTimer(uint32_t timeStamp);
 #ifndef PC_SOFTWARE
     void onSleep(void);
-    void onWake(void);
+    void onWake(uint32_t wakeSource);
     SmHalAbstractGpio * mGpioPins[4];
 #endif
     uint8_t mLastState;

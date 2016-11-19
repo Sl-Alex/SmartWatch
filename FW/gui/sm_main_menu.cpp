@@ -13,12 +13,14 @@ SmMainMenu::SmMainMenu(SmHwKeyboardIface * parent)
     menuAnimator.setDirection(SmAnimator::ANIM_DIR_UP);
     menuAnimator.setDestSource(SmDisplay::getInstance()->getCanvas(),pCanvas);
     menuAnimator.setShiftLimit(128);
-    menuAnimator.setSpeed(2);
+    menuAnimator.setSpeed(4);
     menuAnimator.setType(SmAnimator::ANIM_TYPE_VIS_APPEAR);
     menuAnimator.start(0,63,0,0,128,64);
 
     SmHwKeyboard::getInstance()->subscribe(this);
     SmHalSysTimer::subscribe(this, 10, true);
+
+    SmHwPowerMgr::getInstance()->blockSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU);
 }
 
 SmMainMenu::~SmMainMenu()
@@ -31,6 +33,7 @@ SmMainMenu::~SmMainMenu()
 
     SmHwKeyboard::getInstance()->unsubscribe(this);
     SmHalSysTimer::unsubscribe(this);
+    SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU, 0);
 }
 
 void SmMainMenu::onTimer(uint32_t)
@@ -68,7 +71,7 @@ void SmMainMenu::gotoNext(void)
     menuAnimator.setDirection(SmAnimator::ANIM_DIR_UP);
     menuAnimator.setDestSource(SmDisplay::getInstance()->getCanvas(),pCanvas);
     menuAnimator.setShiftLimit(0);
-    menuAnimator.setSpeed(2);
+    menuAnimator.setSpeed(8);
     menuAnimator.setType(SmAnimator::ANIM_TYPE_SHIFT);
     menuAnimator.start(0,63,0,0,128,64);
 }
@@ -95,7 +98,7 @@ void SmMainMenu::gotoPrev(void)
     menuAnimator.setDirection(SmAnimator::ANIM_DIR_DOWN);
     menuAnimator.setDestSource(SmDisplay::getInstance()->getCanvas(),pCanvas);
     menuAnimator.setShiftLimit(0);
-    menuAnimator.setSpeed(2);
+    menuAnimator.setSpeed(8);
     menuAnimator.setType(SmAnimator::ANIM_TYPE_SHIFT);
     menuAnimator.start(0,0,0,0,128,64);
 }

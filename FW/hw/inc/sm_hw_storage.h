@@ -150,7 +150,7 @@ private:
 
     // SmHwPowerMgrIface
     void onSleep(void);
-    void onWake(void);
+    void onWake(uint32_t wakeSource);
     #else
     std::fstream inFile;
     #endif

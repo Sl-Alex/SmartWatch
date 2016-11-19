@@ -37,7 +37,7 @@ void SmHwKeyboard::onSleep(void)
     //mLastState = 0;
 }
 
-void SmHwKeyboard::onWake(void)
+void SmHwKeyboard::onWake(uint32_t wakeSource)
 {
     // Real timestamp does not matter in this case;
     onTimer(0);

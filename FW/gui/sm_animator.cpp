@@ -123,7 +123,7 @@ bool SmAnimator::tick()
                 else
                     limit = mY + mLimit;
 
-                pDest->scrollArea(mX,mY - limit,mX+mW-1,mY - mTick,mSpeed,SmCanvas::DIR_UP);
+                pDest->scrollArea(mX,mY - limit,mX+mW-1,mY - mTick + 1,mSpeed,SmCanvas::DIR_UP);
             }
             // Draw a part of the image
             if ((mType != ANIM_TYPE_APPEAR) && (mType != ANIM_TYPE_VIS_APPEAR))

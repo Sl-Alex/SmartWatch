@@ -51,7 +51,7 @@ private:
     };
     static SmHalSysTimerSubscriber * mPool;
     static uint8_t mPoolSize;
-    static uint32_t mTimeStamp;
+    volatile static uint32_t mTimeStamp;
 
     friend void SysTick_Handler(void); // We should be able to access timestamp in the IRQ
 };

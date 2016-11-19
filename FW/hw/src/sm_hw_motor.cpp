@@ -19,7 +19,7 @@ void SmHwMotor::onSleep(void)
     mGpio->resetPin();
 }
 
-void SmHwMotor::onWake(void)
+void SmHwMotor::onWake(uint32_t wakeSource)
 {
     mGpio->setPin();
 }
@@ -31,10 +31,10 @@ void SmHwMotor::onTimer(uint32_t timeStamp)
 
 void SmHwMotor::onKeyDown(SmHwButtons key)
 {
-    mGpio->setPin();
+//    mGpio->setPin();
 }
 
 void SmHwMotor::onKeyUp(SmHwButtons key)
 {
-    mGpio->resetPin();
+//    mGpio->resetPin();
 }

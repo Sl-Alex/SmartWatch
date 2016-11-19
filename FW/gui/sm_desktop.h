@@ -50,6 +50,7 @@ private:
 
     void setIcon(uint8_t pos, uint8_t icon);
     void drawIcons(void);
+    void drawAll(void);
 
 
     /// @brief BLE signal strength

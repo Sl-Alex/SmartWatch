@@ -100,10 +100,8 @@ int main(void)
     SmFont * smallFont = new SmFont();
     smallFont->init(IDX_FW_FONT_SMALL);
 
-    SmHalRtc::SmHalRtcTime rtc{2016,10,11,23,55,50};
+    SmHalRtc::SmHalRtcTime rtc{2016,10,11,23,59,45};
     SmHalRtc::getInstance()->setDateTime(rtc);
-
-    //SmHalRtc::getInstance()->setAlarm(18*3600 + 0*60 + 0);
 
     SmDesktop::getInstance()->init();
     while (1)
@@ -111,20 +109,5 @@ int main(void)
         SmHalSysTimer::processEvents();
         display->update();
         SmHwPowerMgr::getInstance()->updateState();
-
-        uint8_t st1 = SmHwKeyboard::getInstance()->getState(1);
-        uint8_t st2 = SmHwKeyboard::getInstance()->getState(2) << 1;
-        uint8_t st3 = SmHwKeyboard::getInstance()->getState(3) << 2;
-        uint8_t st4 = SmHwKeyboard::getInstance()->getState(4) << 3;
-
-        uint8_t st = st1|st2|st3|st4;
-        if (st)
-        {
-            SmHwBt::getInstance()->send(0x30+st);
-        }
-        if (SmHwKeyboard::getInstance()->getState(1) && SmHwKeyboard::getInstance()->getState(2))
-        {
-            SmHwPowerMgr::getInstance()->sleep();
-        }
     }
 }

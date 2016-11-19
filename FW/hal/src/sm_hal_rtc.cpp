@@ -320,7 +320,7 @@ void SmHalRtc::onSleep(void)
 {
 }
 
-void SmHalRtc::onWake(void)
+void SmHalRtc::onWake(uint32_t wakeSource)
 {
     // After wake up RCT CR should be reconfigured ()
     RTC_WaitForSynchro();

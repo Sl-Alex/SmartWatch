@@ -41,7 +41,7 @@
 /*!< Write In Progress (WIP) flag */
 #define FLASH_FLAG_WIP                  0x01
 
-//#include "update.inc"
+#include "update.inc"
 
 void SmHwStorage::init(void)
 {
@@ -424,7 +424,7 @@ void SmHwStorage::onSleep(void)
     mSpi->setSs();
 }
 
-void SmHwStorage::onWake(void)
+void SmHwStorage::onWake(uint32_t wakeSource)
 {
     mSpi->resetSs();
     sendByte(FLASH_CMD_WAKE);

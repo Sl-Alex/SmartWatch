@@ -18,19 +18,6 @@
 #define PORT_AIRQ3 0UL  // GPIOA
 #define PORT_ARDY  1UL  // GPIOB
 
-#define PIN_S1     12UL
-#define PIN_S2     3UL
-#define PIN_S3     1UL
-#define PIN_S4     6UL
-#define PIN_BTST   3UL  // BT status
-#define PIN_BTRX   10UL // BT RX
-#define PIN_AIRQ1  2UL
-#define PIN_AIRQ2  1UL
-#define PIN_AIRQ3  7UL
-#define PIN_ARDY   0UL
-
-#define PIN_ALARM  17UL
-
 // Potential EXTI conflicts:
 // S2 <=> BTST  ==> Both signals use pin1, BTRX can be used for waking instead of BT
 // S3 <=> AI2   ==> AI2 can be disabled. @todo: Check BMC150 datasheet
@@ -55,29 +42,28 @@
 
 #define EVENTS_FALLING (\
   (1UL << PIN_S1) | \
+  (1UL << PIN_S2) | \
+  (1UL << PIN_S3) | \
   (1UL << PIN_S4) | \
-  (1UL << PIN_AIRQ1))
+  (1UL << PIN_AIRQ1) | \
+  (1UL << PIN_BTRX))
 
 #define EVENTS_COMMON (EVENTS_RISING | EVENTS_FALLING)
 
-#define SHORT_TIMEOUT   2000
-#define LONG_TIMEOUT    5000
-
-/// @todo Enable wake up on any button (temporary disabled).
-/// Just uncomment commented lines in this function
+/// @todo Uncomment some events
 void SmHwPowerMgr::init(void)
 {
     // Initialize GPIO EXTI
     // Pins 0 to 3 (any port)
-//    AFIO->EXTICR[0] = (PORT_S2    << ((PIN_S2    & 0x03) << 2)) | \
-//                      (PORT_S3    << ((PIN_S3    & 0x03) << 2)) |
-    AFIO->EXTICR[0] = (PORT_AIRQ1 << ((PIN_AIRQ1 & 0x03) << 2));// | \
+    AFIO->EXTICR[0] = (PORT_S2    << ((PIN_S2    & 0x03) << 2)) |
+                      (PORT_S3    << ((PIN_S3    & 0x03) << 2)) |
+                      (PORT_AIRQ1 << ((PIN_AIRQ1 & 0x03) << 2));// | \
                       (PORT_ARDY  << ((PIN_ARDY  & 0x03) << 2));
     // Pins 4 to 7 (any port)
     AFIO->EXTICR[1] = (PORT_S4    << ((PIN_S4    & 0x03) << 2));// | \
                       //(PORT_AIRQ3 << ((PIN_AIRQ3 & 0x03) << 2));
     // Pins 8 to 11 (any port)
-    AFIO->EXTICR[2] = (PORT_S1    << ((PIN_S1    & 0x03) << 2));// | \
+    AFIO->EXTICR[2] = (PORT_S1    << ((PIN_S1    & 0x03) << 2)) |
                       (PORT_BTRX  << ((PIN_BTRX  & 0x03) << 2));
     // Pins 12 to 15 (any port)
     AFIO->EXTICR[3] = 0;
@@ -98,7 +84,11 @@ void SmHwPowerMgr::init(void)
     // Enable events
     EXTI->EMR |=  EVENTS_COMMON;
     // Enable interrupts
-    EXTI->IMR |= (1UL << PIN_ALARM);
+//    EXTI->IMR |= (1UL << PIN_ALARM);
+    EXTI->IMR |= EVENTS_COMMON; // Enable all
+
+    // Clear pending events (by writing one)
+    EXTI->PR |= EVENTS_COMMON;
 
     sleepBlockers = 0;
 }
@@ -169,6 +159,9 @@ void SmHwPowerMgr::sleep(void)
         }
     }
 
+    // Clear pending events (by writing one)
+    EXTI->PR |= EVENTS_COMMON;
+
     // Entering STOP state with low power regulator mode and WFE
     uint32_t tmpreg = 0;
 
@@ -180,6 +173,8 @@ void SmHwPowerMgr::sleep(void)
     tmpreg |= PWR_Regulator_LowPower;
     // Store the new value
     PWR->CR = tmpreg;
+
+    __disable_irq();
     // Set SLEEPDEEP bit of Cortex System Control Register
     SCB->SCR |= SCB_SCR_SLEEPDEEP;
 
@@ -189,17 +184,20 @@ void SmHwPowerMgr::sleep(void)
     /* Reset SLEEPDEEP bit of Cortex System Control Register */
     SCB->SCR &= (uint32_t)~((uint32_t)SCB_SCR_SLEEPDEEP);
 
+    // Read all pending interrupts
+    uint32_t wakeSource = EXTI->PR;
+    EXTI->IMR &= EVENTS_COMMON & (~(1UL << PIN_ALARM)); // Disable all except of alarm
+    EXTI->PR &=  EVENTS_COMMON & (~(1UL << PIN_ALARM)); // Clear all except of alarm
+
     SystemInit();
 
-    canSleep = false;
-    SmHalSysTimer::subscribe(this, 2000,false);
-
+    __enable_irq();
     // Call onWake() for all subscribers
     for (uint32_t i = 0; i < mPoolSize; ++i)
     {
         if (mPool[i].iface != 0)
         {
-            mPool[i].iface->onWake();
+            mPool[i].iface->onWake(wakeSource);
         }
     }
 }
@@ -218,18 +216,17 @@ void SmHwPowerMgr::onTimer(uint32_t timeStamp)
         canSleep = true;
 }
 
-void SmHwPowerMgr::blockSleep(void)
+void SmHwPowerMgr::blockSleep(SleepBlocker blocker)
 {
-    sleepBlockers++;
+    sleepBlockers |= blocker;
     canSleep = false;
 }
 
-void SmHwPowerMgr::allowSleep(uint32_t timeout)
+void SmHwPowerMgr::allowSleep(SleepBlocker blocker, uint32_t timeout)
 {
-    if (sleepBlockers)
-        sleepBlockers--;
-    else
-        return;
-
+    // Remove blocker
+    sleepBlockers &= ~blocker;
+    // Subscribe for a notification and block sleep
     SmHalSysTimer::subscribe(this, timeout,false);
+    canSleep = false;
 }

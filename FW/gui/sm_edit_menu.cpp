@@ -285,7 +285,7 @@ void SmEditMenu::onKeyDown(SmHwButtons key)
             case EG_DATE:
                 datetime.day   = mEditors[0].getSelection()*10 + mEditors[1].getSelection();
                 datetime.month = mEditors[2].getSelection()*10 + mEditors[3].getSelection();
-                datetime.year = 2000 + mEditors[0].getSelection()*10 + mEditors[1].getSelection();
+                datetime.year = 2000 + mEditors[4].getSelection()*10 + mEditors[5].getSelection();
                 SmHalRtc::getInstance()->setDateTime(datetime);
                 break;
             case EG_TIME:

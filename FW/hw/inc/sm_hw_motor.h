@@ -15,7 +15,7 @@ public:
 private:
     void onTimer(uint32_t timeStamp);
     void onSleep(void);
-    void onWake(void);
+    void onWake(uint32_t wakeSource);
 
     /// @todo Remove after testing
     void onKeyDown(SmHwButtons key);

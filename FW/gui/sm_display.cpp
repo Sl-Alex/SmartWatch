@@ -106,6 +106,7 @@ SmDisplay::SmDisplay()
 
     mDcPin->resetPin();
     mResetPin->setPin();
+    mPowered = false;
 
     SmHwPowerMgr::getInstance()->subscribe(this);
 #endif
@@ -122,6 +123,8 @@ void SmDisplay::init(int width, int height)
 
 void SmDisplay::update(void)
 {
+    if (!mPowered)
+        return;
 #ifndef PC_SOFTWARE
     uint8_t m = 0;
 
@@ -167,6 +170,10 @@ void SmDisplay::sendData(uint8_t * data, uint8_t size)
 
 void SmDisplay::powerOn(void)
 {
+    if (mPowered)
+        return;
+
+    mPowered = true;
 #ifndef PC_SOFTWARE
     mPowerPin->resetPin();
     mResetPin->setPin();
@@ -214,6 +221,7 @@ void SmDisplay::powerOn(void)
 
 void SmDisplay::powerOff(void)
 {
+    mPowered = false;
 #ifndef PC_SOFTWARE
     mSpi->deInit();
     mDcPin->resetPin();
@@ -229,9 +237,14 @@ void SmDisplay::onSleep(void)
 #endif
 }
 
-void SmDisplay::onWake(void)
+void SmDisplay::onWake(uint32_t wakeSource)
 {
+    if (wakeSource & (SmHwPowerMgr::WakeSource::SM_HW_WAKE_MASK_ACCELEROMETER |
+                      SmHwPowerMgr::WakeSource::SM_HW_WAKE_MASK_KEYBOARD))
+    {
 #ifndef PC_SOFTWARE
-//    powerOn();
+        SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY, 5000);
+        powerOn();
 #endif
+    }
 }

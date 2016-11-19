@@ -74,7 +74,7 @@ private:
 
     // Power manager interface
     void onSleep(void);
-    void onWake(void);
+    void onWake(uint32_t wakeSource);
 
     friend void RTCAlarm_IRQHandler(void);
 };

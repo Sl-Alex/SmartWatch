@@ -50,7 +50,7 @@ private:
     void sendCommand(uint8_t cmd, uint8_t data);
     void sendData(uint8_t * data, uint8_t size);
     void onSleep(void);
-    void onWake(void);
+    void onWake(uint32_t WakeSource);
     SmCanvas * mCanvas;
 #ifndef PC_SOFTWARE
     SmHalAbstractSpi * mSpi;
@@ -58,6 +58,7 @@ private:
     SmHalAbstractGpio * mPowerPin;
     SmHalAbstractGpio * mResetPin;
 #endif
+    bool mPowered;
 };
 
 #endif // SM_DISPLAY_H
