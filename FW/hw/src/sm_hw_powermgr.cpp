@@ -186,8 +186,10 @@ void SmHwPowerMgr::sleep(void)
 
     // Read all pending interrupts
     uint32_t wakeSource = EXTI->PR;
-    EXTI->IMR &= EVENTS_COMMON & (~(1UL << PIN_ALARM)); // Disable all except of alarm
-    EXTI->PR &=  EVENTS_COMMON & (~(1UL << PIN_ALARM)); // Clear all except of alarm
+     // Disable all except of alarm
+    EXTI->IMR &= EVENTS_COMMON & (~(1UL << PIN_ALARM));
+     // Clear all except of alarm
+    EXTI->PR &=  EVENTS_COMMON & (~(1UL << PIN_ALARM));
 
     SystemInit();
 
