@@ -162,7 +162,8 @@ void SmHwPowerMgr::sleep(void)
     }
 
     // Clear pending events (by writing one)
-    EXTI->PR |= EVENTS_COMMON;
+    EXTI->PR  |= EVENTS_COMMON;
+    EXTI->IMR |= EVENTS_COMMON;
 
     // Entering STOP state with low power regulator mode and WFE
     uint32_t tmpreg = 0;

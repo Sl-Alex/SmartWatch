@@ -43,7 +43,7 @@ public:
     };
     enum WakeSource {
         SM_HW_WAKE_MASK_ALARM     = (1UL << PIN_ALARM),
-        SM_HW_WAKE_MASK_KEYBOARD  = ((1UL << PIN_S1) || (1UL << PIN_S2) || (1UL << PIN_S3) || (1UL << PIN_S4)),
+        SM_HW_WAKE_MASK_KEYBOARD  = ((1UL << PIN_S1) | (1UL << PIN_S2) | (1UL << PIN_S3) | (1UL << PIN_S4)),
         SM_HW_WAKE_MASK_ACCELEROMETER  = (1UL << PIN_AIRQ1),
         SM_HW_WAKE_MASK_ALL = SM_HW_WAKE_MASK_ALARM |
                               SM_HW_WAKE_MASK_KEYBOARD |
