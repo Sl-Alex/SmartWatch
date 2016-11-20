@@ -38,8 +38,8 @@
 **
 ****************************************************************************/
 
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef EMULATOR_WINDOW_H
+#define EMULATOR_WINDOW_H
 
 #include <QWidget>
 #include <QLabel>
@@ -61,17 +61,19 @@ class QPushButton;
 QT_END_NAMESPACE
 class RenderArea;
 
-class Window : public QWidget
+class EmulatorWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    Window();
+    EmulatorWindow();
     void keyPressEvent(QKeyEvent * pEvent);
     void keyReleaseEvent(QKeyEvent * event);
 
     void onKeyDown(SmHwButtons key);
     void onKeyUp(SmHwButtons key);
+
+    void setPortName(QString port) {portName = port; setWindowTitle(portName);}
 
 private slots:
     void onTimerEvent(void);
@@ -88,8 +90,9 @@ private:
     QLabel * lbl2;
     QLabel * lbl3;
     QLabel * lbl4;
+    QString portName;
 
     friend class SmHalSysTimer;
 };
 
-#endif // WINDOW_H
+#endif // EMULATOR_WINDOW_H

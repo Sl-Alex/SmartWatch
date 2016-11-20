@@ -38,25 +38,17 @@
 **
 ****************************************************************************/
 
-#include "window.h"
+#include "emulator_window.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
+#include <serial_selection.h>
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    Window window;
 
-    QDesktopWidget wid;
-
-    int screenWidth = wid.screen()->width();
-    int screenHeight = wid.screen()->height();
-
-    int width = 128;
-    int height = 64;
-
-    window.setGeometry((screenWidth/2)-(width/2),(screenHeight/2)-(height/2),width,height);
-    window.show();
+    SerialSelection selection;
+    selection.show();
     return app.exec();
 }

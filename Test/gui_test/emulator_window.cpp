@@ -41,14 +41,15 @@
 #include <QGridLayout>
 #include <QTimer>
 #include "renderarea.h"
-#include "window.h"
+#include "emulator_window.h"
 #include "sm_hw_storage.h"
 #include "sm_canvas.h"
 
 #define LABEL_STYLE_DEFAULT "QLabel { background-color : #C0C0C0; color : black; }"
 #define LABEL_STYLE_PRESSED "QLabel { background-color : #303030; color : white; }"
 
-Window::Window()
+EmulatorWindow::EmulatorWindow()
+    :portName("")
 {
     SmHalSysTimer::initSubscribersPool(10);
     SmHwStorage::getInstance()->init();
@@ -123,12 +124,12 @@ Window::Window()
     pTimerMs->start(1);
 }
 
-void Window::onTimerEvent(void)
+void EmulatorWindow::onTimerEvent(void)
 {
     renderArea->update();
 }
 
-void Window::keyPressEvent(QKeyEvent *pEvent)
+void EmulatorWindow::keyPressEvent(QKeyEvent *pEvent)
 {
     if (Qt::Key_A == pEvent->key())
     {
@@ -154,7 +155,7 @@ void Window::keyPressEvent(QKeyEvent *pEvent)
     QWidget::keyPressEvent(pEvent);
 }
 
-void Window::keyReleaseEvent(QKeyEvent *pEvent)
+void EmulatorWindow::keyReleaseEvent(QKeyEvent *pEvent)
 {
     if (Qt::Key_A == pEvent->key())
     {
@@ -181,7 +182,7 @@ void Window::keyReleaseEvent(QKeyEvent *pEvent)
 }
 
 void SysTick_Handler(void);
-void Window::onTimerMsEvent(void)
+void EmulatorWindow::onTimerMsEvent(void)
 {
     SysTick_Handler();
     SmHalSysTimer::processEvents();

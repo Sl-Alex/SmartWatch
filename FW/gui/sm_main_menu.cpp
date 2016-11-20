@@ -20,7 +20,9 @@ SmMainMenu::SmMainMenu(SmHwKeyboardIface * parent)
     SmHwKeyboard::getInstance()->subscribe(this);
     SmHalSysTimer::subscribe(this, 10, true);
 
+#ifndef PC_SOFTWARE
     SmHwPowerMgr::getInstance()->blockSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU);
+#endif
 }
 
 SmMainMenu::~SmMainMenu()
@@ -33,7 +35,9 @@ SmMainMenu::~SmMainMenu()
 
     SmHwKeyboard::getInstance()->unsubscribe(this);
     SmHalSysTimer::unsubscribe(this);
+#ifndef PC_SOFTWARE
     SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU, 0);
+#endif
 }
 
 void SmMainMenu::onTimer(uint32_t)

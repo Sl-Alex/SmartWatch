@@ -150,6 +150,8 @@ void SmHwPowerMgr::unsubscribe(SmHwPowerMgrIface *iface)
 
 void SmHwPowerMgr::sleep(void)
 {
+    __disable_irq();
+
     // Call onSleep() for all subscribers
     for (uint32_t i = 0; i < mPoolSize; ++i)
     {
@@ -174,26 +176,26 @@ void SmHwPowerMgr::sleep(void)
     // Store the new value
     PWR->CR = tmpreg;
 
-    __disable_irq();
     // Set SLEEPDEEP bit of Cortex System Control Register
     SCB->SCR |= SCB_SCR_SLEEPDEEP;
 
     // Goes to sleep at this step
     __WFE();
 
-    /* Reset SLEEPDEEP bit of Cortex System Control Register */
+    // Reset SLEEPDEEP bit of Cortex System Control Register
     SCB->SCR &= (uint32_t)~((uint32_t)SCB_SCR_SLEEPDEEP);
 
     // Read all pending interrupts
     uint32_t wakeSource = EXTI->PR;
-     // Disable all except of alarm
-    EXTI->IMR &= EVENTS_COMMON & (~(1UL << PIN_ALARM));
-     // Clear all except of alarm
-    EXTI->PR &=  EVENTS_COMMON & (~(1UL << PIN_ALARM));
+    // All interrupts except of alarm
+    const uint32_t isrClearMask = EVENTS_COMMON & (~(1UL << PIN_ALARM));
+    // Disable all except of alarm
+    EXTI->IMR &=~isrClearMask;
+    // Clear all except of alarm
+    EXTI->PR = isrClearMask;
 
     SystemInit();
 
-    __enable_irq();
     // Call onWake() for all subscribers
     for (uint32_t i = 0; i < mPoolSize; ++i)
     {
@@ -202,6 +204,8 @@ void SmHwPowerMgr::sleep(void)
             mPool[i].iface->onWake(wakeSource);
         }
     }
+
+    __enable_irq();
 }
 
 void SmHwPowerMgr::updateState(void)

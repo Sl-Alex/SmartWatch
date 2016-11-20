@@ -239,12 +239,12 @@ void SmDisplay::onSleep(void)
 
 void SmDisplay::onWake(uint32_t wakeSource)
 {
+#ifndef PC_SOFTWARE
     if (wakeSource & (SmHwPowerMgr::WakeSource::SM_HW_WAKE_MASK_ACCELEROMETER |
                       SmHwPowerMgr::WakeSource::SM_HW_WAKE_MASK_KEYBOARD))
     {
-#ifndef PC_SOFTWARE
         SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY, 5000);
         powerOn();
-#endif
     }
+#endif
 }

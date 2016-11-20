@@ -1,4 +1,4 @@
-QT += widgets
+QT += widgets serialport
 
 CONFIG += c++11
 
@@ -11,7 +11,6 @@ DEFINES += BPP=1 PACK_VERT PC_SOFTWARE
 
 HEADERS       = \
     renderarea.h \
-    window.h \
     ../../FW/gui/sm_canvas.h \
     ../../FW/gui/sm_texture.h \
     ../../FW/gui/sm_animator.h \
@@ -26,13 +25,14 @@ HEADERS       = \
     ../../FW/gui/sm_display.h \
     ../../FW/gui/sm_main_menu.h \
     ../../FW/gui/sm_edit_menu.h \
-    ../../FW/gui/sm_editor.h
+    ../../FW/gui/sm_editor.h \
+    emulator_window.h \
+    serial_selection.h
     ../../FW/gui/sm_main_menu.h
 
 SOURCES       = \
     main.cpp \
     renderarea.cpp \
-    window.cpp \
     ../../FW/gui/sm_canvas.cpp \
     ../../FW/gui/sm_texture.cpp \
     ../../FW/gui/sm_animator.cpp \
@@ -48,6 +48,8 @@ SOURCES       = \
     ../../FW/gui/sm_main_menu.cpp \
     ../../FW/hal/src/sm_hal_rtc.cpp \
     ../../FW/gui/sm_edit_menu.cpp \
-    ../../FW/gui/sm_editor.cpp
+    ../../FW/gui/sm_editor.cpp \
+    emulator_window.cpp \
+    serial_selection.cpp
 
 RESOURCES     =
