@@ -1,4 +1,8 @@
 #include "sm_hw_bt.h"
+#include <cstring>
+#include <cstdio>
+
+#ifndef PC_SOFTWARE
 #include "sm_hal_gpio.h"
 #include "sm_hal_rcc.h"
 
@@ -34,9 +38,13 @@
 #define USART_FLAG_PE                        ((uint16_t)0x0001)
 
 #define CR1_UART_ENABLE                 0x2000UL  /*!< USART Enable Mask */
+#endif // !PC_SOFTWARE
 
 void SmHwBt::init(void)
 {
+    // Clear received data
+    memset(mData,0,sizeof(mData)/sizeof(mData[0]));
+#ifndef PC_SOFTWARE
     mPowerPin = new SmHalGpio<BT_EN_PORT, BT_EN_PIN>();
     mPowerPin->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
 
@@ -48,9 +56,10 @@ void SmHwBt::init(void)
 
     mStPin = new SmHalGpio<BT_ST_PORT, BT_ST_PIN>();
     mStPin->setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT, SM_HAL_GPIO_SPEED_2M);
+#endif
     // Initialize default BT state
     enable();
-
+#ifndef PC_SOFTWARE
     // Enable clocking
     SmHalRcc::clockEnable(RCC_PERIPH_USART1);
 
@@ -138,22 +147,32 @@ void SmHwBt::init(void)
 
     /* Enable the selected USART by setting the UE bit in the CR1 register */
     ((USART_TypeDef * )USART_BASE)->CR1 |= CR1_UART_ENABLE;
+#endif // !PC_SOFTWARE
 }
 
 void SmHwBt::enable(void)
 {
+#ifndef PC_SOFTWARE
     mTxPin->setModeSpeed(SM_HAL_GPIO_MODE_AF_PP, SM_HAL_GPIO_SPEED_2M);
     mPowerPin->resetPin();
+#endif
 }
 
 void SmHwBt::disable(void)
 {
+#ifndef PC_SOFTWARE
     mTxPin->setModeSpeed(SM_HAL_GPIO_MODE_IN_FLOAT, SM_HAL_GPIO_SPEED_2M);
     mPowerPin->setPin();
+#endif
 }
 
 void SmHwBt::send(uint8_t data)
 {
+    char packet[20];
+    sprintf(packet, "Test string 0x%04X !", data);
+#ifdef PC_SOFTWARE
+    EmulatorWindow::getInstance()->sendPacket(packet, 20);
+#else
     /* Send one byte from USARTy to USARTz */
     /* Transmit Data */
     ((USART_TypeDef * )USART_BASE)->DR = data;
@@ -162,9 +181,21 @@ void SmHwBt::send(uint8_t data)
     while((((USART_TypeDef * )USART_BASE)->SR & USART_FLAG_TXE) == 0)
     {
     }
+#endif
 }
 
 bool SmHwBt::isConnected(void)
 {
+#ifndef PC_SOFTWARE
     return mStPin->readPin();
+#else
+    return true;
+#endif
 }
+
+#ifdef PC_SOFTWARE
+void SmHwBt::injectPacket(char *data, uint8_t size)
+{
+    memcpy(mData,data,size);
+}
+#endif

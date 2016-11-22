@@ -49,8 +49,8 @@
 #define LABEL_STYLE_PRESSED "QLabel { background-color : #303030; color : white; }"
 
 EmulatorWindow::EmulatorWindow()
-    :portName("")
 {
+    serialPort = nullptr;
     SmHalSysTimer::initSubscribersPool(10);
     SmHwStorage::getInstance()->init();
 
@@ -124,6 +124,15 @@ EmulatorWindow::EmulatorWindow()
     pTimerMs->start(1);
 }
 
+EmulatorWindow::~EmulatorWindow()
+{
+    if (serialPort != nullptr)
+    {
+        serialPort->close();
+        delete serialPort;
+    }
+}
+
 void EmulatorWindow::onTimerEvent(void)
 {
     renderArea->update();
@@ -181,9 +190,71 @@ void EmulatorWindow::keyReleaseEvent(QKeyEvent *pEvent)
     QWidget::keyReleaseEvent(pEvent);
 }
 
+void EmulatorWindow::setPortName(QString port)
+{
+    setWindowTitle(port);
+    if (serialPort == nullptr)
+    {
+        serialPort = new QSerialPort();
+    }
+    else
+    {
+        serialPort->close();
+    }
+    serialPort->setPortName(port);
+    serialPort->setBaudRate(QSerialPort::Baud9600);
+    serialPort->setDataBits(QSerialPort::Data8);
+    serialPort->setStopBits(QSerialPort::OneStop);
+    serialPort->setParity(QSerialPort::NoParity);
+    serialPort->setFlowControl(QSerialPort::NoFlowControl);
+
+    serialPort->open(QSerialPort::ReadWrite);
+    connect(serialPort, SIGNAL(readyRead()), this, SLOT(onSerialData()));
+}
+
+void EmulatorWindow::onSerialData(void)
+{
+    static QByteArray dataPacket;
+    static uint32_t timestamp = SmHalSysTimer::getTimeStamp();
+    uint32_t newTimestamp = SmHalSysTimer::getTimeStamp();
+    if (newTimestamp - timestamp < 100)
+    {
+        dataPacket += serialPort->readAll();
+        if (dataPacket.length() == 20)
+        {
+            // 20 bytes packet is received
+            SmHwBt::getInstance()->injectPacket(dataPacket.data(), dataPacket.count());
+            QString response(dataPacket);
+            setWindowTitle(response);
+        }
+    }
+    else
+    {
+        dataPacket = serialPort->readAll();
+    }
+    timestamp = newTimestamp;
+}
+
+void EmulatorWindow::sendPacket(const char *data, uint8_t size)
+{
+    serialPort->write(data, size);
+}
+
 void SysTick_Handler(void);
 void EmulatorWindow::onTimerMsEvent(void)
 {
     SysTick_Handler();
     SmHalSysTimer::processEvents();
+/*    if (serialPort && serialPort->isOpen())
+    {
+        if (serialPort->waitForReadyRead(1))
+        {
+            QByteArray responseData = serialPort->readAll();
+            while (serialPort->waitForReadyRead(10))
+                responseData += serialPort->readAll();
+            QString response(responseData);
+            setWindowTitle(response);
+        }
+    }
+*/
 }

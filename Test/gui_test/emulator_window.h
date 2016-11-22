@@ -45,9 +45,11 @@
 #include <QLabel>
 #include <QKeyEvent>
 #include <QMainWindow>
+#include <QSerialPort>
 #include "sm_image.h"
 #include "sm_animator.h"
 #include "sm_hw_keyboard.h"
+#include "sm_hw_bt.h"
 #include "sm_font.h"
 #include "sm_desktop.h"
 #include "sm_display.h"
@@ -66,20 +68,31 @@ class EmulatorWindow : public QWidget
     Q_OBJECT
 
 public:
-    EmulatorWindow();
+    ~EmulatorWindow();
     void keyPressEvent(QKeyEvent * pEvent);
     void keyReleaseEvent(QKeyEvent * event);
 
     void onKeyDown(SmHwButtons key);
     void onKeyUp(SmHwButtons key);
 
-    void setPortName(QString port) {portName = port; setWindowTitle(portName);}
+    void setPortName(QString port);
+    void sendPacket(const char * data, uint8_t size);
 
+    EmulatorWindow(EmulatorWindow const&) = delete;
+    void operator=(EmulatorWindow const&) = delete;
+    static EmulatorWindow * getInstance()
+    {
+        static EmulatorWindow  instance; // Guaranteed to be destroyed.
+                                 // Instantiated on first use.
+        return &instance;
+    }
 private slots:
     void onTimerEvent(void);
     void onTimerMsEvent(void);
+    void onSerialData(void);
 
 private:
+    EmulatorWindow();
     RenderArea *renderArea;
     SmDesktop * desktop;
     SmImage * pImage;
@@ -90,9 +103,10 @@ private:
     QLabel * lbl2;
     QLabel * lbl3;
     QLabel * lbl4;
-    QString portName;
+    QSerialPort * serialPort;
 
     friend class SmHalSysTimer;
+    friend class SmHwBt;
 };
 
 #endif // EMULATOR_WINDOW_H

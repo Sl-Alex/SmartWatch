@@ -29,6 +29,7 @@ SmHwKeyboard::SmHwKeyboard(void)
 #ifndef PC_SOFTWARE
     SmHwPowerMgr::getInstance()->subscribe(this);
 #endif
+    mWaitForRelease = false;
 }
 
 #ifndef PC_SOFTWARE
@@ -39,6 +40,7 @@ void SmHwKeyboard::onSleep(void)
 
 void SmHwKeyboard::onWake(uint32_t wakeSource)
 {
+    mWaitForRelease = true;
     // Real timestamp does not matter in this case;
     onTimer(0);
 }
@@ -53,6 +55,11 @@ void SmHwKeyboard::onTimer(uint32_t)
     {
         newState |= (!mGpioPins[key]->readPin()) << key;
     }
+
+    if (mWaitForRelease && (newState))
+        return;
+
+    mWaitForRelease = false;
 #else
     newState = simulatedState;
 #endif

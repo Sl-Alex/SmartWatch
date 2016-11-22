@@ -35,12 +35,11 @@ SerialSelection::SerialSelection(QWidget *parent)
 
     connect(runButton, &QAbstractButton::clicked, this, &SerialSelection::onRunButton);
 
-    mainWindow = new EmulatorWindow();
+    mainWindow = EmulatorWindow::getInstance();
 }
 
 SerialSelection::~SerialSelection()
 {
-    delete mainWindow;
 }
 
 void SerialSelection::setControlsEnabled(bool enable)

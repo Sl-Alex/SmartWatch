@@ -84,6 +84,7 @@ private:
     SmHalAbstractGpio * mGpioPins[4];
 #endif
     uint8_t mLastState;
+    bool mWaitForRelease;
 
     struct SmHwKeyboardSubscriber
     {

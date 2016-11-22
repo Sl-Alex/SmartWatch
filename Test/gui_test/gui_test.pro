@@ -50,6 +50,7 @@ SOURCES       = \
     ../../FW/gui/sm_edit_menu.cpp \
     ../../FW/gui/sm_editor.cpp \
     emulator_window.cpp \
-    serial_selection.cpp
+    serial_selection.cpp \
+    ../../FW/hw/src/sm_hw_bt.cpp
 
 RESOURCES     =
