@@ -8,6 +8,11 @@
 #include "emulator_window.h"
 #endif
 
+struct __attribute__((__packed__)) SmHwBtPacket {
+    uint32_t crc32;
+    char data[16];
+};
+
 /// @brief HM-10 BT module wrapper class
 class SmHwBt
 {
@@ -18,10 +23,10 @@ public:
     void enable(void);
     /// @brief Disable UART transmitter and BT power
     void disable(void);
-    /// @brief Send a single byte of data
-    void send(uint8_t data);
     /// @brief Read status pin
     bool isConnected(void);
+    /// @brief Run mRxPacket parser, acknowledge generation and so on
+    void update(void);
 
     SmHwBt(SmHwBt const&) = delete;
     void operator=(SmHwBt const&) = delete;
@@ -33,7 +38,13 @@ public:
     }
 private:
     SmHwBt() {}
-    char mData[20];
+
+    /// @brief Send a prepared packet
+    void send(void);
+
+    SmHwBtPacket mRxPacket;
+    SmHwBtPacket mTxPacket;
+    bool mRxDone;
 #ifndef PC_SOFTWARE
     SmHalAbstractGpio *mPowerPin;
     SmHalAbstractGpio *mRxPin;

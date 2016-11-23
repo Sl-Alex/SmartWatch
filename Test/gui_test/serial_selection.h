@@ -13,13 +13,9 @@ class SerialSelection : public QDialog
 
 public:
     SerialSelection(QWidget *parent = 0);
-    ~SerialSelection();
 
 private slots:
     void onRunButton(void);
-
-private:
-    void setControlsEnabled(bool enable);
 
 private:
     QLabel *serialPortLabel;

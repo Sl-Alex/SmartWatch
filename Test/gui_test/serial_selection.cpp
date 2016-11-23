@@ -38,16 +38,6 @@ SerialSelection::SerialSelection(QWidget *parent)
     mainWindow = EmulatorWindow::getInstance();
 }
 
-SerialSelection::~SerialSelection()
-{
-}
-
-void SerialSelection::setControlsEnabled(bool enable)
-{
-    runButton->setEnabled(enable);
-    serialPortComboBox->setEnabled(enable);
-}
-
 void SerialSelection::onRunButton(void)
 {
     QDesktopWidget wid;

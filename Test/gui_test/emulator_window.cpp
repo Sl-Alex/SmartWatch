@@ -220,7 +220,7 @@ void EmulatorWindow::onSerialData(void)
     if (newTimestamp - timestamp < 100)
     {
         dataPacket += serialPort->readAll();
-        if (dataPacket.length() == 20)
+        if (dataPacket.length() >= 20)
         {
             // 20 bytes packet is received
             SmHwBt::getInstance()->injectPacket(dataPacket.data(), dataPacket.count());
@@ -245,6 +245,7 @@ void EmulatorWindow::onTimerMsEvent(void)
 {
     SysTick_Handler();
     SmHalSysTimer::processEvents();
+    SmHwBt::getInstance()->update();
 /*    if (serialPort && serialPort->isOpen())
     {
         if (serialPort->waitForReadyRead(1))

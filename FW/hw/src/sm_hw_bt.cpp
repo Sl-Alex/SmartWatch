@@ -43,7 +43,7 @@
 void SmHwBt::init(void)
 {
     // Clear received data
-    memset(mData,0,sizeof(mData)/sizeof(mData[0]));
+    memset(&mRxPacket,0,sizeof(SmHwBtPacket));
 #ifndef PC_SOFTWARE
     mPowerPin = new SmHalGpio<BT_EN_PORT, BT_EN_PIN>();
     mPowerPin->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
@@ -166,12 +166,11 @@ void SmHwBt::disable(void)
 #endif
 }
 
-void SmHwBt::send(uint8_t data)
+/// @todo implement properly
+void SmHwBt::send(void)
 {
-    char packet[20];
-    sprintf(packet, "Test string 0x%04X !", data);
 #ifdef PC_SOFTWARE
-    EmulatorWindow::getInstance()->sendPacket(packet, 20);
+    EmulatorWindow::getInstance()->sendPacket((char *)&mTxPacket, sizeof(mTxPacket));
 #else
     /* Send one byte from USARTy to USARTz */
     /* Transmit Data */
@@ -196,6 +195,21 @@ bool SmHwBt::isConnected(void)
 #ifdef PC_SOFTWARE
 void SmHwBt::injectPacket(char *data, uint8_t size)
 {
-    memcpy(mData,data,size);
+    if (size > sizeof(SmHwBtPacket))
+        size = sizeof(SmHwBtPacket);
+    memcpy(&mRxPacket,data,size);
+    mRxDone = true;
 }
 #endif
+
+void SmHwBt::update(void)
+{
+    if (mRxDone)
+    {
+        mTxPacket = mRxPacket;
+        mTxPacket.data[0] = ':';
+        mTxPacket.data[1] = ')';
+        mRxDone = false;
+        send();
+    }
+}
