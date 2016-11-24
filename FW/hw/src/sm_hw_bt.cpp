@@ -42,6 +42,7 @@
 
 void SmHwBt::init(void)
 {
+    static_assert(sizeof(SmHwBtPacket) == SM_HW_BT_PACKET_SIZE, "Size of SmHwBtPacket must be equal to SM_HW_BT_PACKET_SIZE!");
     // Clear received data
     memset(&mRxPacket,0,sizeof(SmHwBtPacket));
 #ifndef PC_SOFTWARE
@@ -174,7 +175,7 @@ void SmHwBt::send(void)
 #else
     /* Send one byte from USARTy to USARTz */
     /* Transmit Data */
-    ((USART_TypeDef * )USART_BASE)->DR = data;
+    ((USART_TypeDef * )USART_BASE)->DR = 0x55;
 
     /* Loop until USARTy DR register is empty */
     while((((USART_TypeDef * )USART_BASE)->SR & USART_FLAG_TXE) == 0)
@@ -207,8 +208,8 @@ void SmHwBt::update(void)
     if (mRxDone)
     {
         mTxPacket = mRxPacket;
-        mTxPacket.data[0] = ':';
-        mTxPacket.data[1] = ')';
+        mTxPacket.content.raw[0] = ':';
+        mTxPacket.content.raw[1] = ')';
         mRxDone = false;
         send();
     }

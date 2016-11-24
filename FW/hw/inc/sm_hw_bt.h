@@ -8,9 +8,73 @@
 #include "emulator_window.h"
 #endif
 
-struct __attribute__((__packed__)) SmHwBtPacket {
-    uint32_t crc32;
-    char data[16];
+/// @brief BLE packet size (must be less than 20)
+#define SM_HW_BT_PACKET_SIZE 20
+
+//extern SmHwBtPacket;
+struct SmHwBtPacket;
+
+#define SM_HW_BT_PACKET_HEADER_SIZE (5)
+#define SM_HW_BT_PACKET_CONTENT_SIZE (SM_HW_BT_PACKET_SIZE - SM_HW_BT_PACKET_HEADER_SIZE)
+
+struct __attribute__((__packed__)) SmHwBtPacket
+{
+    struct __attribute__((__packed__)) {
+        uint32_t crc32;
+        uint8_t type;
+    } header;
+    union __attribute__((__packed__))
+    {
+        /// Raw content access
+        char raw[SM_HW_BT_PACKET_CONTENT_SIZE];
+
+        /// Only for a SM_HW_BT_PACKET_ACK response
+        struct __attribute__((__packed__))
+        {
+            uint8_t type;       ///< Which packet type is acknowledged
+            uint16_t seqNumber; ///< Which seqNumber is acknowledged (if applicable)
+        } ack;
+
+        /// Only for a SM_HW_BT_PACKET_VERSION response
+        char version[SM_HW_BT_PACKET_CONTENT_SIZE];
+
+        /// Only for a SM_HW_BT_PACKET_NOTIFICATION_HEADER request
+        struct __attribute__((__packed__))
+        {
+            uint32_t size;      ///< Notification size (bytes)
+        } notification_header;
+
+        /// Only for a SM_HW_BT_PACKET_NOTIFICATION_DATA request
+        struct __attribute__((__packed__))
+        {
+            uint16_t seqNumber; ///< Sequence number, starting from 0
+            char data[SM_HW_BT_PACKET_CONTENT_SIZE - sizeof(uint16_t)]; ///< Notification data
+        } notification;
+
+        /// Only for a SM_HW_BT_PACKET_UPDATE_HEADER request
+        struct __attribute__((__packed__))
+        {
+            uint32_t size;      ///< Update size (bytes)
+        } update_header;
+
+        /// Only for a SM_HW_BT_PACKET_UPDATE_DATA request
+        struct __attribute__((__packed__))
+        {
+            uint16_t seqNumber; ///< Sequence number. starting from 0
+            char data[SM_HW_BT_PACKET_CONTENT_SIZE - sizeof(uint16_t)]; ///< Update data
+        } update;
+
+        /// Only for a SM_HW_BT_PACKET_DATETIME request
+        struct __attribute__((__packed__))
+        {
+            uint16_t year;
+            uint8_t month;
+            uint8_t day;
+            uint8_t hour;
+            uint8_t minute;
+            uint8_t second;
+        } datetime;
+    } content;
 };
 
 /// @brief HM-10 BT module wrapper class
