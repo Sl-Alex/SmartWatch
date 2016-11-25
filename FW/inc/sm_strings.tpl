@@ -1,9 +1,4 @@
-#ifndef SM_STRINGS_H
-#define SM_STRINGS_H
-
-#define FONT_IDX_SMALL  2
-#define FONT_IDX_MEDIUM  4
-
+// This file must be in UTF-8 encoding!!!
 // Do not include *.tpl file to the project
 // Do not edit *.h file, edit *.tpl instead
 // *.tpl should be parsed with flash_packer, *.h will be generated
@@ -16,6 +11,15 @@
 // PACK SM_STRING_BLUETOOTH FONT_IDX_SMALL Bluetooth
 // PACK SM_STRING_DATE FONT_IDX_SMALL Date
 // PACK SM_STRING_TIME FONT_IDX_SMALL Time
+// Add your strings after //============= line
+
+#ifndef SM_STRINGS_H
+#define SM_STRINGS_H
+
+#define FONT_IDX_SMALL  2
+#define FONT_IDX_MEDIUM  4
+
+//======================================================
 
 // PACK SM_STRING_0 FONT_IDX_MEDIUM 0
 // PACK SM_STRING_1 FONT_IDX_MEDIUM 1
