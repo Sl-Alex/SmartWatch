@@ -24,6 +24,8 @@
  *
  * So, font layout in the @ref SmHwStorage is the following:
  *
+ * Offset   | Parameter | Size | Description
+ * ---------|-----------|------|-------------------------
  * 0x0000   | count     | 32   | Number of symbols in font
  * 0x0004   | height    | 32   | Font height
  * 0x0008   | baseLine  | 32   | Font base line
@@ -34,10 +36,10 @@
  * 0xNNNN   | symbol1   | 16   | Symbol1 (UCS-2LE)
  * 0xNNNN+2 | symbol2   | 16   | Symbol2 (UCS-2LE)
  * ...      | ...       | ...  | ...
- * offset1  | image1    | ---  | Symbol1 image (see image element description)
- * offset2  | image2    | ---  | Symbol2 image
+ * offset1  | image1    | var. | Symbol1 image (see image element description)
+ * offset2  | image2    | var. | Symbol2 image
  * ...      | ...       | ...  | ...
-
+ *
  *
  * @}
  *
