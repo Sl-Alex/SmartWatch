@@ -4,8 +4,80 @@
 #include <iostream>
 #include <algorithm>
 #include <locale>
-#include <codecvt>
 #include <iomanip>
+
+// Taken from http://stackoverflow.com/a/7154226
+std::u16string utf8_to_utf16(const std::string& utf8)
+{
+    std::vector<unsigned long> unicode;
+    size_t i = 0;
+    while (i < utf8.size())
+    {
+        unsigned long uni;
+        size_t todo;
+        //bool error = false;
+        unsigned char ch = utf8[i++];
+        if (ch <= 0x7F)
+        {
+            uni = ch;
+            todo = 0;
+        }
+        else if (ch <= 0xBF)
+        {
+            throw std::logic_error("not a UTF-8 string");
+        }
+        else if (ch <= 0xDF)
+        {
+            uni = ch&0x1F;
+            todo = 1;
+        }
+        else if (ch <= 0xEF)
+        {
+            uni = ch&0x0F;
+            todo = 2;
+        }
+        else if (ch <= 0xF7)
+        {
+            uni = ch&0x07;
+            todo = 3;
+        }
+        else
+        {
+            throw std::logic_error("not a UTF-8 string");
+        }
+        for (size_t j = 0; j < todo; ++j)
+        {
+            if (i == utf8.size())
+                throw std::logic_error("not a UTF-8 string");
+            unsigned char ch = utf8[i++];
+            if (ch < 0x80 || ch > 0xBF)
+                throw std::logic_error("not a UTF-8 string");
+            uni <<= 6;
+            uni += ch & 0x3F;
+        }
+        if (uni >= 0xD800 && uni <= 0xDFFF)
+            throw std::logic_error("not a UTF-8 string");
+        if (uni > 0x10FFFF)
+            throw std::logic_error("not a UTF-8 string");
+        unicode.push_back(uni);
+    }
+    std::u16string utf16;
+    for (size_t i = 0; i < unicode.size(); ++i)
+    {
+        unsigned long uni = unicode[i];
+        if (uni <= 0xFFFF)
+        {
+            utf16 += (wchar_t)uni;
+        }
+        else
+        {
+            uni -= 0x10000;
+            utf16 += (char16_t)((uni >> 10) + 0xD800);
+            utf16 += (char16_t)((uni & 0x3FF) + 0xDC00);
+        }
+    }
+    return utf16;
+}
 
 // Split string to up to 5 elements. If string has more than 5 elements then last element
 // will contain the rest of the string
@@ -95,11 +167,7 @@ void sm_strings_process(std::ifstream &inFile, std::ofstream &outFile, std::vect
                         if (params.name == wordsList[3])
                         {
                             std::string strData = wordsList[4];
-
-                            std::u16string utf16 = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.from_bytes(strData.data());
-                            //std::cout << "UTF16 conversion produced " << utf16.size() << " code units:\n";
-                            //for (char16_t c : utf16)
-                                //std::cout << std::hex << std::showbase << c << '\n';
+                            std::u16string utf16 = utf8_to_utf16(strData);
 
                             outFile << "#define " << strName << " (uint16_t *)\"";
                             // Find appropriate font table
