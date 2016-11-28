@@ -7,10 +7,6 @@
 //     SM_STRING_HELLO is a string definition
 //     FONT_IDX_SMALL is a font index (should be defined in this file above)
 //     The rest till the end of the line is just a string
-// PACK SM_STRING_DAYS FONT_IDX_SMALL MoTuWeThFrSaSu
-// PACK SM_STRING_BLUETOOTH FONT_IDX_SMALL Bluetooth
-// PACK SM_STRING_DATE FONT_IDX_SMALL Date
-// PACK SM_STRING_TIME FONT_IDX_SMALL Time
 // Add your strings after //============= line
 
 #ifndef SM_STRINGS_H
@@ -20,6 +16,11 @@
 #define FONT_IDX_MEDIUM  4
 
 //======================================================
+
+// PACK SM_STRING_DAYS FONT_IDX_SMALL MoTuWeThFrSaSu
+// PACK SM_STRING_BLUETOOTH FONT_IDX_SMALL Bluetooth
+// PACK SM_STRING_DATE FONT_IDX_SMALL Date
+// PACK SM_STRING_TIME FONT_IDX_SMALL Time
 
 // PACK SM_STRING_0 FONT_IDX_MEDIUM 0
 // PACK SM_STRING_1 FONT_IDX_MEDIUM 1
