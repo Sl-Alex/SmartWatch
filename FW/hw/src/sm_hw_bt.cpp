@@ -1,6 +1,7 @@
-#include "sm_hw_bt.h"
 #include <cstring>
 #include <cstdio>
+#include "sm_hw_bt.h"
+#include "sm_hal_rtc.h"
 
 #ifndef PC_SOFTWARE
 #include "sm_hal_gpio.h"
@@ -207,10 +208,32 @@ void SmHwBt::update(void)
 {
     if (mRxDone)
     {
-        mTxPacket = mRxPacket;
-        mTxPacket.content.raw[0] = ':';
-        mTxPacket.content.raw[1] = ')';
         mRxDone = false;
+
+        // Set default response values
+        mTxPacket.header.type = SM_HW_BT_PACKET_ACK;
+        mTxPacket.content.ack.seqNumber = 0;
+        mTxPacket.content.ack.type = mRxPacket.header.type;
+
+        SmHalRtc::SmHalRtcTime datetime;
+
+        switch (mRxPacket.header.type)
+        {
+            case SM_HW_BT_PACKET_DATETIME:
+                // Get required fields from received packed
+                datetime.year   = mRxPacket.content.datetime.year;
+                datetime.month  = mRxPacket.content.datetime.month;
+                datetime.day    = mRxPacket.content.datetime.day;
+                datetime.hour   = mRxPacket.content.datetime.hour;
+                datetime.minute = mRxPacket.content.datetime.minute;
+                datetime.second = mRxPacket.content.datetime.second;
+                // Set local date/time
+                SmHalRtc::getInstance()->setDateTime(datetime);
+                break;
+            default:
+                return;
+        }
+
         send();
     }
 }

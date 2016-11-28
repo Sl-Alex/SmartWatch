@@ -94,7 +94,7 @@
 /// @brief BLE packet definitions
 enum SmHwBtPacketType
 {
-    SM_HW_BT_PACKET_ACK,                 ///< Acknowledge to any packet except of SM_HW_BT_PACKET_VERSION
+    SM_HW_BT_PACKET_ACK = 0,             ///< Acknowledge to any packet except of SM_HW_BT_PACKET_VERSION
     SM_HW_BT_PACKET_VERSION,             ///< Version request and response
     SM_HW_BT_PACKET_NOTIFICATION_HEADER, ///< Text notification header, containing the length of the notification
     SM_HW_BT_PACKET_NOTIFICATION_DATA,   ///< Text notification data
