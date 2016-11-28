@@ -4,10 +4,13 @@
 #include "stm32f10x.h"
 
 /// @brief RCC AHB peripheral
-/// @todo Check if it can be removed
 enum RccAhbPeriph
 {
-
+    RCC_PERIPH_DMA1  = 0x00000001,
+    RCC_PERIPH_DMA2  = 0x00000002,
+    RCC_PERIPH_SRAM  = 0x00000004,
+    RCC_PERIPH_FLITF = 0x00000010,
+    RCC_PERIPH_CRC   = 0x00000040
 };
 
 /// @brief RCC APB1 peripheral
