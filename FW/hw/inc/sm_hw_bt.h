@@ -100,7 +100,9 @@ enum SmHwBtPacketType
     SM_HW_BT_PACKET_NOTIFICATION_DATA,   ///< Text notification data
     SM_HW_BT_PACKET_UPDATE_HEADER,       ///< Firmware update header, contains the size of the update
     SM_HW_BT_PACKET_UPDATE_DATA,         ///< Firmware update data.
-    SM_HW_BT_PACKET_DATETIME             ///< Set date/time request, contains both date and time
+    SM_HW_BT_PACKET_DATETIME,            ///< Set date/time request, contains both date and time
+    //======================
+    SM_HW_BT_PACKET_TYPE_MAX             ///< This element should be always kept last
 };
 
 struct __attribute__((__packed__)) SmHwBtPacket
@@ -112,7 +114,7 @@ struct __attribute__((__packed__)) SmHwBtPacket
     union __attribute__((__packed__))
     {
         /// Raw content access
-        char raw[SM_HW_BT_PACKET_CONTENT_SIZE];
+        uint8_t raw[SM_HW_BT_PACKET_CONTENT_SIZE];
 
         /// Only for a SM_HW_BT_PACKET_ACK response
         struct __attribute__((__packed__))

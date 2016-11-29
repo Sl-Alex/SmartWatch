@@ -2,6 +2,7 @@
 #include <cstdio>
 #include "sm_hw_bt.h"
 #include "sm_hal_rtc.h"
+#include "sm_crc.h"
 
 #ifndef PC_SOFTWARE
 #include "sm_hal_gpio.h"
@@ -209,6 +210,23 @@ void SmHwBt::update(void)
     if (mRxDone)
     {
         mRxDone = false;
+
+        // Check header type
+        if (mRxPacket.header.type >= SM_HW_BT_PACKET_TYPE_MAX)
+        {
+            // Wrong packet - nothing to do, just return
+            return;
+        }
+
+        // Check crc32 field
+        uint32_t crc32 = SmCrc::calc32(0xFFFFFFFFUL, mRxPacket.content.raw, sizeof(mRxPacket.content.raw));
+        if (mRxPacket.header.crc32 != crc32)
+        {
+            // Wrong packet - nothing to do, just return
+            return;
+        }
+
+        // CRC and type seems to be fine, continue processing
 
         // Set default response values
         mTxPacket.header.type = SM_HW_BT_PACKET_ACK;
