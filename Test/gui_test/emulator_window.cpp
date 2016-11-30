@@ -198,7 +198,6 @@ void EmulatorWindow::keyReleaseEvent(QKeyEvent *pEvent)
 
 void EmulatorWindow::setPortName(QString port)
 {
-    setWindowTitle(port);
     if (serialPort == nullptr)
     {
         serialPort = new QSerialPort();
@@ -231,7 +230,6 @@ void EmulatorWindow::onSerialData(void)
             // 20 bytes packet is received
             SmHwBt::getInstance()->injectPacket(dataPacket.data(), dataPacket.count());
             QString response(dataPacket);
-            setWindowTitle(response);
         }
     }
     else

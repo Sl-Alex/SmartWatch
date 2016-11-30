@@ -54,18 +54,18 @@ public:
     bool init(int index);
 
     /// @brief Draw symbol from font on a canvas
-    /// @params canvas: Canvas to draw on
-    /// @params x: X coordinate on the canvas
-    /// @params y: Canvas to draw on the canvas
-    /// @params symbol: Symbol to output (symbol from the font code table)
+    /// @param canvas: Canvas to draw on
+    /// @param x: X coordinate on the canvas
+    /// @param y: Canvas to draw on the canvas
+    /// @param symbol: Symbol to output (symbol from the font code table)
     void drawSymbol(SmCanvas * canvas, int x, int y, uint16_t symbol);
 
     /// @brief Output text on a canvas
-    /// @params canvas: Canvas to draw on
-    /// @params x: X coordinate on the canvas
-    /// @params y: Y coordinate on the canvas
-    /// @params text: Pointer to the text to output
-    /// @params count: Number of symbols to output
+    /// @param canvas: Canvas to draw on
+    /// @param x: X coordinate on the canvas
+    /// @param y: Y coordinate on the canvas
+    /// @param text: Pointer to the text to output
+    /// @param count: Number of symbols to output
     void drawText(SmCanvas * canvas, int x, int y, uint16_t * text, uint16_t count);
 
     /// @brief Output ASCII text (symbols between 0x20 and 0x7E)
@@ -77,7 +77,9 @@ public:
     uint32_t getStringWidth(uint16_t * text, uint16_t count);
     /// @brief Get ASCII text width
     uint32_t getStringWidth(char * text);
+    /// @brief Get total font height
     uint32_t getFontHeight(void) { return mFontHeight; }
+    /// @brief Get font baseline position
     uint32_t getBaseLine(void) {return mBaseLine; }
 private:
     uint32_t mFontOffset;   ///< Start address of the font element in the external flash

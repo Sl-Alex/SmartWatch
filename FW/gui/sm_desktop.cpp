@@ -7,6 +7,8 @@
 #include "sm_hw_keyboard.h"
 #include <cstdio>
 
+const char FwVersion[10] = "FW v0.4";
+
 /// @todo Implement all services initialization
 void SmDesktop::init(void)
 {
@@ -221,4 +223,9 @@ void SmDesktop::onKeyDown(SmHwButtons key)
 
 void SmDesktop::onKeyUp(SmHwButtons)
 {
+}
+
+const char * SmDesktop::getVersion(void)
+{
+    return FwVersion;
 }

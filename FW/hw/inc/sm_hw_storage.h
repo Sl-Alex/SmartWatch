@@ -70,11 +70,11 @@ enum SmHwStorageIndices {
     IDX_FW_FONT_1_MEDIUM,   ///< Small clock font
     IDX_FW_FONT_2_LARGE,    ///< Big clock font
     IDX_FW_FONT_2_MEDIUM,   ///< Small clock font
-    IDX_ICON_BLUETOOTH,
-    IDX_ICON_DATE,
-    IDX_ICON_TIME,
-    IDX_ICON_ARROW_DOWN,
-    IDX_ICON_ARROW_UP
+    IDX_ICON_BLUETOOTH,     ///< Bluetooth menu icon
+    IDX_ICON_DATE,          ///< Date menu icon
+    IDX_ICON_TIME,          ///< Time menu icon
+    IDX_ICON_ARROW_DOWN,    ///< Arrow down (for SmEditor)
+    IDX_ICON_ARROW_UP       ///< Arrow up (for SmEditor)
 };
 
 /// @brief External SPI flash class
@@ -130,11 +130,6 @@ public:
     /// @brief Get elements count
     inline uint32_t elementsCount(void) { return mCount; }
 
-    void startFwDataErase(void);
-    bool isFwDataErased(void);
-
-    void startSettingsErase(void);
-    bool isSettingsErased(void);
 private:
     SmHwStorage() {}
     #ifndef PC_SOFTWARE

@@ -211,22 +211,24 @@ void SmHwBt::update(void)
     {
         mRxDone = false;
 
-        // Check header type
+        // Check received packet crc32
+        uint32_t receivedCRC = SmCrc::calc32(0xFFFFFFFFUL, mRxPacket.content.raw, sizeof(mRxPacket.content.raw));
+        if (mRxPacket.header.crc32 != receivedCRC)
+        {
+            // Wrong CRC32, nothing to do, just return
+            return;
+        }
+
+        /// @todo Decryption can be done here, packet type and packet content will be decrypted
+
+        // Check received packet type
         if (mRxPacket.header.type >= SM_HW_BT_PACKET_TYPE_MAX)
         {
-            // Wrong packet - nothing to do, just return
+            // Wrong type, nothing to do, just return
             return;
         }
 
-        // Check crc32 field
-        uint32_t crc32 = SmCrc::calc32(0xFFFFFFFFUL, mRxPacket.content.raw, sizeof(mRxPacket.content.raw));
-        if (mRxPacket.header.crc32 != crc32)
-        {
-            // Wrong packet - nothing to do, just return
-            return;
-        }
-
-        // CRC and type seems to be fine, continue processing
+        // Everything seems to be fine, proceed to the content parsing
 
         // Set default response values
         mTxPacket.header.type = SM_HW_BT_PACKET_ACK;
@@ -248,9 +250,14 @@ void SmHwBt::update(void)
                 // Set local date/time
                 SmHalRtc::getInstance()->setDateTime(datetime);
                 break;
+            case SM_HW_BT_PACKET_VERSION:
+                strcpy(mTxPacket.content.version, SmDesktop::getInstance()->getVersion());
+                break;
             default:
                 return;
         }
+
+        mTxPacket.header.crc32 = SmCrc::calc32(0xFFFFFFFFUL, mTxPacket.content.raw, sizeof(mTxPacket.content.raw));
 
         send();
     }

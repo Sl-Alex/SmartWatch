@@ -10,6 +10,8 @@
 #include "sm_hw_storage.h"
 #include "sm_editor.h"
 
+/// @brief Editors menu class
+/// @details Basically it is the content of all main menu items
 class SmEditMenu: public SmHalSysTimerIface, public SmHwKeyboardIface
 {
 public:

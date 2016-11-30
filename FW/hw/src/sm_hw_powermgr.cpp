@@ -31,12 +31,6 @@
 // AI3     A  7
 // ARDY    B  0
 
-//  (1UL << PIN_S2) | \
-//  (1UL << PIN_S3) |
-//  (1UL << PIN_BTRX) | \
-//  (1UL << PIN_AIRQ3) | \
-//  (1UL << PIN_ARDY))
-
 #define EVENTS_RISING (\
   (1UL << PIN_ALARM))
 
@@ -50,7 +44,6 @@
 
 #define EVENTS_COMMON (EVENTS_RISING | EVENTS_FALLING)
 
-/// @todo Uncomment some events
 void SmHwPowerMgr::init(void)
 {
     // Initialize GPIO EXTI

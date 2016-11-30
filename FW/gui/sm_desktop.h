@@ -22,6 +22,8 @@ public:
     void operator=(SmDesktop const&) = delete;
     ~SmDesktop();
 
+    const char * getVersion(void);
+
     /// @brief Get a singleton instance
     static SmDesktop* getInstance()
     {
