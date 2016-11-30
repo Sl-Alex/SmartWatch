@@ -1,7 +1,15 @@
 #include "sm_hal_rtc.h"
 #include <utility>
 
-#ifndef PC_SOFTWARE
+#ifdef PC_SOFTWARE
+#include <ctime>
+#include <qglobal.h>
+    static uint32_t EMUL_COUNTER = 0;
+    static uint16_t BKP_YEAR = 0;
+    static uint16_t BKP_MONTH = 0;
+    static uint16_t BKP_DAY = 0;
+#else
+
 #include "sm_hal_rcc.h"
 /// @brief Just a magic 16-bit number. Stored in backup register, helps to determine
 /// if RTC module has already been configured.
@@ -51,11 +59,6 @@
 #define PRLH_MSB_MASK    ((uint32_t)0x000F0000)  /*!< RTC Prescaler MSB Mask */
 #endif
 
-#ifdef PC_SOFTWARE
-#include <ctime>
-#include <qglobal.h>
-#endif
-
 #ifndef PC_SOFTWARE
 inline void RTC_WaitForLastTask(void)
 {
@@ -86,7 +89,19 @@ inline void RTC_ExitConfigMode(void)
 
 void SmHalRtc::init(void)
 {
-#ifndef PC_SOFTWARE
+#ifdef PC_SOFTWARE
+    SmHalRtcTime rtc;
+
+    time_t t = time(0);   // get time now
+    struct tm * now = localtime( & t );
+    rtc.year = now->tm_year + 1900;
+    rtc.month = now->tm_mon + 1;
+    rtc.day = now->tm_mday;
+    rtc.hour = now->tm_hour;
+    rtc.minute = now->tm_min;
+    rtc.second = now->tm_sec;
+    setDateTime(rtc);
+#else
 
     uint16_t state = BKP_CONFIGURED;
 
@@ -198,9 +213,7 @@ void SmHalRtc::init(void)
 uint32_t SmHalRtc::getCounter(void)
 {
 #ifdef PC_SOFTWARE
-    time_t t = time(0);   // get time now
-    struct tm * now = localtime( & t );
-    return (now->tm_hour*3600 + now->tm_min*60 + now->tm_sec);
+    return EMUL_COUNTER;
 #else
     RTC_WaitForSynchro();
     uint32_t tmp = RTC->CNTL;
@@ -222,7 +235,7 @@ uint32_t SmHalRtc::getAlarm(void)
 void SmHalRtc::setCounter(uint32_t value)
 {
 #ifdef PC_SOFTWARE
-    Q_UNUSED (value)
+    EMUL_COUNTER = value;
 #else
     RTC_WaitForLastTask();
     RTC_EnterConfigMode();
@@ -236,6 +249,18 @@ void SmHalRtc::setCounter(uint32_t value)
     RTC_WaitForLastTask();
 #endif
 }
+
+#ifdef PC_SOFTWARE
+void SmHalRtc::incrementCounter()
+{
+    EMUL_COUNTER++;
+    if (EMUL_COUNTER >= 24*3600)
+    {
+        EMUL_COUNTER %= 24*3600;
+        RTCAlarm_IRQHandler();
+    }
+}
+#endif
 
 void SmHalRtc::setAlarm(uint32_t value)
 {
@@ -260,11 +285,9 @@ void SmHalRtc::setAlarm(uint32_t value)
 
 void SmHalRtc::setDateTime(SmHalRtcTime &time)
 {
-#ifdef PC_SOFTWARE
-    Q_UNUSED (time)
-#else
     setDate(time);
     setTime(time);
+#ifndef PC_SOFTWARE
     updateAlarm();
 #endif
 }
@@ -272,16 +295,7 @@ void SmHalRtc::setDateTime(SmHalRtcTime &time)
 SmHalRtc::SmHalRtcTime SmHalRtc::getDateTime(void)
 {
     SmHalRtcTime rtc;
-#ifdef PC_SOFTWARE
-    time_t t = time(0);   // get time now
-    struct tm * now = localtime( & t );
-    rtc.year = now->tm_year + 1900;
-    rtc.month = now->tm_mon + 1;
-    rtc.day = now->tm_mday;
-    rtc.hour = now->tm_hour;
-    rtc.minute = now->tm_min;
-    rtc.second = now->tm_sec;
-#else
+
     rtc.year  = BKP_YEAR;
     rtc.month = BKP_MONTH;
     rtc.day   = BKP_DAY;
@@ -292,19 +306,14 @@ SmHalRtc::SmHalRtcTime SmHalRtc::getDateTime(void)
     rtc.minute = rest / 60;
     rtc.second = rest % 60;
 
-#endif
     return std::move(rtc);
 }
 
 void SmHalRtc::setDate(SmHalRtcTime &time)
 {
-#ifdef PC_SOFTWARE
-    Q_UNUSED(time)
-#else
     BKP_YEAR  = time.year;
     BKP_MONTH = time.month;
     BKP_DAY   = time.day;
-#endif
 }
 
 void SmHalRtc::setTime(SmHalRtcTime &time)
@@ -343,9 +352,13 @@ void SmHalRtc::updateAlarm(void)
     RTC_WaitForLastTask();
 }
 
+#endif
+
 extern "C" void RTCAlarm_IRQHandler(void)
 {
+#ifndef PC_SOFTWARE
     SmHalRtc::getInstance()->updateAlarm();
+#endif
 
     BKP_DAY++;
     if (BKP_DAY > SmHalRtc::getInstance()->getDaysOfMonth(BKP_YEAR, BKP_MONTH))
@@ -358,10 +371,13 @@ extern "C" void RTCAlarm_IRQHandler(void)
             BKP_YEAR++;
         }
     }
+
+#ifndef PC_SOFTWARE
     // Clear interrupt flag
     EXTI->PR = (1UL << 17UL);
-}
 #endif
+}
+
 //-----------------------------------------------------------------------
 // Date/time utils
 //-----------------------------------------------------------------------

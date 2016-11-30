@@ -6,6 +6,8 @@
 #ifndef PC_SOFTWARE
 #include "stm32f10x.h"
 #include "sm_hw_powermgr.h"
+#else
+#include "emulator_window.h"
 #endif
 
 extern "C" void RTCAlarm_IRQHandler(void);
@@ -77,6 +79,11 @@ private:
     void onWake(uint32_t wakeSource);
 
     friend void RTCAlarm_IRQHandler(void);
+
+#ifdef PC_SOFTWARE
+    friend class EmulatorWindow;
+    void incrementCounter(void);
+#endif
 };
 
 #endif // SM_HAL_RTC_H

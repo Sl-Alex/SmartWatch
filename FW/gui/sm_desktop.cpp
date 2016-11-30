@@ -10,6 +10,7 @@
 /// @todo Implement all services initialization
 void SmDesktop::init(void)
 {
+    SmHalRtc::getInstance()->init();
     SmHwBattery::getInstance()->init();
     SmHalSysTimer::subscribe(this, 10, true);
     SmHwKeyboard::getInstance()->initSubscribersPool(10);

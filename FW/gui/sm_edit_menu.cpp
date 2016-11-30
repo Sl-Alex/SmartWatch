@@ -291,6 +291,7 @@ void SmEditMenu::onKeyDown(SmHwButtons key)
             case EG_TIME:
                 datetime.hour = mEditors[0].getSelection()*10 + mEditors[1].getSelection();
                 datetime.minute = mEditors[2].getSelection()*10 + mEditors[3].getSelection();
+                datetime.second = 0;
                 SmHalRtc::getInstance()->setDateTime(datetime);
                 break;
             default:

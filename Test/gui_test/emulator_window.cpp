@@ -44,6 +44,7 @@
 #include "emulator_window.h"
 #include "sm_hw_storage.h"
 #include "sm_canvas.h"
+#include "sm_hal_rtc.h"
 
 #define LABEL_STYLE_DEFAULT "QLabel { background-color : #C0C0C0; color : black; }"
 #define LABEL_STYLE_PRESSED "QLabel { background-color : #303030; color : white; }"
@@ -122,6 +123,11 @@ EmulatorWindow::EmulatorWindow()
     QTimer * pTimerMs = new QTimer(this);
     connect(pTimerMs, SIGNAL(timeout()), this, SLOT(onTimerMsEvent()));
     pTimerMs->start(1);
+
+    QTimer * pTimer1s = new QTimer(this);
+    pTimer1s->setTimerType(Qt::PreciseTimer);
+    connect(pTimer1s, SIGNAL(timeout()), this, SLOT(onTimer1sEvent()));
+    pTimer1s->start(1000);
 }
 
 EmulatorWindow::~EmulatorWindow()
@@ -246,16 +252,9 @@ void EmulatorWindow::onTimerMsEvent(void)
     SysTick_Handler();
     SmHalSysTimer::processEvents();
     SmHwBt::getInstance()->update();
-/*    if (serialPort && serialPort->isOpen())
-    {
-        if (serialPort->waitForReadyRead(1))
-        {
-            QByteArray responseData = serialPort->readAll();
-            while (serialPort->waitForReadyRead(10))
-                responseData += serialPort->readAll();
-            QString response(responseData);
-            setWindowTitle(response);
-        }
-    }
-*/
+}
+
+void EmulatorWindow::onTimer1sEvent(void)
+{
+    SmHalRtc::getInstance()->incrementCounter();
 }

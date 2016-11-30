@@ -89,6 +89,7 @@ public:
 private slots:
     void onTimerEvent(void);
     void onTimerMsEvent(void);
+    void onTimer1sEvent(void);
     void onSerialData(void);
 
 private:

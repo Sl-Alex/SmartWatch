@@ -15,7 +15,7 @@ std::u16string utf8_to_utf16(const std::string& utf8)
     {
         unsigned long uni;
         size_t todo;
-        //bool error = false;
+
         unsigned char ch = utf8[i++];
         if (ch <= 0x7F)
         {

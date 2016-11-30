@@ -95,13 +95,6 @@ int main(void)
 
     SmHwBmc150::getInstance()->checkPresent();
     SmHwBmp180::getInstance()->checkPresent();
-    SmHalRtc::getInstance()->init();
-
-    SmFont * smallFont = new SmFont();
-    smallFont->init(IDX_FW_FONT_SMALL);
-
-    SmHalRtc::SmHalRtcTime rtc{2016,10,11,23,59,45};
-    SmHalRtc::getInstance()->setDateTime(rtc);
 
     SmDesktop::getInstance()->init();
     while (1)

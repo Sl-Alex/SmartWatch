@@ -3,6 +3,8 @@
 #ifndef PC_SOFTWARE
 #include "sm_hal_spi_sw.h"
 #include "sm_hal_gpio.h"
+#else
+#include <qglobal.h>
 #endif
 
 #include "sm_canvas.h"
@@ -239,7 +241,9 @@ void SmDisplay::onSleep(void)
 
 void SmDisplay::onWake(uint32_t wakeSource)
 {
-#ifndef PC_SOFTWARE
+#ifdef PC_SOFTWARE
+    Q_UNUSED(wakeSource)
+#else
     if (wakeSource & (SmHwPowerMgr::WakeSource::SM_HW_WAKE_MASK_ACCELEROMETER |
                       SmHwPowerMgr::WakeSource::SM_HW_WAKE_MASK_KEYBOARD))
     {
