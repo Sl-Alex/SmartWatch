@@ -1,8 +1,12 @@
 package ua.com.slalex.smcenter;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,10 +17,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import static ua.com.slalex.smcenter.R.string.action_settings;
+import layout.MainFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        SettingsFragment.OnFragmentInteractionListener,
+        AboutFragment.OnFragmentInteractionListener,
+        FiltersFragment.OnFragmentInteractionListener,
+        LogFragment.OnFragmentInteractionListener,
+        MainFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +43,12 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.content_main, new MainFragment());
+        ft.commit();
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -76,16 +90,73 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_settings) {
-            // Handle the camera action
-        } else if (id == R.id.nav_filters) {
+        // Create a new fragment and specify the planet to show based on position
 
-        } else if (id == R.id.nav_log) {
+        //TextView tv = (TextView) findViewById(R.id.main_text);
+        Fragment fragment = null;
+        //Bundle args;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        switch (id)
+        {
+            case R.id.nav_about:
+                fragment = new AboutFragment();
+                break;
+            case R.id.nav_settings:
+                fragment = new SettingsFragment();
+                //args = new Bundle();
+                //args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+                //fragment.setArguments(args);
 
+                // Insert the fragment by replacing any existing fragment
+                //fragmentManager = getSupportFragmentManager();
+                //fragmentManager.beginTransaction()
+                //        .replace(R.id.content_main, fragment)
+                //        .commit();
+                break;
+            case R.id.nav_filters:
+                fragment = new FiltersFragment();
+                break;
+            case R.id.nav_log:
+                fragment = new LogFragment();
+                break;
+            default:
+                fragment = new MainFragment();
+        }
+
+        if (fragment != null)
+        {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.content_main, fragment);
+            ft.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onSettingsFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onAboutFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onFiltersFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onLogFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onMainFragmentInteraction(Uri uri) {
+
     }
 }

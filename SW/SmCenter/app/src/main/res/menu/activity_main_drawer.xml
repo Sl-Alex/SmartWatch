@@ -3,6 +3,11 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_main"
+            android:icon="@drawable/ic_home_black"
+            android:checked="true"
+            android:title="Home" />
+        <item
             android:id="@+id/nav_about"
             android:icon="@drawable/ic_info_black"
             android:title="About" />
@@ -10,6 +15,7 @@
 
     <item android:title="Settings">
         <menu>
+            <group android:checkableBehavior="single">
             <item
                 android:id="@+id/nav_settings"
                 android:icon="@drawable/ic_settings_black"
@@ -22,6 +28,7 @@
                 android:id="@+id/nav_log"
                 android:icon="@drawable/ic_list_black"
                 android:title="Log" />
+            </group>
         </menu>
     </item>
 
