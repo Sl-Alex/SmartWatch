@@ -8,4 +8,18 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="n_a">n.a.</string>
+    <string-array name="filter_types">
+        <item>Black list</item>
+        <item>White list</item>
+        <item>Don\'t filter</item>
+    </string-array>
+    <string-array name="list_items">
+        <item>com.test.sw__^test message</item>
+        <item>net.other.soft__blaBlabla</item>
+        <item>other.example__Regular</item>
+        <item>blabla.program__expressions</item>
+        <item>com.super.soft__can be used</item>
+        <item>test.android.sw__as a filter</item>
+    </string-array>
 </resources>

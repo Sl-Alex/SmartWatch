@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 
 /**
@@ -64,7 +65,21 @@ public class FiltersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_filters, container, false);
+        View v = inflater.inflate(R.layout.fragment_filters, container, false);
+
+        ListView lstview=(ListView)v.findViewById(R.id.filtes_listview);
+        // Inflate header view
+        ViewGroup headerView = (ViewGroup)getActivity().getLayoutInflater().inflate(R.layout.filter_header, lstview,false);
+        // Add header view to the ListView
+        lstview.addHeaderView(headerView);
+        // Get the string array defined in strings.xml file
+        String[] items=getResources().getStringArray(R.array.list_items);
+        // Create an adapter to bind data to the ListView
+        FilterAdapter adapter=new FilterAdapter(v.getContext(),R.layout.filter_layout,R.id.txtname,items);
+        // Bind data to the ListView
+        lstview.setAdapter(adapter);
+
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

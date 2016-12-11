@@ -4,10 +4,39 @@
     android:layout_height="match_parent"
     tools:context="ua.com.slalex.smcenter.SettingsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="General settings" />
+        android:layout_height="match_parent">
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/fab_margin">
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/switch1"
+                android:text="Send date/time"
+                android:layout_weight="1"
+                android:checked="true" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/fab_margin">
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/switch3"
+                android:gravity="right|center_vertical|start"
+                android:layout_weight="1"
+                android:text="Send notifications" />
+
+        </TableRow>
+
+    </TableLayout>
 </FrameLayout>
