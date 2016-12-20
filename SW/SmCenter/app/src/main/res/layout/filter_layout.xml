@@ -10,7 +10,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:id="@+id/txtname"
+            android:id="@+id/filterListSource"
             android:layout_column="0"
             android:padding="@dimen/fab_margin"
             android:gravity="left"
@@ -23,7 +23,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_weight="1.5"
-            android:id="@+id/txtprice"
+            android:id="@+id/filterListText"
             android:padding="@dimen/fab_margin"
             android:layout_column="1"
             android:gravity="left"

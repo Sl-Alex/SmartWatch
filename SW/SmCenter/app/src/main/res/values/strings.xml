@@ -9,17 +9,26 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="n_a">n.a.</string>
+    <string name="filter_actions">Filter actions</string>
     <string-array name="filter_types">
+        <item>Don\'t filter</item>
         <item>Black list</item>
         <item>White list</item>
-        <item>Don\'t filter</item>
     </string-array>
     <string-array name="list_items">
-        <item>com.test.sw__^test message</item>
-        <item>net.other.soft__blaBlabla</item>
-        <item>other.example__Regular</item>
-        <item>blabla.program__expressions</item>
-        <item>com.super.soft__can be used</item>
-        <item>test.android.sw__as a filter</item>
+        <item>com.test.sw|^test message</item>
+        <item>net.other.soft|blaBlabla</item>
+        <item>other.example|Regular</item>
+        <item>blabla.program|expressions</item>
+        <item>com.super.soft|can|be used</item>
+        <item>test.android.sw||as|a|filter|</item>
+    </string-array>
+    <string-array name="add_edit_delete_filter">
+        <item>Add</item>
+        <item>Edit</item>
+        <item>Delete</item>
+    </string-array>
+    <string-array name="add_filter">
+        <item>Add</item>
     </string-array>
 </resources>

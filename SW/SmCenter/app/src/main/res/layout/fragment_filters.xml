@@ -28,13 +28,13 @@
             <Spinner
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/spinner2"
+                android:id="@+id/filterSpinner"
                 android:entries="@array/filter_types"
                 android:layout_weight="1" />
         </LinearLayout>
 
         <ListView
-            android:id="@+id/filtes_listview"
+            android:id="@+id/filtersListview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
