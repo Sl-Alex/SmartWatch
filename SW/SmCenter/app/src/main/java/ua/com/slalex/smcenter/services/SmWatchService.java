@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import ua.com.slalex.smcenter.BLE.BleDevice;
 
@@ -43,10 +44,12 @@ public class SmWatchService extends Service {
 
         Log.d("BLE","E: Connecting...");
         mBleDevice.connect();
-        String data = "!123456789ABCDEFGHI)";
-        byte[] data_arr = data.getBytes(StandardCharsets.US_ASCII);
-        Log.d("BLE", "E: Sending " + data_arr.length + " bytes");
-        mBleDevice.writeData(data_arr);
+        String data = "0123456789ABCDEFGHIJ";
+        byte[] data_out = data.getBytes(StandardCharsets.US_ASCII);
+        Log.d("BLE", "E: Sending " + data_out.length + " bytes");
+        byte[] data_in = null;
+        data_in = mBleDevice.transfer(data_out);
+        Log.d("BLE", "E: Received: " + Arrays.toString(data_in));
         Log.d("BLE","E: Disconnecting...");
         mBleDevice.disconnect();
         Log.d("BLE","E: Disconnected");
