@@ -8,10 +8,12 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import ua.com.slalex.smcenter.BLE.BleDevice;
+import ua.com.slalex.smcenter.BLE.BlePacket;
 
 public class SmWatchService extends Service {
 
@@ -42,6 +44,7 @@ public class SmWatchService extends Service {
         Toast.makeText(this, "Ble service started",
                 Toast.LENGTH_SHORT).show();
 
+        /*
         Log.d("BLE","E: Connecting...");
         mBleDevice.connect();
         String data = "0123456789ABCDEFGHIJ";
@@ -53,16 +56,36 @@ public class SmWatchService extends Service {
         Log.d("BLE","E: Disconnecting...");
         mBleDevice.disconnect();
         Log.d("BLE","E: Disconnected");
+        */
+
+        getFwVersion();
 
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public synchronized void sendNotification() {
+    public synchronized String getFwVersion() {
+        String ret;
 
+        BlePacket txPacket = new BlePacket();
+        BlePacket rxPacket;
+        txPacket.fillRaw(BlePacket.TYPE_VERSION);
+
+        mBleDevice.connect();
+        Log.d("BLE", "E: Sending " + txPacket.getRaw().length + " bytes, " + Arrays.toString(txPacket.getRaw()));
+        rxPacket = new BlePacket(mBleDevice.transfer(txPacket.getRaw()));
+        if (rxPacket.getType() == BlePacket.TYPE_ACK) {
+            Log.d("BLE", "E: Version is: " + rxPacket.getFwVersion());
+        }
+        Log.d("BLE","E: Disconnecting...");
+        mBleDevice.disconnect();
+
+        ret = "TBD";
+        return ret;
     }
 
     @Override
     public void onDestroy() {
+        mBleDevice.disconnect();
         super.onDestroy();
         Toast.makeText(this, "Ble service stopped",
                 Toast.LENGTH_SHORT).show();

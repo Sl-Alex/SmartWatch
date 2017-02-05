@@ -27,6 +27,7 @@ public class BleDevice {
     private static final int DEVICE_CONNECT_TIMEOUT = 5000;
     private static final int DEVICE_TRANSFER_TIMEOUT = 5000;
     private static final int DEVICE_DISCONNECT_TIMEOUT = 500;
+    private static final int DEVICE_RETRIES_MAX = 3;
 
     public BleDevice(){
     }
@@ -178,23 +179,31 @@ public class BleDevice {
             return null;
 
         mDataIn = null;
-        mTransferLatch = new CountDownLatch(1);
-
-        mRwCharacteristic.setValue(data);
-        mBtGatt.writeCharacteristic(mRwCharacteristic);
 
         // Wait for the result with a timeout
         boolean ret = false;
 
-        try {
-            ret = mTransferLatch.await(DEVICE_TRANSFER_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            disconnect();
+        int retries = DEVICE_RETRIES_MAX;
+        while (retries > 0)
+        {
+            mTransferLatch = new CountDownLatch(1);
+            mRwCharacteristic.setValue(data);
+            mBtGatt.writeCharacteristic(mRwCharacteristic);
+
+            try {
+                ret = mTransferLatch.await(DEVICE_TRANSFER_TIMEOUT, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                disconnect();
+                break;
+            }
+            if (ret) {
+                break;
+            } else {
+                retries--;
+            }
         }
 
         if (!ret) {
-            Log.d("BLE", "Transfer timeout");
-            /// TODO: Implement resending
             disconnect();
         }
 
