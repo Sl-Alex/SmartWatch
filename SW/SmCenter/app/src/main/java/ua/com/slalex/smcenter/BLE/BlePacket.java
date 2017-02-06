@@ -4,6 +4,8 @@ import android.util.Log;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
@@ -13,13 +15,13 @@ import java.util.zip.Checksum;
 
 public class BlePacket {
 
-    public static final byte TYPE_ACK                 = 0;  ///< Acknowledge to any packet except of SM_HW_BT_PACKET_VERSION
-    public static final byte TYPE_VERSION             = 1;  ///< Version request and response
-    public static final byte TYPE_NOTIFICATION_HEADER = 2;  ///< Text notification header, containing the length of the notification
-    public static final byte TYPE_NOTIFICATION_DATA   = 3;  ///< Text notification data
-    public static final byte TYPE_UPDATE_HEADER       = 4;  ///< Firmware update header, contains the size of the update
-    public static final byte TYPE_UPDATE_DATA         = 5;  ///< Firmware update data.
-    public static final byte TYPE_DATETIME            = 6;  ///< Set date/time request, contains both date and time
+    public static final byte TYPE_ACK                 = 1;  ///< Acknowledge to any packet except of SM_HW_BT_PACKET_VERSION
+    public static final byte TYPE_VERSION             = 2;  ///< Version request and response
+    public static final byte TYPE_NOTIFICATION_HEADER = 3;  ///< Text notification header, containing the length of the notification
+    public static final byte TYPE_NOTIFICATION_DATA   = 4;  ///< Text notification data
+    public static final byte TYPE_UPDATE_HEADER       = 5;  ///< Firmware update header, contains the size of the update
+    public static final byte TYPE_UPDATE_DATA         = 6;  ///< Firmware update data.
+    public static final byte TYPE_DATETIME            = 7;  ///< Set date/time request, contains both date and time
 
     public static final int PACKET_SIZE = 20;
 
@@ -30,7 +32,7 @@ public class BlePacket {
     }
 
     public BlePacket(byte[] data) {
-        if (data.length != 20)
+        if ((data != null) && (data.length != 20))
             mRaw = new byte[PACKET_SIZE];
         else
             mRaw = data;
@@ -123,29 +125,39 @@ public class BlePacket {
         return ret;
     }
 
-    public void fillRaw(byte type) {
+    public void setType(byte type) {
         mRaw[4] = type;
-        // Calculate and update CRC32
-        Log.d("BLE_CRC", "Original array " + Arrays.toString(mRaw));
-        int crc32 = calcCrc32(0xFFFFFFFF, mRaw, 5, 15);
-        Log.d("BLE_CRC", Integer.toHexString(crc32));
-        mRaw[0] = (byte)(crc32 & 0xFF); crc32 >>= 8;
-        mRaw[1] = (byte)(crc32 & 0xFF); crc32 >>= 8;
-        mRaw[2] = (byte)(crc32 & 0xFF); crc32 >>= 8;
-        mRaw[3] = (byte)(crc32 & 0xFF);
-    }
-
-    public byte[] getRaw() {
-        return mRaw;
     }
 
     public byte getType() {
         return mRaw[4];
     }
 
+    public byte[] getRaw() {
+        // Calculate and update CRC32
+        int crc32 = calcCrc32(0xFFFFFFFF, mRaw, 5, 15);
+        mRaw[0] = (byte)(crc32 & 0xFF); crc32 >>>= 8;
+        mRaw[1] = (byte)(crc32 & 0xFF); crc32 >>>= 8;
+        mRaw[2] = (byte)(crc32 & 0xFF); crc32 >>>= 8;
+        mRaw[3] = (byte)(crc32 & 0xFF);
+
+        return mRaw;
+    }
+
     public String getFwVersion() {
         int i = 5;
         while (i < mRaw.length && mRaw[i] != 0) { i++; }
         return new String(mRaw, 5, i - 5, StandardCharsets.US_ASCII);
+    }
+
+    public void setDateTime(Calendar calendar) {
+        int temp = calendar.get(Calendar.YEAR);
+        mRaw[ 5] = (byte)(temp & 0xFF); temp >>>= 8;
+        mRaw[ 6] = (byte)(temp & 0xFF);
+        mRaw[ 7] = (byte)(calendar.get(Calendar.MONTH) + 1);
+        mRaw[ 8] = (byte)(calendar.get(Calendar.DAY_OF_MONTH));
+        mRaw[ 9] = (byte)(calendar.get(Calendar.HOUR_OF_DAY));
+        mRaw[10] = (byte)(calendar.get(Calendar.MINUTE));
+        mRaw[11] = (byte)(calendar.get(Calendar.SECOND));
     }
 }

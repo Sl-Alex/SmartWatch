@@ -197,8 +197,10 @@ public class BleDevice {
                 break;
             }
             if (ret) {
+                Log.d("BLE", "ret = true");
                 break;
             } else {
+                Log.d("BLE", "ret = false");
                 retries--;
             }
         }

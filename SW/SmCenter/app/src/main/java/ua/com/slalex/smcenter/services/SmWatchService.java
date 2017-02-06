@@ -11,6 +11,8 @@ import android.widget.Toast;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 
 import ua.com.slalex.smcenter.BLE.BleDevice;
 import ua.com.slalex.smcenter.BLE.BlePacket;
@@ -44,42 +46,48 @@ public class SmWatchService extends Service {
         Toast.makeText(this, "Ble service started",
                 Toast.LENGTH_SHORT).show();
 
-        /*
-        Log.d("BLE","E: Connecting...");
         mBleDevice.connect();
-        String data = "0123456789ABCDEFGHIJ";
-        byte[] data_out = data.getBytes(StandardCharsets.US_ASCII);
-        Log.d("BLE", "E: Sending " + data_out.length + " bytes");
-        byte[] data_in = null;
-        data_in = mBleDevice.transfer(data_out);
-        Log.d("BLE", "E: Received: " + Arrays.toString(data_in));
-        Log.d("BLE","E: Disconnecting...");
-        mBleDevice.disconnect();
-        Log.d("BLE","E: Disconnected");
-        */
 
         getFwVersion();
+        setDateTime(Calendar.getInstance());
+
+        mBleDevice.disconnect();
 
         return super.onStartCommand(intent, flags, startId);
     }
 
     public synchronized String getFwVersion() {
-        String ret;
+        String ret = null;
 
         BlePacket txPacket = new BlePacket();
         BlePacket rxPacket;
-        txPacket.fillRaw(BlePacket.TYPE_VERSION);
+        txPacket.setType(BlePacket.TYPE_VERSION);
 
-        mBleDevice.connect();
-        Log.d("BLE", "E: Sending " + txPacket.getRaw().length + " bytes, " + Arrays.toString(txPacket.getRaw()));
         rxPacket = new BlePacket(mBleDevice.transfer(txPacket.getRaw()));
         if (rxPacket.getType() == BlePacket.TYPE_ACK) {
-            Log.d("BLE", "E: Version is: " + rxPacket.getFwVersion());
+            ret = rxPacket.getFwVersion();
+            Log.d("BLE", "E: Version is: " + ret);
         }
-        Log.d("BLE","E: Disconnecting...");
-        mBleDevice.disconnect();
 
-        ret = "TBD";
+        return ret;
+    }
+
+    public synchronized boolean setDateTime(Calendar calendar) {
+        boolean ret = false;
+
+        BlePacket txPacket = new BlePacket();
+        BlePacket rxPacket;
+        txPacket.setType(BlePacket.TYPE_DATETIME);
+        txPacket.setDateTime(calendar);
+
+        rxPacket = new BlePacket(mBleDevice.transfer(txPacket.getRaw()));
+        if (rxPacket.getType() == BlePacket.TYPE_ACK) {
+            Log.d("BLE", "DateTime ACK");
+            ret = true;
+        } else {
+            Log.d("BLE", "DateTime NACK");
+        }
+
         return ret;
     }
 
