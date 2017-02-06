@@ -50,13 +50,12 @@
  * 
  * @par SM_HW_BT_PACKET_ACK
  * 
- * This is a response to any request packet except of @ref SM_HW_BT_PACKET_VERSION. It must contain a type
- * and a sequence number of the request packet. If request packet does not contain a sequence number, then this field must be 0xFF
+ * This is a response to any request packet. It must contain a type and a sequence number of the request packet. If request packet does not contain a sequence number, then this field must be 0xFF
  * 
  * @par SM_HW_BT_PACKET_VERSION
  * 
- * This type of packet requests version information (ASCII, NULL-terminated) from the SmartWatch. Request data is not important. Response must have the same type.
- * Response data is a NULL-terminated ASCII-encoded version string.
+ * This type of packet requests version information (ASCII, NULL-terminated) from the SmartWatch. Request data is not important. Response must have @ref SM_HW_BT_PACKET_ACK type and correct version field.
+ * Version is a NULL-terminated ASCII-encoded version string.
  * 
  * @par SM_HW_BT_PACKET_NOTIFICATION_HEADER
  * 
@@ -94,8 +93,8 @@
 /// @brief BLE packet definitions
 enum SmHwBtPacketType
 {
-    SM_HW_BT_PACKET_ACK = 0,             ///< Acknowledge to any packet except of SM_HW_BT_PACKET_VERSION
-    SM_HW_BT_PACKET_VERSION,             ///< Version request and response
+    SM_HW_BT_PACKET_ACK = 1,             ///< Acknowledge to any packet except of SM_HW_BT_PACKET_VERSION
+    SM_HW_BT_PACKET_VERSION,             ///< Version request
     SM_HW_BT_PACKET_NOTIFICATION_HEADER, ///< Text notification header, containing the length of the notification
     SM_HW_BT_PACKET_NOTIFICATION_DATA,   ///< Text notification data
     SM_HW_BT_PACKET_UPDATE_HEADER,       ///< Firmware update header, contains the size of the update

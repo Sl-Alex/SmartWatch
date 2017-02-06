@@ -40,6 +40,8 @@
 #define USART_FLAG_PE                        ((uint16_t)0x0001)
 
 #define CR1_UART_ENABLE                 0x2000UL  /*!< USART Enable Mask */
+#else
+#include <QDebug>
 #endif // !PC_SOFTWARE
 
 void SmHwBt::init(void)
@@ -216,8 +218,11 @@ void SmHwBt::update(void)
         if (mRxPacket.header.crc32 != receivedCRC)
         {
             // Wrong CRC32, nothing to do, just return
+            qDebug("Wrong CRC32\n");
             return;
         }
+
+        //qDebug("");
 
         /// @todo Decryption can be done here, packet type and packet content will be decrypted
 
@@ -225,7 +230,7 @@ void SmHwBt::update(void)
         if (mRxPacket.header.type >= SM_HW_BT_PACKET_TYPE_MAX)
         {
             // Wrong type, nothing to do, just return
-            return;
+            //return;
         }
 
         // Everything seems to be fine, proceed to the content parsing
@@ -247,6 +252,12 @@ void SmHwBt::update(void)
                 datetime.hour   = mRxPacket.content.datetime.hour;
                 datetime.minute = mRxPacket.content.datetime.minute;
                 datetime.second = mRxPacket.content.datetime.second;
+
+                char buff[100];
+                sprintf(buff,"DD/MM/YYYY HH:MM:SS = %02u/%02u/%04u %02u:%02u:%02u\n",
+                        datetime.day,  datetime.month,  datetime.year,
+                        datetime.hour, datetime.minute, datetime.second);
+                qDebug() << buff;
                 // Set local date/time
                 SmHalRtc::getInstance()->setDateTime(datetime);
                 break;

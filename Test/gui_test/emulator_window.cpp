@@ -207,7 +207,7 @@ void EmulatorWindow::setPortName(QString port)
         serialPort->close();
     }
     serialPort->setPortName(port);
-    serialPort->setBaudRate(QSerialPort::Baud9600);
+    serialPort->setBaudRate(QSerialPort::Baud115200);
     serialPort->setDataBits(QSerialPort::Data8);
     serialPort->setStopBits(QSerialPort::OneStop);
     serialPort->setParity(QSerialPort::NoParity);
@@ -225,16 +225,16 @@ void EmulatorWindow::onSerialData(void)
     if (newTimestamp - timestamp < 100)
     {
         dataPacket += serialPort->readAll();
-        if (dataPacket.length() >= 20)
-        {
-            // 20 bytes packet is received
-            SmHwBt::getInstance()->injectPacket(dataPacket.data(), dataPacket.count());
-            QString response(dataPacket);
-        }
     }
     else
     {
         dataPacket = serialPort->readAll();
+    }
+    if (dataPacket.length() >= 20)
+    {
+        // 20 bytes packet is received
+        SmHwBt::getInstance()->injectPacket(dataPacket.data(), dataPacket.count());
+        dataPacket.clear();
     }
     timestamp = newTimestamp;
 }
