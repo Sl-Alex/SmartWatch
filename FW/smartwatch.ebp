@@ -121,6 +121,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="gui\sm_main_menu.h" />
+		<Unit filename="gui\sm_notification.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="gui\sm_notification.h" />
 		<Unit filename="gui\sm_texture.cpp">
 			<Option compilerVar="CC" />
 		</Unit>

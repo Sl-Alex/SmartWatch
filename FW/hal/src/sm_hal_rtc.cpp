@@ -12,9 +12,9 @@
 
 #include "sm_hal_rcc.h"
 /// @brief Just a magic 16-bit number. Stored in backup register, helps to determine
-/// if RTC module has already been configured.
+/// if some external or internal module has already been configured.
 /// @note Can be any value except of zero
-#define USR_RTC_CONFIGURED  0xABCD
+#define USR_STATE_CONFIGURED  0xABCD
 
 #define BKP_DR1             ((uint16_t)0x0004)
 #define BKP_DR2             ((uint16_t)0x0008)
@@ -30,6 +30,7 @@
 #define BKP_YEAR            (*(__IO uint16_t *)(BKP_BASE + BKP_DR2))
 #define BKP_MONTH           (*(__IO uint16_t *)(BKP_BASE + BKP_DR3))
 #define BKP_DAY             (*(__IO uint16_t *)(BKP_BASE + BKP_DR4))
+#define BKP_HM10_PRECONF    (*(__IO uint16_t *)(BKP_BASE + BKP_DR5))
 /* --------- PWR registers bit address in the alias region ---------- */
 #define PWR_OFFSET               (PWR_BASE - PERIPH_BASE)
 
@@ -105,7 +106,7 @@ void SmHalRtc::init(void)
 
     uint16_t state = BKP_CONFIGURED;
 
-    if (state == USR_RTC_CONFIGURED)
+    if (state == USR_STATE_CONFIGURED)
     {
         // Enable PWR and BKP clocks
         SmHalRcc::clockEnable(RCC_PERIPH_PWR);
@@ -201,7 +202,7 @@ void SmHalRtc::init(void)
         /* Wait until last write operation on RTC registers has finished */
         RTC_WaitForLastTask();
 
-        BKP_CONFIGURED = USR_RTC_CONFIGURED;
+        BKP_CONFIGURED = USR_STATE_CONFIGURED;
     }
 
     // Enable RTC interrupts
@@ -420,4 +421,20 @@ uint32_t SmHalRtc::getDaysOfMonth(uint32_t year, uint32_t month)
         return 29;
     else
         return 28;
+}
+
+bool SmHalRtc::isHm10Preconf(void)
+{
+#ifndef PC_SOFTWARE
+    return (BKP_HM10_PRECONF == USR_STATE_CONFIGURED);
+#else
+    return false;
+#endif
+}
+
+void SmHalRtc::setHm10Preconf(void)
+{
+#ifndef PC_SOFTWARE
+    BKP_HM10_PRECONF = USR_STATE_CONFIGURED;
+#endif
 }
