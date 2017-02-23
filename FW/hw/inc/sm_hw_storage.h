@@ -74,7 +74,8 @@ enum SmHwStorageIndices {
     IDX_ICON_DATE,          ///< Date menu icon
     IDX_ICON_TIME,          ///< Time menu icon
     IDX_ICON_ARROW_DOWN,    ///< Arrow down (for SmEditor)
-    IDX_ICON_ARROW_UP       ///< Arrow up (for SmEditor)
+    IDX_ICON_ARROW_UP,       ///< Arrow up (for SmEditor)
+    IDX_ICON_NOTIFICATION = 24       ///< Envelope icon
 };
 
 /// @brief External SPI flash class

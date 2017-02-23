@@ -7,6 +7,7 @@
 #include "sm_hw_battery.h"
 #include "sm_hw_keyboard.h"
 #include "sm_main_menu.h"
+#include "sm_notification.h"
 
 /// @brief Desktop class
 class SmDesktop: public SmHalSysTimerIface, public SmHwKeyboardIface
@@ -39,6 +40,8 @@ public:
     void onKeyDown(SmHwButtons key);
     /// @brief onKeyUp event.
     void onKeyUp(SmHwButtons key);
+
+    void showNotification(void);
 
 private:
     static const uint8_t MAX_ICONS_COUNT = 10;
@@ -73,6 +76,7 @@ private:
     SmFont * pFont7SegSmall;
     SmFont * pFontSmall;
     SmMainMenu * pMainMenu;
+    SmNotification * pNotification;
 
     SmAnimator menuAnimator;
 

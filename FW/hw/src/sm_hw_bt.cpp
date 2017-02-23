@@ -49,6 +49,10 @@ void SmHwBt::init(void)
     static_assert(sizeof(SmHwBtPacket) == SM_HW_BT_PACKET_SIZE, "Size of SmHwBtPacket must be equal to SM_HW_BT_PACKET_SIZE!");
     // Clear received data
     memset(&mRxPacket,0,sizeof(SmHwBtPacket));
+    mHeader = nullptr;
+    mText = nullptr;
+    mHeaderSize = 0;
+    mTextSize = 0;
 #ifndef PC_SOFTWARE
     mPowerPin = new SmHalGpio<BT_EN_PORT, BT_EN_PIN>();
     mPowerPin->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
@@ -264,6 +268,10 @@ void SmHwBt::update(void)
             case SM_HW_BT_PACKET_VERSION:
                 strcpy(mTxPacket.content.version, SmDesktop::getInstance()->getVersion());
                 break;
+            case SM_HW_BT_PACKET_NOTIFICATION_HEADER:
+                /// TODO: implement correct numbers
+                mHeaderSize = 10;
+                break;
             default:
                 return;
         }
@@ -272,4 +280,33 @@ void SmHwBt::update(void)
 
         send();
     }
+}
+
+bool SmHwBt::isNotification(void)
+{
+    return (mHeaderSize != 0);
+}
+
+void SmHwBt::clearNotification(void)
+{
+    if (mHeader != nullptr)
+        delete mHeader;
+    if (mText != nullptr)
+        delete mText;
+
+    mText = nullptr;
+    mHeader = nullptr;
+    mHeaderSize = 0;
+}
+
+void SmHwBt::getHeader(uint16_t** ppHeader, uint16_t* pHeaderSize)
+{
+    *ppHeader = mHeader;
+    *pHeaderSize = mHeaderSize;
+}
+
+void SmHwBt::getText(uint16_t** ppText, uint16_t* pTextSize )
+{
+    *ppText = mText;
+    *pTextSize = mTextSize;
 }

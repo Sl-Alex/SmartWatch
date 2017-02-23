@@ -187,6 +187,11 @@ public:
                                  // Instantiated on first use.
         return &instance;
     }
+
+    bool isNotification(void);
+    void clearNotification(void);
+    void getHeader(uint16_t** ppHeader, uint16_t* pHeaderSize);
+    void getText(uint16_t** ppText, uint16_t* pTextSize );
 private:
     SmHwBt() {}
 
@@ -206,6 +211,11 @@ private:
     void injectPacket(char * data, uint8_t size);
 #endif
     friend class EmulatorWindow;
+
+    uint16_t * mHeader;
+    uint16_t * mText;
+    uint16_t mHeaderSize;
+    uint16_t mTextSize;
 };
 
 #endif // SM_HW_BT_H

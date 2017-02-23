@@ -50,10 +50,10 @@ void SmHwPowerMgr::init(void)
     // Pins 0 to 3 (any port)
     AFIO->EXTICR[0] = (PORT_S2    << ((PIN_S2    & 0x03) << 2)) |
                       (PORT_S3    << ((PIN_S3    & 0x03) << 2)) |
-                      (PORT_AIRQ1 << ((PIN_AIRQ1 & 0x03) << 2));// | \
-                      (PORT_ARDY  << ((PIN_ARDY  & 0x03) << 2));
+                      (PORT_AIRQ1 << ((PIN_AIRQ1 & 0x03) << 2));
+                      //(PORT_ARDY  << ((PIN_ARDY  & 0x03) << 2));
     // Pins 4 to 7 (any port)
-    AFIO->EXTICR[1] = (PORT_S4    << ((PIN_S4    & 0x03) << 2));// | \
+    AFIO->EXTICR[1] = (PORT_S4    << ((PIN_S4    & 0x03) << 2));
                       //(PORT_AIRQ3 << ((PIN_AIRQ3 & 0x03) << 2));
     // Pins 8 to 11 (any port)
     AFIO->EXTICR[2] = (PORT_S1    << ((PIN_S1    & 0x03) << 2)) |

@@ -33,6 +33,7 @@ void SmDesktop::init(void)
     pFontSmall = new SmFont();
     pFontSmall->init(IDX_FW_FONT_SMALL);
     pMainMenu = nullptr;
+    pNotification = nullptr;
 #ifndef PC_SOFTWARE
 //    SmHwPowerMgr::getInstance()->blockSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY);
     SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY, 5000);
@@ -215,6 +216,28 @@ void SmDesktop::onKeyDown(SmHwButtons key)
             SmHwKeyboard::getInstance()->subscribe(this);
             SmHalSysTimer::subscribe(this,10,true);
         }
+        if (pNotification != nullptr)
+        {
+            delete pNotification;
+            pNotification = nullptr;
+
+            // Replace drawing canvas with this
+            pCanvas = new SmCanvas();
+            pCanvas->init(128,64);
+            pCanvas->clear();
+
+            drawAll();
+
+            menuAnimator.setDestSource(SmDisplay::getInstance()->getCanvas(), pCanvas);
+            menuAnimator.setDirection(SmAnimator::ANIM_DIR_DOWN);
+            menuAnimator.setShiftLimit(128);
+            menuAnimator.setSpeed(4);
+            menuAnimator.setType(SmAnimator::ANIM_TYPE_VIS_APPEAR);
+            menuAnimator.start(0,0,0,0,128,64);
+
+            SmHwKeyboard::getInstance()->subscribe(this);
+            SmHalSysTimer::subscribe(this,10,true);
+        }
     }
 #ifndef PC_SOFTWARE
     SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY, 5000);
@@ -223,6 +246,23 @@ void SmDesktop::onKeyDown(SmHwButtons key)
 
 void SmDesktop::onKeyUp(SmHwButtons)
 {
+}
+
+void SmDesktop::showNotification(void)
+{
+    if (pNotification == nullptr)
+    {
+        if (menuAnimator.isRunning())
+        {
+            menuAnimator.finish();
+            delete pCanvas;
+            pCanvas = SmDisplay::getInstance()->getCanvas();
+        }
+        // Check if pCanvas is different, delete and set default then
+        SmHwKeyboard::getInstance()->unsubscribe(this);
+        SmHalSysTimer::unsubscribe(this);
+        pNotification = new SmNotification(this);
+    }
 }
 
 const char * SmDesktop::getVersion(void)

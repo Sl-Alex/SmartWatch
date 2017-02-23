@@ -74,7 +74,7 @@ private:
     void onTimer(uint32_t timeStamp);
 
 #ifndef PC_SOFTWARE
-    // SmHalSysTimerIface events
+    // SmHwPowerMgrIface events
     void onSleep(void);
     void onWake(uint32_t wakeSource);
 #endif
