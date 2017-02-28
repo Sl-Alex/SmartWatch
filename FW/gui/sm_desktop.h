@@ -42,6 +42,7 @@ public:
     void onKeyUp(SmHwButtons key);
 
     void showNotification(void);
+    inline SmNotification * getNotification(void) { return pNotification; }
 
 private:
     static const uint8_t MAX_ICONS_COUNT = 10;

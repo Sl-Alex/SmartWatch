@@ -58,7 +58,7 @@ private:
     SmHalAbstractGpio * mPowerPin;
     SmHalAbstractGpio * mResetPin;
 #endif
-    bool mPowered;
+    volatile bool mPowered;
 };
 
 #endif // SM_DISPLAY_H

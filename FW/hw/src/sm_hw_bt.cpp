@@ -50,7 +50,7 @@ void SmHwBt::init(void)
 {
     static_assert(sizeof(SmHwBtPacket) == SM_HW_BT_PACKET_SIZE, "Size of SmHwBtPacket must be equal to SM_HW_BT_PACKET_SIZE!");
     // Clear received data
-    memset(&mRxPacket,0,sizeof(SmHwBtPacket));
+    //memset((void)&mRxPacket,0,sizeof(SmHwBtPacket));
     mHeader = nullptr;
     mText = nullptr;
     mHeaderSize = 0;
@@ -84,6 +84,7 @@ void SmHwBt::init(void)
 
 void SmHwBt::preConf(void)
 {
+    return;
     if (SmHalRtc::getInstance()->isHm10Preconf() == true)
         return;
 
@@ -122,17 +123,26 @@ void SmHwBt::send(void)
 #ifdef PC_SOFTWARE
     EmulatorWindow::getInstance()->sendPacket((char *)&mTxPacket, sizeof(mTxPacket));
 #else
-    static uint32_t tmp = 2017;
-    sprintf((char *)&mTxPacket, "BLABLABLA %u", tmp++);
-    uint32_t tmpreg = 0;
+    SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_BT,
+                                            SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_SHORT);
+
+#define USART_DMAReq_Tx                      ((uint16_t)0x0080)
+    ((USART_TypeDef * )USART_BASE)->CR3 &=~USART_DMAReq_Tx;
+
     // USART1 DMA TX disable
     DMA1_Channel4->CCR &=~DMA_CCR1_EN;
 
+    DMA1_Channel4->CPAR = (uint32_t)&(USART1->DR);
+    DMA1_Channel4->CMAR = (uint32_t)&mTxPacket;
+
+
     /*--------------------------- DMAy Channelx CNDTR Configuration ---------------*/
     /* Write to DMAy Channelx CNDTR */
-    DMA1_Channel4->CNDTR = sizeof(mTxPacket);
+    DMA1_Channel4->CNDTR = SM_HW_BT_PACKET_SIZE;
 
     // USART1 DMA TX enable
+    ((USART_TypeDef * )USART_BASE)->CR3 |= USART_DMAReq_Tx;
+
     DMA1_Channel4->CCR |= DMA_CCR1_EN;
 #endif
 }
@@ -163,7 +173,7 @@ void SmHwBt::update(void)
         mRxDone = false;
 
         // Check received packet crc32
-        uint32_t receivedCRC = SmCrc::calc32(0xFFFFFFFFUL, mRxPacket.content.raw, sizeof(mRxPacket.content.raw));
+        uint32_t receivedCRC = SmCrc::calc32(0xFFFFFFFFUL, (uint8_t *)mRxPacket.content.raw, sizeof(mRxPacket.content.raw));
         if (mRxPacket.header.crc32 != receivedCRC)
         {
             // Wrong CRC32, nothing to do, just return
@@ -311,8 +321,8 @@ void SmHwBt::setBaud(uint32_t baud)
     /* Enable the selected USART by setting the UE bit in the CR1 register */
     ((USART_TypeDef * )USART_BASE)->CR1 |= CR1_UART_ENABLE;
 
-#define USART_DMAReq_Tx                      ((uint16_t)0x0080)
-    ((USART_TypeDef * )USART_BASE)->CR3 |= USART_DMAReq_Tx;
+//#define USART_DMAReq_Tx                      ((uint16_t)0x0080)
+//    ((USART_TypeDef * )USART_BASE)->CR3 |= USART_DMAReq_Tx;
 
     /*--------------------------- DMAy Channelx CCR Configuration -----------------*/
     /* Get the DMAy_Channelx CCR value */
@@ -347,7 +357,7 @@ void SmHwBt::setBaud(uint32_t baud)
 
     /*--------------------------- DMAy Channelx CNDTR Configuration ---------------*/
     /* Write to DMAy Channelx CNDTR */
-    DMA1_Channel4->CNDTR = sizeof(mTxPacket);
+    DMA1_Channel4->CNDTR = SM_HW_BT_PACKET_SIZE;
 
 /*--------------------------- DMAy Channelx CPAR Configuration ----------------*/
     /* Write to DMAy Channelx CPAR */
@@ -356,6 +366,11 @@ void SmHwBt::setBaud(uint32_t baud)
 /*--------------------------- DMAy Channelx CMAR Configuration ----------------*/
     /* Write to DMAy Channelx CMAR */
     DMA1_Channel4->CMAR = (uint32_t)&mTxPacket;
+
+
+    ((USART_TypeDef * )USART_BASE)->CR1  |= USART_CR1_RXNEIE;    // UART1 Receive Interrupt Enable.
+    // Enable interrupt fromUSART1(NVIC level)
+    NVIC_EnableIRQ(USART1_IRQn);
 #endif
 }
 
@@ -387,3 +402,43 @@ void SmHwBt::getText(uint16_t** ppText, uint16_t* pTextSize )
     *ppText = mText;
     *pTextSize = mTextSize;
 }
+
+#ifndef PC_SOFTWARE
+extern "C" {
+
+void USART1_IRQHandler()
+{
+
+    if((USART1->SR & USART_SR_RXNE) == 0)
+        return;
+
+    static uint32_t timestamp = SmHalSysTimer::getTimeStamp();
+    uint32_t newTimestamp = SmHalSysTimer::getTimeStamp();
+
+    static uint8_t cnt = 0;
+    static uint8_t * pData = (uint8_t *)(&SmHwBt::getInstance()->mRxPacket);
+
+    uint8_t data = USART1->DR;
+
+    if (newTimestamp - timestamp > SM_HW_BT_RX_TIMEOUT)
+    {
+        pData = (uint8_t *)(&SmHwBt::getInstance()->mRxPacket);
+        cnt = 0;
+    }
+
+    *pData++ = data;
+    cnt++;
+
+    if (cnt >= SM_HW_BT_PACKET_SIZE)
+    {
+        // 20 bytes packet is received
+        SmHwBt::getInstance()->mRxDone = true;
+        pData = (uint8_t *)(&SmHwBt::getInstance()->mRxPacket);
+        cnt = 0;
+    }
+    timestamp = newTimestamp;
+
+}
+
+}
+#endif

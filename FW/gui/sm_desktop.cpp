@@ -35,8 +35,8 @@ void SmDesktop::init(void)
     pMainMenu = nullptr;
     pNotification = nullptr;
 #ifndef PC_SOFTWARE
-//    SmHwPowerMgr::getInstance()->blockSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY);
-    SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY, 5000);
+    SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY,
+                                            SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_LONG);
 #endif
 }
 
@@ -240,7 +240,8 @@ void SmDesktop::onKeyDown(SmHwButtons key)
         }
     }
 #ifndef PC_SOFTWARE
-    SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY, 5000);
+    SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY,
+                                            SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_LONG);
 #endif
 }
 

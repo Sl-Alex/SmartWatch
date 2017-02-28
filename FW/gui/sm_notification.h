@@ -10,19 +10,18 @@
 #include "sm_hw_storage.h"
 #include "sm_edit_menu.h"
 
-class SmNotification: public SmHalSysTimerIface, public SmHwKeyboardIface
+class SmNotification: public SmHwKeyboardIface
 {
 public:
     SmNotification(SmHwKeyboardIface * parent);
     ~SmNotification();
 
-    /// @brief System timer event
-    void onTimer(uint32_t timeStamp);
-
     /// @brief onKeyDown event.
     void onKeyDown(SmHwButtons key);
     /// @brief onKeyUp event.
     void onKeyUp(SmHwButtons key);
+
+    inline void addCount(void) { mCount++; drawItem(); }
 private:
 
     void drawItem(void);
@@ -34,10 +33,10 @@ private:
         uint16_t textSymbolsCount;
     };
 
+    int mCount;
+
     SmCanvas * pCanvas;
     SmHwKeyboardIface * pParent;
-    SmAnimator notificationAnimator;
-
 };
 
 #endif // SM_NOTIFICATION_H

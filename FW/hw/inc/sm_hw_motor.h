@@ -7,22 +7,25 @@
 #include "sm_hw_keyboard.h"
 
 /// @brief Vibration motor control
-class SmHwMotor: public SmHalSysTimerIface, public SmHwPowerMgrIface, public SmHwKeyboardIface
+class SmHwMotor: public SmHalSysTimerIface, public SmHwPowerMgrIface
 {
 public:
     /// @brief Initialize motor control GPIO and subscribe to the system timer events
     SmHwMotor();
+    void startNotification(uint32_t pattern, uint8_t pulses);
+    void stopNotification(void);
 private:
     void onTimer(uint32_t timeStamp);
     void onSleep(void);
     void onWake(uint32_t wakeSource);
 
-    /// @todo Remove after testing
-    void onKeyDown(SmHwButtons key);
-    /// @todo Remove after testing
-    void onKeyUp(SmHwButtons key);
-
     SmHalAbstractGpio * mGpio;
+
+    inline void enable(void) { mGpio->setPin(); }
+    inline void disable(void) { mGpio->resetPin(); }
+
+    uint32_t mPattern;
+    uint32_t mLength;
 };
 
 #endif // SM_HW_MOTOR_H

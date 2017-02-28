@@ -170,6 +170,8 @@ void SmDisplay::sendData(uint8_t * data, uint8_t size)
 }
 #endif
 
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
 void SmDisplay::powerOn(void)
 {
     if (mPowered)
@@ -220,6 +222,7 @@ void SmDisplay::powerOn(void)
     sendCommand(LCD_CMD_DISPLAY_ON);
 #endif
 }
+#pragma GCC pop_options
 
 void SmDisplay::powerOff(void)
 {
@@ -247,7 +250,8 @@ void SmDisplay::onWake(uint32_t wakeSource)
     if (wakeSource & (SmHwPowerMgr::WakeSource::SM_HW_WAKE_MASK_ACCELEROMETER |
                       SmHwPowerMgr::WakeSource::SM_HW_WAKE_MASK_KEYBOARD))
     {
-        SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY, 5000);
+        SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY,
+                                                SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_LONG);
         powerOn();
     }
 #endif

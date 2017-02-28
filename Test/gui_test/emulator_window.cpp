@@ -250,6 +250,28 @@ void EmulatorWindow::onTimerMsEvent(void)
     SysTick_Handler();
     SmHalSysTimer::processEvents();
     SmHwBt::getInstance()->update();
+    if (SmHwBt::getInstance()->isNotification())
+    {
+        SmNotification * pNotification = desktop->getNotification();
+
+        if (pNotification)
+            pNotification->addCount();
+        else
+            desktop->showNotification();
+
+        SmHwBt::getInstance()->clearNotification();
+    }
+    else
+    {
+        SmNotification * pNotification = desktop->getNotification();
+        if (pNotification == nullptr)
+        {
+            desktop->showNotification();
+            pNotification = desktop->getNotification();
+            pNotification->addCount();
+            pNotification->addCount();
+        }
+    }
 }
 
 void EmulatorWindow::onTimer1sEvent(void)

@@ -59,6 +59,7 @@ void SmHwStorage::init(void)
     ((SmHalSpiHw<SPI_BASE, SM_HAL_SPI_CFG_FULL_DUPLEX> *)mSpi)->init(SM_HAL_SPI_MODE3, SM_HAL_SPI_WIDTH_8);
 
     SmHwPowerMgr::getInstance()->subscribe(this);
+    onWake(0);
 
     readId();
 
@@ -424,6 +425,8 @@ void SmHwStorage::onSleep(void)
     mSpi->setSs();
 }
 
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
 void SmHwStorage::onWake(uint32_t wakeSource)
 {
     mSpi->resetSs();
@@ -432,6 +435,7 @@ void SmHwStorage::onWake(uint32_t wakeSource)
     for (uint32_t i = 0; i < 1000; i++)
         mSpi->setSs();
 }
+#pragma GCC pop_options
 #else
 void SmHwStorage::init(void)
 {

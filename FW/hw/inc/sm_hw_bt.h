@@ -90,6 +90,8 @@
 #define SM_HW_BT_PACKET_HEADER_SIZE (5)
 #define SM_HW_BT_PACKET_CONTENT_SIZE (SM_HW_BT_PACKET_SIZE - SM_HW_BT_PACKET_HEADER_SIZE)
 
+extern "C" void USART1_IRQHandler(void);
+
 /// @brief BLE packet definitions
 enum SmHwBtPacketType
 {
@@ -206,17 +208,18 @@ private:
 
     SmHwBtPacket mRxPacket;
     SmHwBtPacket mTxPacket;
-    bool mRxDone;
+    volatile bool mRxDone;
 #ifndef PC_SOFTWARE
     SmHalAbstractGpio *mPowerPin;
     SmHalAbstractGpio *mRxPin;
     SmHalAbstractGpio *mTxPin;
     SmHalAbstractGpio *mStPin;
+    friend void USART1_IRQHandler(void);
 #else
     /// @brief Inject a packet from another class
     void injectPacket(char * data, uint8_t size);
-#endif
     friend class EmulatorWindow;
+#endif
 
     uint16_t * mHeader;
     uint16_t * mText;

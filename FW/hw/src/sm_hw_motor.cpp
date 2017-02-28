@@ -5,36 +5,66 @@
 #define MOTOR_PORT  GPIOA_BASE
 #define MOTOR_PIN   8
 
+/// "Tick" of the motor, ms
+#define MOTOR_TICK  80
+
+#define SHORT_SLOT  MOTOR_TICK
+#define LONG_SLOT   MOTOR_TICK*3
+
 SmHwMotor::SmHwMotor()
 {
     mGpio = new SmHalGpio<MOTOR_PORT, MOTOR_PIN>();
     mGpio->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
-    mGpio->resetPin();
+    mPattern = 0;
+    mLength = 0;
     SmHwPowerMgr::getInstance()->subscribe(this);
-    SmHalSysTimer::subscribe(this,2000,false);
+    disable();
 }
 
 void SmHwMotor::onSleep(void)
 {
-    mGpio->resetPin();
+    disable();
 }
 
 void SmHwMotor::onWake(uint32_t wakeSource)
 {
-    mGpio->setPin();
 }
 
 void SmHwMotor::onTimer(uint32_t timeStamp)
 {
-    SmHalSysTimer::subscribe(this,2000,false);
+    if (mPattern & 1)
+        SmHalSysTimer::subscribe(this, LONG_SLOT, false);
+    else
+        SmHalSysTimer::subscribe(this, SHORT_SLOT, false);
+
+    if (mLength & 1)
+        enable();
+    else
+        disable();
+
+
+    mPattern >>= 1;
+
+    if (mLength)
+        mLength--;
+    else
+        stopNotification();
 }
 
-void SmHwMotor::onKeyDown(SmHwButtons key)
+void SmHwMotor::startNotification(uint32_t pattern, uint8_t pulses)
 {
-//    mGpio->setPin();
+    if ((pulses == 0) || (pulses > 16))
+        return;
+
+    mPattern = pattern;
+    mLength = pulses * 2 - 1;
+
+    // Call onTimer with any value
+    onTimer(0);
 }
 
-void SmHwMotor::onKeyUp(SmHwButtons key)
+void SmHwMotor::stopNotification(void)
 {
-//    mGpio->resetPin();
+    SmHalSysTimer::unsubscribe(this);
+	disable();
 }

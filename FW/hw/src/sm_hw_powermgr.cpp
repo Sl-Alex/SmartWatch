@@ -1,5 +1,6 @@
 #include <cstring>
 #include "sm_hw_powermgr.h"
+#include "sm_display.h"
 
 #define PWR_Regulator_ON          ((uint32_t)0x00000000)
 #define PWR_Regulator_LowPower    ((uint32_t)0x00000001)
@@ -56,10 +57,11 @@ void SmHwPowerMgr::init(void)
     AFIO->EXTICR[1] = (PORT_S4    << ((PIN_S4    & 0x03) << 2));
                       //(PORT_AIRQ3 << ((PIN_AIRQ3 & 0x03) << 2));
     // Pins 8 to 11 (any port)
-    AFIO->EXTICR[2] = (PORT_S1    << ((PIN_S1    & 0x03) << 2)) |
-                      (PORT_BTRX  << ((PIN_BTRX  & 0x03) << 2));
+    AFIO->EXTICR[2] = (PORT_BTRX  << ((PIN_BTRX  & 0x03) << 2));
+//    AFIO->EXTICR[2] = (PORT_S1    << ((PIN_S1    & 0x03) << 2)) |
+//                      (PORT_BTRX  << ((PIN_BTRX  & 0x03) << 2));
     // Pins 12 to 15 (any port)
-    AFIO->EXTICR[3] = 0;
+    AFIO->EXTICR[3] = (PORT_S1    << ((PIN_S1    & 0x03) << 2));
 
     // Disable interrupts
     EXTI->IMR &= ~EVENTS_COMMON;
@@ -75,10 +77,10 @@ void SmHwPowerMgr::init(void)
     EXTI->FTSR |=  EVENTS_FALLING;
 
     // Enable events
-    EXTI->EMR |=  EVENTS_COMMON;
+    EXTI->EMR =  EVENTS_COMMON;
     // Enable interrupts
 //    EXTI->IMR |= (1UL << PIN_ALARM);
-    EXTI->IMR |= EVENTS_COMMON; // Enable all
+    EXTI->IMR = EVENTS_COMMON; // Enable all
 
     // Clear pending events (by writing one)
     EXTI->PR |= EVENTS_COMMON;
@@ -141,6 +143,8 @@ void SmHwPowerMgr::unsubscribe(SmHwPowerMgrIface *iface)
     }
 }
 
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
 void SmHwPowerMgr::sleep(void)
 {
     __disable_irq();
@@ -154,9 +158,11 @@ void SmHwPowerMgr::sleep(void)
         }
     }
 
+    EXTI->IMR = EVENTS_COMMON;
+    EXTI->EMR = EVENTS_COMMON;
+
     // Clear pending events (by writing one)
-    EXTI->PR  |= EVENTS_COMMON;
-    EXTI->IMR |= EVENTS_COMMON;
+    EXTI->PR  = 0xFFFFUL;
 
     // Entering STOP state with low power regulator mode and WFE
     uint32_t tmpreg = 0;
@@ -170,17 +176,26 @@ void SmHwPowerMgr::sleep(void)
     // Store the new value
     PWR->CR = tmpreg;
 
-    // Set SLEEPDEEP bit of Cortex System Control Register
-    SCB->SCR |= SCB_SCR_SLEEPDEEP;
+    uint32_t wakeSource;
 
-    // Goes to sleep at this step
-    __WFE();
+    do
+    {
+        PWR->CR = tmpreg;
+        // Set SLEEPDEEP bit of Cortex System Control Register
+        SCB->SCR |= SCB_SCR_SLEEPDEEP;
 
-    // Reset SLEEPDEEP bit of Cortex System Control Register
-    SCB->SCR &= (uint32_t)~((uint32_t)SCB_SCR_SLEEPDEEP);
+        // Goes to sleep at this step
+        __WFE();
 
-    // Read all pending interrupts
-    uint32_t wakeSource = EXTI->PR;
+        // Reset SLEEPDEEP bit of Cortex System Control Register
+        SCB->SCR &= (uint32_t)~((uint32_t)SCB_SCR_SLEEPDEEP);
+
+        // Read all pending interrupts
+        wakeSource = EXTI->PR;
+        wakeSource &= EVENTS_COMMON;
+    }
+    while (wakeSource == 0);
+
     // All interrupts except of alarm
     const uint32_t isrClearMask = EVENTS_COMMON & (~(1UL << PIN_ALARM));
     // Disable all except of alarm
@@ -198,15 +213,19 @@ void SmHwPowerMgr::sleep(void)
             mPool[i].iface->onWake(wakeSource);
         }
     }
+    allowSleep(SM_HW_SLEEPBLOCKER_BT, SM_HW_SLEEP_SHORT);
+    //SmDisplay::getInstance()->powerOn();
 
     __enable_irq();
 }
+#pragma GCC pop_options
 
 void SmHwPowerMgr::updateState(void)
 {
     if (!canSleep)
         return;
 
+    //return;
     sleep();
 }
 

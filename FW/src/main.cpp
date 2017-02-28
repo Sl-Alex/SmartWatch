@@ -101,6 +101,21 @@ int main(void)
     {
         SmHalSysTimer::processEvents();
         display->update();
+        SmHwBt::getInstance()->update();
+        if (SmHwBt::getInstance()->isNotification())
+        {
+            display->powerOn();
+            SmNotification * pNotification = SmDesktop::getInstance()->getNotification();
+
+            if (pNotification)
+                pNotification->addCount();
+            else
+                SmDesktop::getInstance()->showNotification();
+
+            // Show "SOS" pattern (...---...)
+            motor->startNotification(0x0FC0,9);
+            SmHwBt::getInstance()->clearNotification();
+        }
         SmHwPowerMgr::getInstance()->updateState();
     }
 }

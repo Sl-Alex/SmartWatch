@@ -34,20 +34,23 @@ class SmHwPowerMgr: public SmHalSysTimerIface
 {
 public:
     enum SleepTimeout {
+        SM_HW_SLEEP_NONE  = 0,
         SM_HW_SLEEP_SHORT = 2000,
-        SM_HW_SLEEP_LONG = 5000
+        SM_HW_SLEEP_LONG  = 5000
     };
     enum SleepBlocker {
-        SM_HW_SLEEPBLOCKER_DISPLAY  = 0x00000001,
-        SM_HW_SLEEPBLOCKER_MENU     = 0x00000002
-    };
+        SM_HW_SLEEPBLOCKER_DISPLAY      = 0x00000001,
+        SM_HW_SLEEPBLOCKER_MENU         = 0x00000002,
+        SM_HW_SLEEPBLOCKER_BT           = 0x00000004,
+        SM_HW_SLEEPBLOCKER_NOTIFICATION = 0x00000008
+   };
     enum WakeSource {
         SM_HW_WAKE_MASK_ALARM     = (1UL << PIN_ALARM),
         SM_HW_WAKE_MASK_KEYBOARD  = ((1UL << PIN_S1) | (1UL << PIN_S2) | (1UL << PIN_S3) | (1UL << PIN_S4)),
         SM_HW_WAKE_MASK_ACCELEROMETER  = (1UL << PIN_AIRQ1),
-        SM_HW_WAKE_MASK_ALL = SM_HW_WAKE_MASK_ALARM |
+        SM_HW_WAKE_MASK_ALL = (SM_HW_WAKE_MASK_ALARM |
                               SM_HW_WAKE_MASK_KEYBOARD |
-                              SM_HW_WAKE_MASK_ACCELEROMETER
+                              SM_HW_WAKE_MASK_ACCELEROMETER)
     };
 
     /// @brief Initialize wakeup lines

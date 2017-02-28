@@ -1,3 +1,4 @@
+#include <cstdio>
 #include "sm_notification.h"
 #include "sm_display.h"
 #include "sm_font.h"
@@ -6,49 +7,20 @@
 SmNotification::SmNotification(SmHwKeyboardIface * parent)
     :pParent(parent)
 {
-    pCanvas = new SmCanvas();
-    pCanvas->init(128,64);
+    pCanvas = SmDisplay::getInstance()->getCanvas();
+    mCount = 1;
     drawItem();
-    notificationAnimator.setDirection(SmAnimator::ANIM_DIR_UP);
-    notificationAnimator.setDestSource(SmDisplay::getInstance()->getCanvas(),pCanvas);
-    notificationAnimator.setShiftLimit(128);
-    notificationAnimator.setSpeed(4);
-    notificationAnimator.setType(SmAnimator::ANIM_TYPE_VIS_APPEAR);
-    notificationAnimator.start(0,63,0,0,128,64);
 
     SmHwKeyboard::getInstance()->subscribe(this);
-    SmHalSysTimer::subscribe(this, 10, true);
 #ifndef PC_SOFTWARE
-    SmHwPowerMgr::getInstance()->blockSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU);
+    SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU,
+                                            SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_LONG);
 #endif
 }
 
 SmNotification::~SmNotification()
 {
-    if (notificationAnimator.isRunning())
-    {
-        notificationAnimator.finish();
-        delete pCanvas;
-    }
-
     SmHwKeyboard::getInstance()->unsubscribe(this);
-    SmHalSysTimer::unsubscribe(this);
-#ifndef PC_SOFTWARE
-    SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU, 0);
-#endif
-}
-
-void SmNotification::onTimer(uint32_t)
-{
-    if (notificationAnimator.isRunning())
-    {
-        notificationAnimator.tick();
-        if (!notificationAnimator.isRunning())
-        {
-            delete pCanvas;
-            pCanvas = SmDisplay::getInstance()->getCanvas();
-        }
-    }
 }
 
 void SmNotification::drawItem(void)
@@ -56,15 +28,30 @@ void SmNotification::drawItem(void)
     SmImage image;
     SmFont font;
 
+    char tmp[4];
+
+    if (mCount > 99)
+        sprintf(tmp, "99+");
+    else
+        sprintf(tmp, "%d", mCount);
+
+    if (mCount == 1)
+        tmp[0] = 0;
+
     image.init(IDX_ICON_NOTIFICATION);
     font.init(IDX_FW_FONT_SMALL);
 
     pCanvas->clear();
-    pCanvas->drawCanvas(48,15,&image);
+    pCanvas->drawCanvas(0,0,&image);
 
-    char tmp[] = "Notification";
+    font.drawText(pCanvas, 14, 1, tmp);
+    pCanvas->drawHLine(0,127,10,1);
 
-    font.drawText(pCanvas, 32, 45, tmp);
+    char tmpHeader[] = "SMS";
+    char tmpText[] = "Incoming message";
+
+    font.drawText(pCanvas, 62, 1, tmpHeader);
+    font.drawText(pCanvas, 20, 35, tmpText);
 }
 
 void SmNotification::onKeyDown(SmHwButtons key)
@@ -80,13 +67,6 @@ void SmNotification::onKeyDown(SmHwButtons key)
     }
     if (key == SM_HW_BUTTON_EXIT)
     {
-        // Finalize animation if it is active
-        if (notificationAnimator.isRunning())
-        {
-            notificationAnimator.finish();
-            delete pCanvas;
-            pCanvas = SmDisplay::getInstance()->getCanvas();
-        }
         // Inform parent that we are done
         // Do nothing after this step because we will be destroyed here
         pParent->onKeyDown(SM_HW_BUTTON_VIRT_EXIT);

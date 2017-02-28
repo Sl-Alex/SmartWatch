@@ -36,7 +36,8 @@ SmMainMenu::~SmMainMenu()
     SmHwKeyboard::getInstance()->unsubscribe(this);
     SmHalSysTimer::unsubscribe(this);
 #ifndef PC_SOFTWARE
-    SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU, 0);
+    SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU,
+                                            SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_NONE);
 #endif
 }
 

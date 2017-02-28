@@ -29,7 +29,8 @@ HEADERS       = \
     emulator_window.h \
     serial_selection.h \
     ../../FW/hw/inc/sm_hw_bt.h \
-    ../../FW/hal/inc/sm_hal_rtc.h
+    ../../FW/hal/inc/sm_hal_rtc.h \
+    ../../FW/gui/sm_notification.h
     ../../FW/gui/sm_main_menu.h
 
 SOURCES       = \
@@ -53,6 +54,7 @@ SOURCES       = \
     ../../FW/gui/sm_editor.cpp \
     emulator_window.cpp \
     serial_selection.cpp \
-    ../../FW/hw/src/sm_hw_bt.cpp
+    ../../FW/hw/src/sm_hw_bt.cpp \
+    ../../FW/gui/sm_notification.cpp
 
 RESOURCES     =
