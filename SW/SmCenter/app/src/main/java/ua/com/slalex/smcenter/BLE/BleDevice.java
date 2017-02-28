@@ -24,16 +24,17 @@ public class BleDevice {
 
     // For HM-10 read and write characteristic is the same
     private static final String RW_CHARACTERISTIC_ID = "0000FFE1-0000-1000-8000-00805F9B34FB";
-    private static final int DEVICE_CONNECT_TIMEOUT = 5000;
-    private static final int DEVICE_TRANSFER_TIMEOUT = 5000;
+    private static final int DEVICE_CONNECT_TIMEOUT = 60000;
+    private static final int DEVICE_TRANSFER_TIMEOUT = 500;
     private static final int DEVICE_DISCONNECT_TIMEOUT = 500;
-    private static final int DEVICE_RETRIES_MAX = 3;
+    private static final int DEVICE_RETRIES_MAX = 5;
 
     public BleDevice(){
     }
 
     private int mConnState = BluetoothProfile.STATE_DISCONNECTED;
     private Context mContext = null;
+    private String mBtAddress = "";
     private BluetoothDevice mBtDevice = null;
     private BluetoothGatt mBtGatt = null;
     private BluetoothGattCallback mBtGattCallback = null;
@@ -44,14 +45,30 @@ public class BleDevice {
     private CountDownLatch mTransferLatch = null;
     private CountDownLatch mDisconnectLatch = null;
 
-    public void init(String address, Context context) {
+    public void setBtAddress(String address, Context context) {
+        mContext = context;
+
+        if (mBtAddress.equals(address))
+            return;
+
+        if (mConnState == BluetoothProfile.STATE_CONNECTED)
+            disconnect();
+
+        mBtAddress = address;
+    }
+
+    private void init() {
         // Check and disconnect if connected
         if (mConnState == BluetoothProfile.STATE_CONNECTED)
             disconnect();
 
-        mContext = context;
         BluetoothManager manager = (BluetoothManager)mContext.getSystemService(Context.BLUETOOTH_SERVICE);
         BluetoothAdapter adapter = manager.getAdapter();
+        mBtDevice = null;
+        if (adapter == null)
+        {
+            return;
+        }
         mBtGattCallback = new BluetoothGattCallback() {
             @Override
             public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
@@ -113,10 +130,16 @@ public class BleDevice {
                 }
             }
         };
-        mBtDevice = adapter.getRemoteDevice(address);
+        mBtDevice = adapter.getRemoteDevice(mBtAddress);
     }
 
     public boolean connect() {
+        if (mBtDevice == null)
+            init();
+
+        if (mBtDevice == null)
+            return false;
+
         if (mConnState == BluetoothProfile.STATE_CONNECTED)
             return true;
 
@@ -149,6 +172,9 @@ public class BleDevice {
         if (mConnState == BluetoothProfile.STATE_DISCONNECTED)
             return true;
 
+        if (mBtDevice == null)
+            return true;
+
         mDisconnectLatch = new CountDownLatch(1);
 
         mBtGatt.disconnect();
@@ -176,6 +202,9 @@ public class BleDevice {
 
     public byte[] transfer(byte[] data) {
         if (mConnState != BluetoothProfile.STATE_CONNECTED)
+            return null;
+
+        if (mBtDevice == null)
             return null;
 
         mDataIn = null;

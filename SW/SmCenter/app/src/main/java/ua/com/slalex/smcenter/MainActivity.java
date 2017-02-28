@@ -1,24 +1,25 @@
 package ua.com.slalex.smcenter;
 
-import android.app.Dialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import android.content.Context;
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.support.annotation.NonNull;
 
 import ua.com.slalex.smcenter.services.SmWatchService;
 
@@ -30,9 +31,10 @@ public class MainActivity extends AppCompatActivity
         LogFragment.OnFragmentInteractionListener,
         MainFragment.OnFragmentInteractionListener,
         ScanFragment.OnFragmentInteractionListener
-        {
+{
 
-    //private final static int REQUEST_ENABLE_BT = 1;
+    private static final int REQUEST_ENABLE_LOCATION_AND_SMS = 1;
+    private static final String MAIN_TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,18 +54,56 @@ public class MainActivity extends AppCompatActivity
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        //BluetoothManager btManager = (BluetoothManager)getSystemService(Context.BLUETOOTH_SERVICE);
 
-        //BluetoothAdapter btAdapter = btManager.getAdapter();
-        //if (btAdapter != null && !btAdapter.isEnabled()) {
-//            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//            startActivityForResult(enableIntent,REQUEST_ENABLE_BT);
-//        }
+        checkPermissions();
+    }
+
+    /**
+     * Check if we have all permissions, request if not all are granted
+     */
+    private void checkPermissions() {
+        int coarseLocation = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION);
+        int receiveSms = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECEIVE_SMS);
+
+        // Check if all permissions are granted
+        if ((coarseLocation == PackageManager.PERMISSION_GRANTED) &&
+                (receiveSms == PackageManager.PERMISSION_GRANTED))
+            return;
+
+        // Check how many permissions do we need
+        int required = 1;
+        if ((coarseLocation == PackageManager.PERMISSION_DENIED) &&
+                (receiveSms == PackageManager.PERMISSION_DENIED))
+            required = 2;
+
+        Log.d(MAIN_TAG, required + " permission(s) are requested");
+        String[] permissions = new String[required];
+        int cnt = 0;
+        if ((coarseLocation == PackageManager.PERMISSION_DENIED)){
+            permissions[cnt] = Manifest.permission.ACCESS_COARSE_LOCATION;
+            cnt++;
+        }
+        if ((receiveSms == PackageManager.PERMISSION_DENIED)){
+            permissions[cnt] = Manifest.permission.RECEIVE_SMS;
+        }
+
+        // Request for permissions
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_ENABLE_LOCATION_AND_SMS);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode != REQUEST_ENABLE_LOCATION_AND_SMS)
+            //noinspection UnnecessaryReturnStatement
+            return;
+        // TODO or not to do: Here we can parse the result
     }
 
     @Override
@@ -93,26 +133,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onScanButton(View view) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.content_main, new ScanFragment());
         ft.commit();
     }
 
-
-
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        // Create a new fragment and specify the planet to show based on position
-
-        //TextView tv = (TextView) findViewById(R.id.main_text);
-        Fragment fragment = null;
-        //Bundle args;
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment;
         switch (id)
         {
             case R.id.nav_about:
@@ -120,15 +151,6 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_settings:
                 fragment = new SettingsFragment();
-                //args = new Bundle();
-                //args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-                //fragment.setArguments(args);
-
-                // Insert the fragment by replacing any existing fragment
-                //fragmentManager = getSupportFragmentManager();
-                //fragmentManager.beginTransaction()
-                //        .replace(R.id.content_main, fragment)
-                //        .commit();
                 break;
             case R.id.nav_filters:
                 fragment = new FiltersFragment();
@@ -140,12 +162,9 @@ public class MainActivity extends AppCompatActivity
                 fragment = new MainFragment();
         }
 
-        if (fragment != null)
-        {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.content_main, fragment);
-            ft.commit();
-        }
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.content_main, fragment);
+        ft.commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
