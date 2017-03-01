@@ -261,17 +261,6 @@ void EmulatorWindow::onTimerMsEvent(void)
 
         SmHwBt::getInstance()->clearNotification();
     }
-    else
-    {
-        SmNotification * pNotification = desktop->getNotification();
-        if (pNotification == nullptr)
-        {
-            desktop->showNotification();
-            pNotification = desktop->getNotification();
-            pNotification->addCount();
-            pNotification->addCount();
-        }
-    }
 }
 
 void EmulatorWindow::onTimer1sEvent(void)

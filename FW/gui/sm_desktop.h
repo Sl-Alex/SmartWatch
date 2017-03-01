@@ -9,8 +9,13 @@
 #include "sm_main_menu.h"
 #include "sm_notification.h"
 
+#define DIGITS_COUNT 6
+
 /// @brief Desktop class
 class SmDesktop: public SmHalSysTimerIface, public SmHwKeyboardIface
+#ifndef PC_SOFTWARE
+    , public SmHwPowerMgrIface
+#endif
 {
 public:
 
@@ -57,6 +62,10 @@ private:
     void setIcon(uint8_t pos, uint8_t icon);
     void drawIcons(void);
     void drawAll(void);
+    void drawTime(void);
+
+    void onSleep(void);
+    void onWake(uint32_t WakeSource);
 
 
     /// @brief BLE signal strength
@@ -81,6 +90,12 @@ private:
 
     SmAnimator menuAnimator;
 
+    SmAnimator mDigitAnimators[DIGITS_COUNT];
+    SmCanvas mNewDigits[DIGITS_COUNT];
+    uint8_t mDigitsOffsetX[DIGITS_COUNT];
+    uint8_t mDigitsOffsetY[DIGITS_COUNT];
+
+    uint8_t mDigits[DIGITS_COUNT];
 };
 
 #endif // SM_DESKTOP_H
