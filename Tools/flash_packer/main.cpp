@@ -11,7 +11,7 @@
 #define PATH_STRINGS_H      "../../FW/inc/sm_strings.h"
 
 // Include dirent.h (simple directory navigation)
-#if defined(WIN32)
+#if defined(__WIN32)
     #include "dirent_win.h"
 #elif defined(__linux__)
     #include <dirent.h>
