@@ -153,23 +153,23 @@ public class BlePacket {
     }
 
     public void setNotificationHeader(int header_size, int text_size) {
-/*        int temp = calendar.get(Calendar.YEAR);
-        mRaw[ 5] = (byte)(temp & 0xFF); temp >>>= 8;
-        mRaw[ 6] = (byte)(temp & 0xFF);
-        mRaw[ 7] = (byte)(calendar.get(Calendar.MONTH) + 1);
-        mRaw[ 8] = (byte)(calendar.get(Calendar.DAY_OF_MONTH));
-        mRaw[ 9] = (byte)(calendar.get(Calendar.HOUR_OF_DAY));
-        mRaw[10] = (byte)(calendar.get(Calendar.MINUTE));
-        mRaw[11] = (byte)(calendar.get(Calendar.SECOND));*/
+        mRaw[ 5] = (byte)(header_size & 0xFF); header_size >>>= 8;
+        mRaw[ 6] = (byte)(header_size & 0xFF); header_size >>>=8;
+        mRaw[ 7] = (byte)(header_size & 0xFF); header_size >>>=8;
+        mRaw[ 8] = (byte)(header_size & 0xFF);
+        mRaw[ 9] = (byte)(text_size & 0xFF); text_size >>>= 8;
+        mRaw[10] = (byte)(text_size & 0xFF); text_size >>>= 8;
+        mRaw[11] = (byte)(text_size & 0xFF); text_size >>>= 8;
+        mRaw[12] = (byte)(text_size & 0xFF);
     }
 
     public void setNotificationData(int seqNum, String textPart, SmTextEncoder encoder) {
-        mRaw[5] = (byte)(seqNum & 0xFF);
         for (int i = 0; i < textPart.length(); i++)
         {
             long encoded = encoder.getEncoded(textPart.charAt(i));
-            mRaw[6 + i * 2] = (byte)(encoded & 0xFF); encoded >>>= 8;
-            mRaw[6 + i * 2 + 1] = (byte)(encoded & 0xFF);
+            mRaw[5 + i * 2] = (byte)(encoded & 0xFF); encoded >>>= 8;
+            mRaw[5 + i * 2 + 1] = (byte)(encoded & 0xFF);
         }
+        mRaw[19] = (byte)(seqNum & 0xFF);
     }
 }

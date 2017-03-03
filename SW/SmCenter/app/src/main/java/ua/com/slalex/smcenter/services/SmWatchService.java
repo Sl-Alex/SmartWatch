@@ -93,6 +93,12 @@ public class SmWatchService extends Service {
             isRunning.set(false);
         }
 
+        //BleTransferTask temp_task = new BleTransferTask();
+        //temp_task.type = BleTransferTask.TASK_SMS;
+        //temp_task.SmsSender = "Schätzchen";
+        //temp_task.SmsText = "Ich küsse dich ;)";
+        //addTask(temp_task);
+
 
         if (!isRunning.compareAndSet(false,true)) {
             return START_STICKY;
@@ -167,6 +173,7 @@ public class SmWatchService extends Service {
         BlePacket txPacket = new BlePacket();
         BlePacket rxPacket;
         txPacket.setType(BlePacket.TYPE_NOTIFICATION_HEADER);
+        // Text size in bytes will be two times bigger because of UCS-2LE
         txPacket.setNotificationHeader(header.length(), text.length());
 
         rxPacket = new BlePacket(mBleDevice.transfer(txPacket.getRaw()));
@@ -190,8 +197,13 @@ public class SmWatchService extends Service {
 
             txPacket.setType(BlePacket.TYPE_NOTIFICATION_DATA);
             txPacket.setNotificationData(seqNum, temp, mSmTextEncoder);
-            seqNum++;
+            rxPacket = new BlePacket(mBleDevice.transfer(txPacket.getRaw()));
+            if (rxPacket.getType() != BlePacket.TYPE_ACK) {
+                Log.d(SERVICE_TAG, "Notification data NACK");
+                return false;
+            }
 
+            seqNum++;
             begin += 7;
         }
 
