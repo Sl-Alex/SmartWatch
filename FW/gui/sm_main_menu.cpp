@@ -119,7 +119,10 @@ void SmMainMenu::drawItem(void)
     pCanvas->clear();
     pCanvas->drawCanvas(16,10,&image);
 
-    font.drawText(pCanvas, 16, 50, items[selected].pText, items[selected].symbolsCount);
+    SmText text;
+    text.pText = items[selected].pText;
+    text.length = items[selected].symbolsCount;
+    font.drawText(pCanvas, 16, 50, text);
 }
 
 void SmMainMenu::onKeyDown(SmHwButtons key)

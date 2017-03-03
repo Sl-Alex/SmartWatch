@@ -8,6 +8,7 @@
     static uint16_t BKP_YEAR = 0;
     static uint16_t BKP_MONTH = 0;
     static uint16_t BKP_DAY = 0;
+    static uint16_t BKP_UPDATE_REQ = 0;
 #else
 
 #include "sm_hal_rcc.h"
@@ -31,6 +32,7 @@
 #define BKP_MONTH           (*(__IO uint16_t *)(BKP_BASE + BKP_DR3))
 #define BKP_DAY             (*(__IO uint16_t *)(BKP_BASE + BKP_DR4))
 #define BKP_HM10_PRECONF    (*(__IO uint16_t *)(BKP_BASE + BKP_DR5))
+#define BKP_UPDATE_REQ      (*(__IO uint16_t *)(BKP_BASE + BKP_DR6))
 /* --------- PWR registers bit address in the alias region ---------- */
 #define PWR_OFFSET               (PWR_BASE - PERIPH_BASE)
 
@@ -438,3 +440,26 @@ void SmHalRtc::setHm10Preconf(void)
     BKP_HM10_PRECONF = USR_STATE_CONFIGURED;
 #endif
 }
+
+bool SmHalRtc::isUpdateRequested(void)
+{
+#ifndef PC_SOFTWARE
+    return (BKP_UPDATE_REQ == USR_STATE_CONFIGURED);
+#else
+    return false;
+#endif
+}
+
+void SmHalRtc::setUpdateRequested(void)
+{
+#ifndef PC_SOFTWARE
+    BKP_UPDATE_REQ = USR_STATE_CONFIGURED;
+#endif
+}
+
+void SmHalRtc::clearUpdateRequested(void)
+{
+    BKP_UPDATE_REQ = 0;
+}
+
+

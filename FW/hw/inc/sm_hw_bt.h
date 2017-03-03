@@ -1,6 +1,7 @@
 #ifndef SM_HW_BT_H
 #define SM_HW_BT_H
 
+#include "sm_text.h"
 #include <cstdint>
 #ifndef PC_SOFTWARE
 #include "sm_hal_abstract_gpio.h"
@@ -106,55 +107,58 @@ enum SmHwBtPacketType
     SM_HW_BT_PACKET_TYPE_MAX             ///< This element should be always kept last
 };
 
-struct __attribute__((__packed__)) SmHwBtPacket
+#define _packed_ __attribute__((__packed__))
+
+struct _packed_ SmHwBtPacket
 {
-    struct __attribute__((__packed__)) {
+    struct _packed_ {
         uint32_t crc32;
         uint8_t type;
     } header;
-    union __attribute__((__packed__))
+    union _packed_
     {
         /// Raw content access
         uint8_t raw[SM_HW_BT_PACKET_CONTENT_SIZE];
 
         /// Only for a SM_HW_BT_PACKET_ACK response
-        struct __attribute__((__packed__))
+        struct _packed_
         {
             uint8_t type;       ///< Which packet type is acknowledged
-            uint16_t seqNumber; ///< Which seqNumber is acknowledged (if applicable)
+            uint8_t seqNumber; ///< Which seqNumber is acknowledged (if applicable)
         } ack;
 
         /// Only for a SM_HW_BT_PACKET_VERSION response
         char version[SM_HW_BT_PACKET_CONTENT_SIZE];
 
         /// Only for a SM_HW_BT_PACKET_NOTIFICATION_HEADER request
-        struct __attribute__((__packed__))
+        struct _packed_
         {
-            uint32_t size;      ///< Notification size (bytes)
+            uint32_t header_size;      ///< Header size (symbols)
+            uint32_t text_size;        ///< Data size (symbols)
         } notification_header;
 
         /// Only for a SM_HW_BT_PACKET_NOTIFICATION_DATA request
-        struct __attribute__((__packed__))
+        struct _packed_
         {
-            uint16_t seqNumber; ///< Sequence number, starting from 0
-            char data[SM_HW_BT_PACKET_CONTENT_SIZE - sizeof(uint16_t)]; ///< Notification data
+            uint16_t text[(SM_HW_BT_PACKET_CONTENT_SIZE - sizeof(uint8_t))/2]; ///< Notification data
+            uint8_t seqNumber; ///< Sequence number, starting from 0
         } notification;
 
         /// Only for a SM_HW_BT_PACKET_UPDATE_HEADER request
-        struct __attribute__((__packed__))
+        struct _packed_
         {
             uint32_t size;      ///< Update size (bytes)
         } update_header;
 
         /// Only for a SM_HW_BT_PACKET_UPDATE_DATA request
-        struct __attribute__((__packed__))
+        struct _packed_
         {
-            uint16_t seqNumber; ///< Sequence number. starting from 0
-            char data[SM_HW_BT_PACKET_CONTENT_SIZE - sizeof(uint16_t)]; ///< Update data
+            char data[SM_HW_BT_PACKET_CONTENT_SIZE - sizeof(uint8_t)]; ///< Update data
+            uint8_t seqNumber; ///< Sequence number. starting from 0
         } update;
 
         /// Only for a SM_HW_BT_PACKET_DATETIME request
-        struct __attribute__((__packed__))
+        struct _packed_
         {
             uint16_t year;
             uint8_t month;
@@ -198,8 +202,8 @@ public:
 
     bool isNotification(void);
     void clearNotification(void);
-    void getHeader(uint16_t** ppHeader, uint16_t* pHeaderSize);
-    void getText(uint16_t** ppText, uint16_t* pTextSize );
+    SmText getHeader(void);
+    SmText getText(void);
 private:
     SmHwBt() {}
 
@@ -223,8 +227,14 @@ private:
 
     uint16_t * mHeader;
     uint16_t * mText;
+    uint8_t * mData;
     uint16_t mHeaderSize;
     uint16_t mTextSize;
+    uint32_t mDataSize;
+
+    uint32_t mCounter;
+
+    uint8_t mSeqNumber;
 };
 
 #endif // SM_HW_BT_H

@@ -56,14 +56,14 @@ uint32_t SmFont::getSymbolWidth(uint16_t symbol)
     return SmImage::getHeader()->width;
 }
 
-void SmFont::drawText(SmCanvas * canvas, int x, int y, uint16_t * text, uint16_t count)
+void SmFont::drawText(SmCanvas * canvas, int x, int y, SmText text)
 {
-    while (count--)
+    while (text.length--)
     {
-        drawSymbol(canvas, x, y, *text);
+        drawSymbol(canvas, x, y, *text.pText);
         canvas->fillRect(x + getWidth(), y, x+getWidth(),y+ mFontHeight,0);
         x += getWidth() + mSpacing;
-        text++;
+        text.pText++;
     }
 }
 
@@ -78,14 +78,14 @@ void SmFont::drawText(SmCanvas * canvas, int x, int y, char * text)
     }
 }
 
-uint32_t SmFont::getStringWidth(uint16_t * text, uint16_t count)
+uint32_t SmFont::getStringWidth(SmText text)
 {
     uint32_t res = 0;
-    while (count--)
+    while (text.length--)
     {
-        res += getSymbolWidth(*text);
+        res += getSymbolWidth(*text.pText);
         res += mSpacing;
-        text++;
+        text.pText++;
     }
     if (res)
         res -= mSpacing;

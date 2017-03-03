@@ -192,6 +192,37 @@ void EmulatorWindow::keyReleaseEvent(QKeyEvent *pEvent)
         lbl4->setStyleSheet(LABEL_STYLE_DEFAULT);
         SmHwKeyboard::getInstance()->simulatedState &=~0x08;
     }
+    if (Qt::Key_Q == pEvent->key())
+    {
+        SmNotification * pNotification = desktop->getNotification();
+
+        static int cnt = 0;
+        if (cnt < 9) cnt++;
+        SmText header;       //  S    M    S
+        SmText text;         //  I    n    c    o    m    i    n    g         m    e    s    s    a    g    e         0
+
+        static uint16_t s_hdr_data[] = {0x33,0x2D,0x33};
+        static uint16_t s_txt_data[] = {0x29,0x4E,0x43,0x4F,0x4D,0x49,0x4E,0x47,0x00,0x4D,0x45,0x53,0x53,0x41,0x47,0x45,0x00,0x10};
+
+        header.length = sizeof(s_hdr_data)/sizeof(uint16_t);
+        text.length = sizeof(s_txt_data)/sizeof(uint16_t);
+
+        uint16_t * pHeader = new uint16_t[header.length];
+        uint16_t * pText = new uint16_t[text.length];
+
+        memcpy(pHeader, s_hdr_data, header.length * sizeof(uint16_t));
+        memcpy(pText, s_txt_data, text.length * sizeof(uint16_t));
+
+        header.pText = pHeader;
+        text.pText = pText;
+        // header.pText = s_hdr_data;
+        // text.pText = s_txt_data;
+        text.pText[text.length - 1] = 0x10 + cnt;
+        if (pNotification)
+            pNotification->addNotification(header, text);
+        else
+            desktop->showNotification(header, text);
+    }
 
     QWidget::keyReleaseEvent(pEvent);
 }
@@ -255,9 +286,9 @@ void EmulatorWindow::onTimerMsEvent(void)
         SmNotification * pNotification = desktop->getNotification();
 
         if (pNotification)
-            pNotification->addCount();
+            pNotification->addNotification(SmHwBt::getInstance()->getHeader(), SmHwBt::getInstance()->getText());
         else
-            desktop->showNotification();
+            desktop->showNotification(SmHwBt::getInstance()->getHeader(), SmHwBt::getInstance()->getText());
 
         SmHwBt::getInstance()->clearNotification();
     }

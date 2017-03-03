@@ -46,7 +46,7 @@ public:
     /// @brief onKeyUp event.
     void onKeyUp(SmHwButtons key);
 
-    void showNotification(void);
+    void showNotification(SmText header, SmText text);
     inline SmNotification * getNotification(void) { return pNotification; }
 
 private:

@@ -3,13 +3,13 @@
 	<EmBitzVersion release="1.11" revision="0" />
 	<FileVersion major="1" minor="0" />
 	<Project>
-		<Option title="smartwatch" />
+		<Option title="bootloader" />
 		<Option pch_mode="2" />
 		<Option compiler="armgcc_eb" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\smartwatch\Debug\smartwatch.elf" />
-				<Option object_output="obj\smartwatch\Debug\" />
+				<Option output="bin\bootloader\Debug\bootloader.elf" />
+				<Option object_output="obj\bootloader\Debug\" />
 				<Option type="0" />
 				<Option create_hex="1" />
 				<Option compiler="armgcc_eb" />
@@ -33,8 +33,8 @@
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin\smartwatch\Release\smartwatch.elf" />
-				<Option object_output="obj\smartwatch\Release\" />
+				<Option output="bin\bootloader\Release\bootloader.elf" />
+				<Option object_output="obj\bootloader\Release\" />
 				<Option type="0" />
 				<Option create_hex="1" />
 				<Option compiler="armgcc_eb" />
@@ -61,7 +61,7 @@
 		</Build>
 		<Device>
 			<Add option="$device=cortex-m3" />
-			<Add option="$lscript=./stm32f103cb_flash.ld" />
+			<Add option="$lscript=./stm32f103cb_bootloader.ld" />
 		</Device>
 		<Compiler>
 			<Add option="-mfloat-abi=soft" />
@@ -71,6 +71,7 @@
 			<Add symbol="HSE_VALUE=16000000" />
 			<Add symbol="BPP=1" />
 			<Add symbol="PACK_VERT" />
+			<Add symbol="BOOTLOADER" />
 			<Add directory=".\inc" />
 			<Add directory=".\src" />
 			<Add directory=".\thirdparty" />
@@ -88,43 +89,15 @@
 			<Add option="-lstdc++" />
 			<Add option="-eb_start_files" />
 		</Linker>
-		<Unit filename="gui\sm_animator.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="gui\sm_animator.h" />
 		<Unit filename="gui\sm_canvas.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="gui\sm_canvas.h" />
-		<Unit filename="gui\sm_desktop.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="gui\sm_desktop.h" />
 		<Unit filename="gui\sm_display.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="gui\sm_edit_menu.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="gui\sm_editor.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="gui\sm_font.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="gui\sm_font.h" />
-		<Unit filename="gui\sm_image.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="gui\sm_image.h" />
-		<Unit filename="gui\sm_main_menu.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="gui\sm_main_menu.h" />
-		<Unit filename="gui\sm_notification.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="gui\sm_notification.h" />
 		<Unit filename="gui\sm_texture.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -138,9 +111,6 @@
 		<Unit filename="hal\inc\sm_hal_spi_hw.h" />
 		<Unit filename="hal\inc\sm_hal_spi_sw.h" />
 		<Unit filename="hal\inc\sm_hal_sys_timer.h" />
-		<Unit filename="hal\src\sm_hal_i2c.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="hal\src\sm_hal_rcc.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -159,12 +129,6 @@
 		<Unit filename="hw\inc\sm_hw_powermgr.h" />
 		<Unit filename="hw\inc\sm_hw_storage.h" />
 		<Unit filename="hw\src\sm_hw_battery.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="hw\src\sm_hw_bmc150.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="hw\src\sm_hw_bmp180.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="hw\src\sm_hw_bt.cpp">
@@ -186,14 +150,16 @@
 		<Unit filename="inc\sm_strings.h" />
 		<Unit filename="inc\sm_text.h" />
 		<Unit filename="readme.txt" />
-		<Unit filename="src\main.cpp">
+		<Unit filename="src\main_boot.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src\sm_crc.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="stm32f103cb_flash.ld" />
-		<Unit filename="stm32f103cb_sram.ld" />
+		<Unit filename="src\sm_text.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="stm32f103cb_bootloader.ld" />
 		<Unit filename="thirdparty\core_cm3.h" />
 		<Unit filename="thirdparty\core_cmFunc.h" />
 		<Unit filename="thirdparty\core_cmInstr.h" />

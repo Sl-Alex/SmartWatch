@@ -30,7 +30,8 @@ HEADERS       = \
     serial_selection.h \
     ../../FW/hw/inc/sm_hw_bt.h \
     ../../FW/hal/inc/sm_hal_rtc.h \
-    ../../FW/gui/sm_notification.h
+    ../../FW/gui/sm_notification.h \
+    ../../FW/inc/sm_text.h
     ../../FW/gui/sm_main_menu.h
 
 SOURCES       = \

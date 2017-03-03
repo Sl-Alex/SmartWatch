@@ -16,22 +16,34 @@ SmEditMenu::SmEditMenu(SmHwKeyboardIface * parent, EditGroup group)
     pCanvas->init(128,64);
     pCanvas->clear();
 
-    std::vector<SmEditor::SmEditorItem> numbers = std::vector<SmEditor::SmEditorItem>{
-        {SM_STRING_0,SM_STRING_0_SZ},
-        {SM_STRING_1,SM_STRING_1_SZ},
-        {SM_STRING_2,SM_STRING_2_SZ},
-        {SM_STRING_3,SM_STRING_3_SZ},
-        {SM_STRING_4,SM_STRING_4_SZ},
-        {SM_STRING_5,SM_STRING_5_SZ},
-        {SM_STRING_6,SM_STRING_6_SZ},
-        {SM_STRING_7,SM_STRING_7_SZ},
-        {SM_STRING_8,SM_STRING_8_SZ},
-        {SM_STRING_9,SM_STRING_9_SZ}
-    };
-    std::vector<SmEditor::SmEditorItem> onOff = std::vector<SmEditor::SmEditorItem>{
-        {SM_STRING_ON_SYMB,SM_STRING_ON_SYMB_SZ},
-        {SM_STRING_OFF_SYMB,SM_STRING_OFF_SYMB_SZ},
-    };
+    std::vector<SmText> numbers;
+    SmText text;
+    text.pText = SM_STRING_0; text.length = SM_STRING_0_SZ;
+    numbers.push_back(text);
+    text.pText = SM_STRING_1; text.length = SM_STRING_1_SZ;
+    numbers.push_back(text);
+    text.pText = SM_STRING_2; text.length = SM_STRING_2_SZ;
+    numbers.push_back(text);
+    text.pText = SM_STRING_3; text.length = SM_STRING_3_SZ;
+    numbers.push_back(text);
+    text.pText = SM_STRING_4; text.length = SM_STRING_4_SZ;
+    numbers.push_back(text);
+    text.pText = SM_STRING_5; text.length = SM_STRING_5_SZ;
+    numbers.push_back(text);
+    text.pText = SM_STRING_6; text.length = SM_STRING_6_SZ;
+    numbers.push_back(text);
+    text.pText = SM_STRING_7; text.length = SM_STRING_7_SZ;
+    numbers.push_back(text);
+    text.pText = SM_STRING_8; text.length = SM_STRING_8_SZ;
+    numbers.push_back(text);
+    text.pText = SM_STRING_9; text.length = SM_STRING_9_SZ;
+    numbers.push_back(text);
+
+    std::vector<SmText> onOff;
+    text.pText = SM_STRING_ON_SYMB;  text.length = SM_STRING_ON_SYMB_SZ;
+    onOff.push_back(text);
+    text.pText = SM_STRING_OFF_SYMB; text.length = SM_STRING_OFF_SYMB_SZ;
+    onOff.push_back(text);
 
     SmHalRtc::SmHalRtcTime datetime = SmHalRtc::getInstance()->getDateTime();
     switch (mGroup) {
@@ -44,8 +56,8 @@ SmEditMenu::SmEditMenu(SmHwKeyboardIface * parent, EditGroup group)
         mEditors[3].init(numbers);
         mEditors[4].init(numbers);
         itemsCount = 5;
-        mHint = SM_STRING_BT_HINT;
-        mHintLen = SM_STRING_BT_HINT_SZ;
+        mHint.pText = SM_STRING_BT_HINT;
+        mHint.length = SM_STRING_BT_HINT_SZ;
         break;
     case EG_DATE:
         // Date
@@ -69,8 +81,8 @@ SmEditMenu::SmEditMenu(SmHwKeyboardIface * parent, EditGroup group)
         // Static min-max (will not be changed)
         mEditors[2].setMinMax(0,1);
         itemsCount = 6;
-        mHint = SM_STRING_DATE_HINT;
-        mHintLen = SM_STRING_DATE_HINT_SZ;
+        mHint.pText = SM_STRING_DATE_HINT;
+        mHint.length = SM_STRING_DATE_HINT_SZ;
         break;
     case EG_TIME:
         // Hours
@@ -88,8 +100,8 @@ SmEditMenu::SmEditMenu(SmHwKeyboardIface * parent, EditGroup group)
         mEditors[2].setSelection(datetime.minute / 10);
         mEditors[3].setSelection(datetime.minute % 10);
         itemsCount = 4;
-        mHint = SM_STRING_TIME_HINT;
-        mHintLen = SM_STRING_TIME_HINT_SZ;
+        mHint.pText = SM_STRING_TIME_HINT;
+        mHint.length = SM_STRING_TIME_HINT_SZ;
         break;
     default:
         break;
@@ -200,8 +212,8 @@ void SmEditMenu::drawItems(void)
 
     SmFont font;
     font.init(IDX_FW_FONT_SMALL);
-    uint32_t len = font.getStringWidth(mHint, mHintLen);
-    font.drawText(pCanvas, 64 - len/2, 55, mHint, mHintLen);
+    uint32_t len = font.getStringWidth(mHint);
+    font.drawText(pCanvas, 64 - len/2, 55, mHint);
 /*
     SmImage image;
 

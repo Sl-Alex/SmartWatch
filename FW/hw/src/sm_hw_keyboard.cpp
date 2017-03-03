@@ -46,6 +46,19 @@ void SmHwKeyboard::onWake(uint32_t wakeSource)
 }
 #endif
 
+uint8_t SmHwKeyboard::getState(void)
+{
+    uint8_t ret = 0;
+    // Update values
+#ifndef PC_SOFTWARE
+    for (uint8_t key = 0; key < 4; ++key)
+    {
+        ret |= (!mGpioPins[key]->readPin()) << key;
+    }
+#endif
+    return ret;
+}
+
 void SmHwKeyboard::onTimer(uint32_t)
 {
     uint8_t newState = 0;

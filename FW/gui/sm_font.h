@@ -2,6 +2,7 @@
 #define SM_FONT_H
 
 #include "sm_image.h"
+#include "sm_text.h"
 
 /** @addtogroup EXTERNAL_FLASH
  * @{
@@ -64,9 +65,8 @@ public:
     /// @param canvas: Canvas to draw on
     /// @param x: X coordinate on the canvas
     /// @param y: Y coordinate on the canvas
-    /// @param text: Pointer to the text to output
-    /// @param count: Number of symbols to output
-    void drawText(SmCanvas * canvas, int x, int y, uint16_t * text, uint16_t count);
+    /// @param text: encoded UCS-2LE text
+    void drawText(SmCanvas * canvas, int x, int y, SmText text);
 
     /// @brief Output ASCII text (symbols between 0x20 and 0x7E)
     void drawText(SmCanvas * canvas, int x, int y, char * text);
@@ -74,7 +74,7 @@ public:
     /// @brief Get symbol width
     uint32_t getSymbolWidth(uint16_t symbol);
     /// @brief Get text width
-    uint32_t getStringWidth(uint16_t * text, uint16_t count);
+    uint32_t getStringWidth(SmText text);
     /// @brief Get ASCII text width
     uint32_t getStringWidth(char * text);
     /// @brief Get total font height

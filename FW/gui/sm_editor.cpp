@@ -13,26 +13,30 @@ SmEditor::~SmEditor()
 {
     for (uint32_t i = 0; i < mItems.size(); i++)
     {
-        delete[] mItems[i].data;
+        delete[] mItems[i].pText;
     }
 }
 
-void SmEditor::init(const std::vector<SmEditorItem> &items)
+void SmEditor::init(const std::vector<SmText> &items)
 {
     uint32_t maxWidth = mArrowUp.getWidth();
     // Copy vector
     mItems.clear();
     mItems.reserve(items.size());
+    SmText text;
     for (uint32_t i = 0; i < items.size(); i++)
     {
         // Copy strings locally
         uint16_t * data = new uint16_t[items[i].length];
-        memcpy(data, items[i].data, sizeof(uint16_t) * items[i].length);
+        memcpy(data, items[i].pText, sizeof(uint16_t) * items[i].length);
+        text.pText = data;
+        text.length = items[i].length;
+
         // Store locally
-        mItems.emplace_back(SmEditorItem{data, items[i].length});
+        mItems.push_back(text);
 
         // Calculate width, remember maximum
-        uint32_t width = mFont.getStringWidth(data, items[i].length);
+        uint32_t width = mFont.getStringWidth(text);
         if (width > maxWidth)
             maxWidth = width;
     }
@@ -79,8 +83,8 @@ void SmEditor::refreshImage(void)
         drawCanvas(center - mArrowDown.getWidth()/2,getHeight()-mArrowDown.getHeight(),&mArrowDown);
     }
 
-    uint32_t txtWidth = mFont.getStringWidth(mItems[mSelected].data, mItems[mSelected].length);
-    mFont.drawText(this, center - txtWidth / 2, mArrowUp.getHeight() + 2, mItems[mSelected].data, mItems[mSelected].length);
+    uint32_t txtWidth = mFont.getStringWidth(mItems[mSelected]);
+    mFont.drawText(this, center - txtWidth / 2, mArrowUp.getHeight() + 2, mItems[mSelected]);
 }
 
 void SmEditor::onKeyDown(SmHwButtons key)

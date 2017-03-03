@@ -15,15 +15,10 @@
 class SmEditor : public SmCanvas, public SmHwKeyboardIface
 {
 public:
-    /// @brief Editor item
-    struct SmEditorItem {
-        uint16_t * data; ///< Item text
-        uint16_t length; ///< Item text length (number of uint16_t symbols)
-    };
     SmEditor();
     ~SmEditor();
     /// @brief Initialize editor from the external vector of items
-    void init(const std::vector<SmEditorItem> &items);
+    void init(const std::vector<SmText> &items);
     /// @brief Set focus on the editor
     /// @details Up/Down arrows will be shown
     void setFocus(void);
@@ -45,7 +40,7 @@ public:
 
 private:
     void refreshImage(void);
-    std::vector<SmEditorItem> mItems;
+    std::vector<SmText> mItems;
     SmFont mFont;
     bool mFocused;
     SmImage mArrowUp;

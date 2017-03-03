@@ -4,11 +4,13 @@
 #include "sm_font.h"
 #include "sm_hw_storage.h"
 
-SmNotification::SmNotification(SmHwKeyboardIface * parent)
+SmNotification::SmNotification(SmHwKeyboardIface * parent, SmText header, SmText text)
     :pParent(parent)
 {
     pCanvas = SmDisplay::getInstance()->getCanvas();
-    mCount = 1;
+
+    mHeader.push_back(header);
+    mText.push_back(text);
     drawItem();
 
     SmHwKeyboard::getInstance()->subscribe(this);
@@ -30,12 +32,9 @@ void SmNotification::drawItem(void)
 
     char tmp[4];
 
-    if (mCount > 99)
-        sprintf(tmp, "99+");
-    else
-        sprintf(tmp, "%d", mCount);
+    sprintf(tmp, "%d", mHeader.size());
 
-    if (mCount == 1)
+    if (mHeader.size() == 1)
         tmp[0] = 0;
 
     image.init(IDX_ICON_NOTIFICATION);
@@ -47,11 +46,8 @@ void SmNotification::drawItem(void)
     font.drawText(pCanvas, 14, 1, tmp);
     pCanvas->drawHLine(0,127,10,1);
 
-    char tmpHeader[] = "SMS";
-    char tmpText[] = "Incoming message";
-
-    font.drawText(pCanvas, 62, 1, tmpHeader);
-    font.drawText(pCanvas, 20, 35, tmpText);
+    font.drawText(pCanvas, 62, 1, mHeader.back());
+    font.drawText(pCanvas, 20, 35, mText.back());
 }
 
 void SmNotification::onKeyDown(SmHwButtons key)
@@ -67,9 +63,28 @@ void SmNotification::onKeyDown(SmHwButtons key)
     }
     if (key == SM_HW_BUTTON_EXIT)
     {
-        // Inform parent that we are done
-        // Do nothing after this step because we will be destroyed here
-        pParent->onKeyDown(SM_HW_BUTTON_VIRT_EXIT);
+        // Remove current element if any
+        if (mHeader.size() > 0)
+        {
+            SmText header = mHeader.back();
+            SmText text = mText.back();
+            // Delete allocated data
+            delete[] header.pText;
+            delete[] text.pText;
+            mHeader.pop_back();
+            mText.pop_back();
+        }
+        // Show element if any
+        if (mHeader.size() > 0)
+        {
+            drawItem();
+        }
+        else
+        {
+            // Inform parent that we are done
+            // Do nothing after this step because we will be destroyed here
+            pParent->onKeyDown(SM_HW_BUTTON_VIRT_EXIT);
+        }
     }
 }
 

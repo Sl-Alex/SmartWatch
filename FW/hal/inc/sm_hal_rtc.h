@@ -39,6 +39,10 @@ public:
     bool isHm10Preconf(void);
     void setHm10Preconf(void);
 
+    bool isUpdateRequested(void);
+    void setUpdateRequested(void);
+    void clearUpdateRequested(void);
+
     /// @brief Calculates day of week
     /// @param[in] year - full year (2014, for example)
     /// @param[in] month - Month number (1..12)

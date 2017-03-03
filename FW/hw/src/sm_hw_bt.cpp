@@ -49,12 +49,12 @@
 void SmHwBt::init(void)
 {
     static_assert(sizeof(SmHwBtPacket) == SM_HW_BT_PACKET_SIZE, "Size of SmHwBtPacket must be equal to SM_HW_BT_PACKET_SIZE!");
-    // Clear received data
-    //memset((void)&mRxPacket,0,sizeof(SmHwBtPacket));
     mHeader = nullptr;
     mText = nullptr;
+    mData = nullptr;
     mHeaderSize = 0;
     mTextSize = 0;
+    mDataSize = 0;
 #ifndef PC_SOFTWARE
     mPowerPin = new SmHalGpio<BT_EN_PORT, BT_EN_PIN>();
     mPowerPin->setModeSpeed(SM_HAL_GPIO_MODE_OUT_PP, SM_HAL_GPIO_SPEED_2M);
@@ -199,11 +199,14 @@ void SmHwBt::update(void)
         mTxPacket.content.ack.seqNumber = 0;
         mTxPacket.content.ack.type = mRxPacket.header.type;
 
+#ifndef BOOTLOADER
         SmHalRtc::SmHalRtcTime datetime;
+#endif
 
         switch (mRxPacket.header.type)
         {
             case SM_HW_BT_PACKET_DATETIME:
+#ifndef BOOTLOADER
                 // Get required fields from received packed
                 datetime.year   = mRxPacket.content.datetime.year;
                 datetime.month  = mRxPacket.content.datetime.month;
@@ -212,20 +215,62 @@ void SmHwBt::update(void)
                 datetime.minute = mRxPacket.content.datetime.minute;
                 datetime.second = mRxPacket.content.datetime.second;
 
-                //char buff[100];
-                //sprintf(buff,"DD/MM/YYYY HH:MM:SS = %02u/%02u/%04u %02u:%02u:%02u\n",
-                //        datetime.day,  datetime.month,  datetime.year,
-                //        datetime.hour, datetime.minute, datetime.second);
-                //qDebug() << buff;
-                // Set local date/time
                 SmHalRtc::getInstance()->setDateTime(datetime);
+#endif
                 break;
             case SM_HW_BT_PACKET_VERSION:
+#ifdef BOOTLOADER
+                strcpy(mTxPacket.content.version, "0");
+#else
                 strcpy(mTxPacket.content.version, SmDesktop::getInstance()->getVersion());
+#endif
                 break;
             case SM_HW_BT_PACKET_NOTIFICATION_HEADER:
-                /// TODO: implement correct numbers
-                mHeaderSize = 10;
+#ifndef BOOTLOADER
+                // Set sequence counter to zero, update header and data sizes
+                mHeaderSize = mRxPacket.content.notification_header.header_size;
+                mTextSize = mRxPacket.content.notification_header.text_size;
+                mSeqNumber = 0xFF;
+                if (mHeader)
+                    delete[] mHeader;
+                if (mText)
+                    delete[] mText;
+                /// @TODO Check sizes, don't allocate too much of memory
+                mHeader = new uint16_t[mHeaderSize];
+                mText = new uint16_t[mTextSize];
+                // We start reception, counter must be zero
+                mCounter = 0;
+#endif
+                break;
+            case SM_HW_BT_PACKET_NOTIFICATION_DATA:
+#ifndef BOOTLOADER
+                // Check sequence counter, copy data if the counter is different
+                {
+                    uint8_t newSeqNumber = mRxPacket.content.notification.seqNumber;
+                    if (newSeqNumber == mSeqNumber)
+                        break;
+
+                    mSeqNumber = newSeqNumber;
+                    uint16_t * pText = mRxPacket.content.notification.text;
+                    /// @TODO Add additional checks
+                    for (int i = 0; i < sizeof(mRxPacket.content.notification.text)/2; ++i)
+                    {
+                        // First part: header
+                        if (mCounter < mHeaderSize)
+                        {
+                            mHeader[mCounter] = *pText;
+                        }
+                        else
+                        {
+                            mText[mCounter - mHeaderSize] = *pText;
+                        }
+                        mCounter++;
+                        if (mCounter >= (mHeaderSize + mTextSize))
+                            break;
+                        pText++;
+                    }
+                }
+#endif
                 break;
             default:
                 return;
@@ -376,31 +421,42 @@ void SmHwBt::setBaud(uint32_t baud)
 
 bool SmHwBt::isNotification(void)
 {
-    return (mHeaderSize != 0);
+    if (mCounter == 0)
+        return false;
+
+    if (mCounter != (mHeaderSize + mTextSize))
+        return false;
+
+    return true;
 }
 
 void SmHwBt::clearNotification(void)
 {
-    if (mHeader != nullptr)
-        delete mHeader;
-    if (mText != nullptr)
-        delete mText;
+    // Do not delete text, it will be deleted in the SmNotification
+    // if (mHeader != nullptr)
+    //     delete mHeader;
+    // if (mText != nullptr)
+    //     delete mText;
 
     mText = nullptr;
     mHeader = nullptr;
     mHeaderSize = 0;
 }
 
-void SmHwBt::getHeader(uint16_t** ppHeader, uint16_t* pHeaderSize)
+SmText SmHwBt::getHeader(void)
 {
-    *ppHeader = mHeader;
-    *pHeaderSize = mHeaderSize;
+    SmText text;
+    text.pText = mHeader;
+    text.length = mHeaderSize;
+    return text;
 }
 
-void SmHwBt::getText(uint16_t** ppText, uint16_t* pTextSize )
+SmText SmHwBt::getText(void)
 {
-    *ppText = mText;
-    *pTextSize = mTextSize;
+    SmText text;
+    text.pText = mText;
+    text.length = mTextSize;
+    return text;
 }
 
 #ifndef PC_SOFTWARE

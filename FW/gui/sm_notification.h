@@ -13,7 +13,7 @@
 class SmNotification: public SmHwKeyboardIface
 {
 public:
-    SmNotification(SmHwKeyboardIface * parent);
+    SmNotification(SmHwKeyboardIface * parent, SmText header, SmText text);
     ~SmNotification();
 
     /// @brief onKeyDown event.
@@ -21,22 +21,22 @@ public:
     /// @brief onKeyUp event.
     void onKeyUp(SmHwButtons key);
 
-    inline void addCount(void) { mCount++; drawItem(); }
+    inline void addNotification(SmText header, SmText text)
+    {
+        /// @TODO Check how many notifications do we have
+        mHeader.push_back(header);
+        mText.push_back(text);
+        drawItem();
+    }
 private:
 
     void drawItem(void);
 
-    struct SmMenuItem {
-        uint16_t * pHeader;
-        uint16_t * pText;
-        uint16_t headerSymbolsCount;
-        uint16_t textSymbolsCount;
-    };
-
-    int mCount;
-
     SmCanvas * pCanvas;
     SmHwKeyboardIface * pParent;
+
+    std::vector<SmText> mHeader;
+    std::vector<SmText> mText;
 };
 
 #endif // SM_NOTIFICATION_H

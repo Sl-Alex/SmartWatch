@@ -11,7 +11,6 @@
    ID:                 $Id:  $
 
 **********************************************************************/
-//#include "stm32f10x_conf.h"
 #include "sm_display.h"
 #include "sm_hal_gpio.h"
 #include "sm_hal_spi_sw.h"
@@ -25,17 +24,11 @@
 #include "sm_hw_bt.h"
 #include "sm_hw_storage.h"
 #include "sm_hw_powermgr.h"
-#include "sm_hw_bmc150.h"
-#include "sm_hw_bmp180.h"
 
-#include "sm_desktop.h"
 #include "sm_canvas.h"
-#include "sm_image.h"
-#include "sm_font.h"
-#include "sm_animator.h"
 
-#define I2C_ACC 0x10
-#define I2C_MAGN 0x12
+// User app will be located at 16K
+#define USER_APP_START_ADDR 0x4000
 
 int main(void)
 {
@@ -50,9 +43,6 @@ int main(void)
     SmHalRcc::clockEnable(RCC_PERIPH_ADC1);
     SmHalRcc::clockEnable(RCC_PERIPH_I2C2);
 
-    SmHwBmc150::getInstance()->init();
-    SmHwBmp180::getInstance()->init(); /// I2C init is done in BMC150 initialization
-
     // Disable JTAG, SWD remains enabled
     // This is for PA15, which is JTDI by default
     AFIO->MAPR|=AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
@@ -61,13 +51,26 @@ int main(void)
     SmHalSysTimer::initSubscribersPool(10);
     // Initialize with 1ms resolution
     SmHalSysTimer::init(1);
+
+    SmHalRtc::getInstance()->init();
+
     // Initialize power manager (10 clients)
     SmHwPowerMgr::getInstance()->initSubscribersPool(10);
     // Initialize wake lines
     SmHwPowerMgr::getInstance()->init();
 
-    SmHwBt::getInstance()->init();
+    // If update is not requested by the SW ans no buttons are pressed
+    if ((SmHwKeyboard::getInstance()->getState() == 0) && (!SmHalRtc::getInstance()->isUpdateRequested()))
+    {
+        /// TODO: Check user SW, run if any
+        SCB->VTOR = USER_APP_START_ADDR;
+        __set_MSP(*((volatile uint32_t*) USER_APP_START_ADDR)); //stack pointer (to RAM) for USER app in this address
+        // Jump to app
+        ((void (*)(void))(USER_APP_START_ADDR + 4))();
+    }
 
+    // Prepare for FW update
+    SmHwBt::getInstance()->init();
 
     SmHwBattery::getInstance()->init();
 
@@ -82,42 +85,13 @@ int main(void)
     display->powerOn();
     display->update();
 
-    SmHalI2c::getInstance()->reset(false);
+    display->getCanvas()->drawRect(16, 40, 111, 48, 1);
 
-    uint8_t data = 1;
-    uint8_t reg[2] = {0x4b, 0x01};
-
-    SmHalI2c::getInstance()->transfer(I2C_MAGN, &reg[0], 2, 0, 0);
-
-    reg[0] = 0x40;
-    // 0b00110010;
-    SmHalI2c::getInstance()->transfer(I2C_MAGN, &reg[0], 1, &data, 1);
-
-    SmHwBmc150::getInstance()->checkPresent();
-    SmHwBmp180::getInstance()->checkPresent();
-
-    SmDesktop * desktop = SmDesktop::getInstance();
-    SmHwBt * bt = SmHwBt::getInstance();
-    desktop->init();
     while (1)
     {
         SmHalSysTimer::processEvents();
         display->update();
-        bt->update();
-        if (bt->isNotification())
-        {
-            display->powerOn();
-            SmNotification * pNotification = desktop->getNotification();
-
-            if (pNotification)
-                pNotification->addNotification(bt->getHeader(), bt->getText());
-            else
-                desktop->showNotification(bt->getHeader(), bt->getText());
-
-            // Show "SOS" pattern (...---...)
-            motor->startNotification(0x0FC0,9);
-            SmHwBt::getInstance()->clearNotification();
-        }
+        SmHwBt::getInstance()->update();
         SmHwPowerMgr::getInstance()->updateState();
     }
 }

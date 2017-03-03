@@ -206,7 +206,6 @@ void SmDesktop::drawAll(void)
     }
     drawIcons();
 
-    uint16_t separator = ':' - 0x20;
     SmHalRtc::SmHalRtcTime rtc = SmHalRtc::getInstance()->getDateTime();
 
     static uint8_t newDigits[DIGITS_COUNT];
@@ -236,7 +235,11 @@ void SmDesktop::drawAll(void)
             mDigits[i] = newDigits[i];
         }
     }
-    pFont7SegBig->drawText(pCanvas,mDigitsOffsetX[2] - DIGITS_SPACE - pFont7SegBig->getSymbolWidth(0x1A),mDigitsOffsetY[0],&separator,1);
+    SmText text;
+    uint16_t separator = ':' - 0x20;
+    text.pText = &separator;
+    text.length = 1;
+    pFont7SegBig->drawText(pCanvas,mDigitsOffsetX[2] - DIGITS_SPACE - pFont7SegBig->getSymbolWidth(0x1A),mDigitsOffsetY[0],text);
 
     char date[11];
     sprintf(date,"%2u/%02u/%04u",rtc.day,rtc.month,rtc.year);
@@ -367,7 +370,7 @@ void SmDesktop::onKeyUp(SmHwButtons)
 {
 }
 
-void SmDesktop::showNotification(void)
+void SmDesktop::showNotification(SmText header, SmText text)
 {
     if (pNotification == nullptr)
     {
@@ -380,7 +383,7 @@ void SmDesktop::showNotification(void)
         // Check if pCanvas is different, delete and set default then
         SmHwKeyboard::getInstance()->unsubscribe(this);
         SmHalSysTimer::unsubscribe(this);
-        pNotification = new SmNotification(this);
+        pNotification = new SmNotification(this, header, text);
     }
 }
 

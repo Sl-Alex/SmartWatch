@@ -50,8 +50,7 @@ private:
 
     SmEditor mEditors[ITEMS_COUNT_MAX];
 
-    uint16_t * mHint;
-    uint8_t mHintLen;
+    SmText mHint;
 
     uint8_t mSelected;
 

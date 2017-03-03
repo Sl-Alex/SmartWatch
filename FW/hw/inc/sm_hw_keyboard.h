@@ -43,6 +43,8 @@ public:
     /// @brief get button state
     /// @param button: number from 1 to 4
     bool getState(uint8_t button) { return (mLastState >> button) & 0x01; }
+    /// @brief get buttons state combined in a single byte
+    uint8_t getState(void);
 
     void initSubscribersPool(uint8_t max);
 
