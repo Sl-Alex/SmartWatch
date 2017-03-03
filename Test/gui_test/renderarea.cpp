@@ -98,6 +98,12 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
                                     QImage::Format_Grayscale8
                                   )
     );
+// Uncomment the following to have a complete set of frames
+//    static uint32_t frame = 0;
+//    char txt[256];
+//    sprintf(txt,"D:\\Temp\\Frames\\%04d.png",frame++);
+//    pixmap.save(txt, "PNG");
+
     painter.drawPixmap(0, 0, pixmap);
 
     painter.restore();

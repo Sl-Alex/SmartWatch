@@ -143,6 +143,9 @@ void SmDesktop::onSleep(void)
 
 void SmDesktop::onWake(uint32_t WakeSource)
 {
+#ifdef PC_SOFTWARE
+    Q_UNUSED(WakeSource)
+#endif
     if (pNotification == nullptr)
     {
         drawTime();

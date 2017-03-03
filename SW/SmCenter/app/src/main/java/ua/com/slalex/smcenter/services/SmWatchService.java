@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import ua.com.slalex.smcenter.BLE.BleDevice;
 import ua.com.slalex.smcenter.BLE.BlePacket;
 import ua.com.slalex.smcenter.BLE.BleTransferTask;
+import ua.com.slalex.smcenter.data.SmTextEncoder;
 
 public class SmWatchService extends Service {
 
@@ -25,6 +26,8 @@ public class SmWatchService extends Service {
     BleDevice mBleDevice;
     LinkedBlockingQueue<BleTransferTask> mTasks;
     Thread mTasksThread;
+
+    SmTextEncoder mSmTextEncoder;
 
 //    boolean isStarted;
     AtomicBoolean isRunning;
@@ -42,6 +45,12 @@ public class SmWatchService extends Service {
     public void onCreate() {
         super.onCreate();
         mBleDevice = new BleDevice();
+
+        mSmTextEncoder = new SmTextEncoder(this);
+        if (!mSmTextEncoder.loadTable())
+        {
+            Log.d(SERVICE_TAG, "Could not load font");
+        }
 
         isRunning = new AtomicBoolean();
         isRunning.set(false);
@@ -78,6 +87,13 @@ public class SmWatchService extends Service {
             addTask(task);
         }
 
+        if ((mTasksThread != null) && (!mTasksThread.isAlive()))
+        {
+            mTasksThread.interrupt();
+            isRunning.set(false);
+        }
+
+
         if (!isRunning.compareAndSet(false,true)) {
             return START_STICKY;
         }
@@ -104,7 +120,7 @@ public class SmWatchService extends Service {
                                 setDateTime();
                                 break;
                             case BleTransferTask.TASK_SMS:
-                                sendNotification();
+                                sendNotification(task.SmsSender, task.SmsText);
                                 break;
                         }
                     }
@@ -145,17 +161,38 @@ public class SmWatchService extends Service {
         return ret;
     }
 
-    private boolean sendNotification() {
+    private boolean sendNotification(String header, String text) {
         boolean ret = false;
 
         BlePacket txPacket = new BlePacket();
         BlePacket rxPacket;
         txPacket.setType(BlePacket.TYPE_NOTIFICATION_HEADER);
+        txPacket.setNotificationHeader(header.length(), text.length());
 
         rxPacket = new BlePacket(mBleDevice.transfer(txPacket.getRaw()));
-        if (rxPacket.getType() == BlePacket.TYPE_ACK) {
-            Log.d(SERVICE_TAG, "Notification ACK");
-            ret = true;
+        if (rxPacket.getType() != BlePacket.TYPE_ACK) {
+            Log.d(SERVICE_TAG, "Notification header NACK");
+            return false;
+        }
+
+        String sum_str = header + text;
+        int total_length = sum_str.length();
+
+        int begin = 0;
+        int end; // 7 symbols in a single packet
+        int seqNum = 0;
+        while(begin < total_length)
+        {
+            end = begin + 7;
+            if (end > sum_str.length())
+                end = sum_str.length();
+            String temp = sum_str.substring(begin,end);
+
+            txPacket.setType(BlePacket.TYPE_NOTIFICATION_DATA);
+            txPacket.setNotificationData(seqNum, temp, mSmTextEncoder);
+            seqNum++;
+
+            begin += 7;
         }
 
         return ret;
@@ -197,6 +234,7 @@ public class SmWatchService extends Service {
 
     @Override
     public void onDestroy() {
+        Log.d(SERVICE_TAG, "onDestroy");
         mBleDevice.disconnect();
         // Null task will stop mTasksThread
         mTasks.add(null);

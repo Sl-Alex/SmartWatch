@@ -32,7 +32,7 @@
  *
  * Offset       | Parameter | Size  | Description
  * ------------ | --------- | ----- | ------
- * 0x0000       | nElements | 8     | Number of elements stored
+ * 0x0000       | nElements | 32    | Number of elements stored
  * 0x0001       | offset1   | 32    | Offset of the first element. Must be equal to 1 + nElements*8 + 4.
  * 0x0005       | size1     | 32    | Size of the first element
  * 0x0009       | offset2   | 32    | Offset of the second element
