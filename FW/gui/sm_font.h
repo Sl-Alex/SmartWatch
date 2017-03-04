@@ -66,17 +66,29 @@ public:
     /// @param x: X coordinate on the canvas
     /// @param y: Y coordinate on the canvas
     /// @param text: encoded UCS-2LE text
-    void drawText(SmCanvas * canvas, int x, int y, SmText text);
+    /// @returns Number of pixels occupied by text
+    int drawText(SmCanvas * canvas, int x, int y, SmText text);
 
     /// @brief Output ASCII text (symbols between 0x20 and 0x7E)
-    void drawText(SmCanvas * canvas, int x, int y, char * text);
+    int drawText(SmCanvas * canvas, int x, int y, char * text);
+
+    /// @brief Output encoded UCS2-LE text, fit in the box
+    /// @details If the text is smaller than the width then it will be centered
+    /// @param canvas: Canvas to draw on
+    /// @param x1: X coordinate on the left top point
+    /// @param y1: Y coordinate on the left top point
+    /// @param x2: X coordinate on the left top point
+    /// @param y2: Y coordinate on the left top point
+    /// @param text: encoded UCS-2LE text
+    void drawTextBox(SmCanvas * canvas, int x1, int y1, int x2, int y2, SmText text);
 
     /// @brief Get symbol width
     uint32_t getSymbolWidth(uint16_t symbol);
-    /// @brief Get text width
-    uint32_t getStringWidth(SmText text);
-    /// @brief Get ASCII text width
-    uint32_t getStringWidth(char * text);
+    /// @brief Get text width, stop calculation at stopAt. Does not stop if stopAt < 0
+    /// fitted can return a number of symbols for the calculated width
+    uint32_t getStringWidth(SmText text, int stopAt, uint32_t * fitted);
+    /// @brief Get ASCII text width, stop calculation at stopAt. Does not stop if stopAt < 0
+    uint32_t getStringWidth(char * text, int stopAt);
     /// @brief Get total font height
     uint32_t getFontHeight(void) { return mFontHeight; }
     /// @brief Get font baseline position

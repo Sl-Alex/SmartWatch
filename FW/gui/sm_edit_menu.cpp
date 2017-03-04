@@ -212,7 +212,7 @@ void SmEditMenu::drawItems(void)
 
     SmFont font;
     font.init(IDX_FW_FONT_SMALL);
-    uint32_t len = font.getStringWidth(mHint);
+    uint32_t len = font.getStringWidth(mHint, -1, nullptr);
     font.drawText(pCanvas, 64 - len/2, 55, mHint);
 /*
     SmImage image;

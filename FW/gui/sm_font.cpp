@@ -2,6 +2,8 @@
 #include "sm_hw_storage.h"
 #include "sm_strings.h"
 
+#define SUBST_SYMBOL 0xAE
+
 bool SmFont::init(int index)
 {
     // Get element info by index
@@ -56,8 +58,9 @@ uint32_t SmFont::getSymbolWidth(uint16_t symbol)
     return SmImage::getHeader()->width;
 }
 
-void SmFont::drawText(SmCanvas * canvas, int x, int y, SmText text)
+int SmFont::drawText(SmCanvas * canvas, int x, int y, SmText text)
 {
+    int start = x;
     while (text.length--)
     {
         drawSymbol(canvas, x, y, *text.pText);
@@ -65,10 +68,15 @@ void SmFont::drawText(SmCanvas * canvas, int x, int y, SmText text)
         x += getWidth() + mSpacing;
         text.pText++;
     }
+    if (x > start)
+        return x - mSpacing;
+    else
+        return x;
 }
 
-void SmFont::drawText(SmCanvas * canvas, int x, int y, char * text)
+int SmFont::drawText(SmCanvas * canvas, int x, int y, char * text)
 {
+    int start = x;
     while (*text)
     {
         drawSymbol(canvas, x, y, *text - 0x20);
@@ -76,16 +84,98 @@ void SmFont::drawText(SmCanvas * canvas, int x, int y, char * text)
         x += getWidth() + mSpacing;
         text++;
     }
+    if (x > start)
+        return x - mSpacing;
+    else
+        return x;
 }
 
-uint32_t SmFont::getStringWidth(SmText text)
+void SmFont::drawTextBox(SmCanvas * canvas, int x1, int y1, int x2, int y2, SmText text)
+{
+    // Check input parameters
+    if ((x2 < x1) || ((y2 - y1) < mFontHeight))
+        return;
+
+    // Calculate parameters
+    int lines_max = (y2 - y1) / mFontHeight;
+    int line_width = 0;
+    int lines = 0;
+    int cnt = 0;
+    SmText line = text;
+    uint32_t fitted;
+    while (cnt < text.length)
+    {
+        uint32_t width = getStringWidth(line,x2 - x1, &fitted);
+        // Check if there are fitted symbols
+        if (fitted == 0)
+            break;
+        // Calculate line width (useful for single-line output)
+        if (width > line_width)
+            line_width = width;
+        cnt += fitted;
+        lines++;
+        if (lines >= lines_max)
+        {
+            if (cnt < text.length)
+            {
+                text.pText[cnt - 1] = SUBST_SYMBOL;
+                text.length = cnt;
+            }
+            break;
+        }
+        line.pText = text.pText + cnt;
+        line.length = text.length - cnt;
+    }
+    // Vertical center
+    uint32_t v_pos = y1 + (y2 - y1 - mFontHeight * lines)/2;
+    // Horizontal center (only for a single-line)
+    uint32_t h_pos;
+    h_pos = x1 + (x2 - x1 - line_width)/2;
+
+    SmText line_text = text;
+    cnt = 0;
+    lines = 0;
+    while (cnt < text.length)
+    {
+        getStringWidth(line_text,x2 - x1, &fitted);
+        // Check if there are fitted symbols
+        if (fitted == 0)
+            break;
+        line_text.length = fitted;
+
+        cnt += fitted;
+        lines++;
+        drawText(canvas, h_pos, v_pos, line_text);
+        //break;
+        v_pos += mFontHeight;
+        if (lines >= lines_max)
+        {
+            break;
+        }
+        line_text.pText = text.pText + cnt;
+        line_text.length = text.length - cnt;
+    }
+}
+
+uint32_t SmFont::getStringWidth(SmText text, int stopAt, uint32_t * fitted)
 {
     uint32_t res = 0;
+    uint32_t new_res;
+
+    if (fitted)
+        *fitted = 0;
+
     while (text.length--)
     {
-        res += getSymbolWidth(*text.pText);
-        res += mSpacing;
+        new_res = res + getSymbolWidth(*text.pText);
+
+        if ((stopAt > 0) && (new_res >= stopAt))
+            break;
+
+        res = new_res + mSpacing;
         text.pText++;
+        if (fitted)
+            (*fitted)++;
     }
     if (res)
         res -= mSpacing;
@@ -93,13 +183,18 @@ uint32_t SmFont::getStringWidth(SmText text)
     return res;
 }
 
-uint32_t SmFont::getStringWidth(char * text)
+uint32_t SmFont::getStringWidth(char * text, int stopAt)
 {
     uint32_t res = 0;
+    uint32_t new_res;
     while (*text)
     {
-        res += getSymbolWidth(*text - 0x20);
-        res += mSpacing;
+        new_res = res + getSymbolWidth(*text - 0x20);
+
+        if ((stopAt > 0) && (new_res >= stopAt))
+            break;
+
+        res = new_res + mSpacing;
         text++;
     }
     if (res)

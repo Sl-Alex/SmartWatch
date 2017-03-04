@@ -36,7 +36,7 @@ void SmEditor::init(const std::vector<SmText> &items)
         mItems.push_back(text);
 
         // Calculate width, remember maximum
-        uint32_t width = mFont.getStringWidth(text);
+        uint32_t width = mFont.getStringWidth(text, -1, nullptr);
         if (width > maxWidth)
             maxWidth = width;
     }
@@ -83,7 +83,7 @@ void SmEditor::refreshImage(void)
         drawCanvas(center - mArrowDown.getWidth()/2,getHeight()-mArrowDown.getHeight(),&mArrowDown);
     }
 
-    uint32_t txtWidth = mFont.getStringWidth(mItems[mSelected]);
+    uint32_t txtWidth = mFont.getStringWidth(mItems[mSelected], -1, nullptr);
     mFont.drawText(this, center - txtWidth / 2, mArrowUp.getHeight() + 2, mItems[mSelected]);
 }
 

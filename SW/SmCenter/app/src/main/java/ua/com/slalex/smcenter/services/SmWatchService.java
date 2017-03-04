@@ -97,12 +97,6 @@ public class SmWatchService extends Service {
     private void startThread() {
         mBleThread = new BleThread(getApplicationContext(), mBleDevice);
         mBleThread.start();
-//        Log.d(LOG_TAG, this.getClass().getSimpleName() + ": " + "Adding new SMS");
-//        BleTransferTask temp_task = new BleTransferTask();
-//        temp_task.type = BleTransferTask.TASK_SMS;
-//        temp_task.SmsSender = "Schätzchen";
-//        temp_task.SmsText = "Ich küsse dich ;)";
-//        mBleThread.addTask(temp_task);
         showForegroundNotification("Service is running");
     }
 

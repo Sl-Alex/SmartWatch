@@ -30,24 +30,34 @@ void SmNotification::drawItem(void)
     SmImage image;
     SmFont font;
 
+    // Print a number of unread messages
     char tmp[4];
-
-    sprintf(tmp, "%d", mHeader.size());
-
+    int num = mHeader.size();
+    if (num > 99)
+    {
+        sprintf(tmp, "99+");
+    }
+    else
+    {
+        sprintf(tmp, "%d", num);
+    }
+    // If the number is 1 then don't show it
     if (mHeader.size() == 1)
         tmp[0] = 0;
 
+    // Load notification icon and initialize font
     image.init(IDX_ICON_NOTIFICATION);
     font.init(IDX_FW_FONT_SMALL);
 
     pCanvas->clear();
     pCanvas->drawCanvas(0,0,&image);
 
-    font.drawText(pCanvas, 14, 1, tmp);
+    int header_left = image.getWidth();
+    header_left = font.drawText(pCanvas, header_left + 1, 1, tmp);
     pCanvas->drawHLine(0,127,10,1);
 
-    font.drawText(pCanvas, 62, 1, mHeader.back());
-    font.drawText(pCanvas, 20, 35, mText.back());
+    font.drawTextBox(pCanvas, header_left + 3, 1, 127, 1 + font.getFontHeight(), mHeader.back());
+    font.drawTextBox(pCanvas, 0, 12, 127, 63, mText.back());
 }
 
 void SmNotification::onKeyDown(SmHwButtons key)
