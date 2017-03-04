@@ -12,11 +12,10 @@ import com.google.gson.Gson;
 
 import ua.com.slalex.smcenter.BLE.BleTransferTask;
 
+import ua.com.slalex.smcenter.Constants;
+
 public class SmsReceiver extends BroadcastReceiver {
     private static final String ACTION = "android.provider.Telephony.SMS_RECEIVED";
-    private static final String SMS_RECEIVER_TAG = "SmsReceiver";
-    public SmsReceiver() {
-    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -58,6 +57,6 @@ public class SmsReceiver extends BroadcastReceiver {
         context.startService(mIntent);
 
         // Log it
-        Log.d(SMS_RECEIVER_TAG, "New SMS received");
+        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "New SMS received");
     }
 }

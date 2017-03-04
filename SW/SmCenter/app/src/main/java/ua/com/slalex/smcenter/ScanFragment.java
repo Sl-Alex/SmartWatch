@@ -27,11 +27,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -147,7 +145,7 @@ public class ScanFragment extends Fragment {
                 public void onScanResult(int callbackType, ScanResult result) {
                     super.onScanResult(callbackType, result);
                     String devInfo = result.getDevice().getName() + " (" + result.getDevice().getAddress() + ")";
-                    Log.d("BLE", devInfo);
+                    Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": onScanResult - " + devInfo);
                     ArrayAdapter<String> ad =
                             new ArrayAdapter<>(context,
                                     android.R.layout.simple_list_item_1,devicesList);
@@ -166,7 +164,7 @@ public class ScanFragment extends Fragment {
                 @Override
                 public void onBatchScanResults(List<ScanResult> results) {
                     super.onBatchScanResults(results);
-                    Log.d("BLE", "Batch result");
+                    Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Batch result");
                 }
             };
             mLeScanner.startScan(filters, settings, mScanCallBack);

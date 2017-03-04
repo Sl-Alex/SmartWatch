@@ -5,16 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.BoolRes;
-import android.support.annotation.NonNull;
-import android.view.LayoutInflater;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 import ua.com.slalex.smcenter.data.FiltersContract.FilterEntry;
 

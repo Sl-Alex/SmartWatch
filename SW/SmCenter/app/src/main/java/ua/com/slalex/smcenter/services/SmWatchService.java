@@ -1,36 +1,38 @@
 package ua.com.slalex.smcenter.services;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Icon;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
-import java.util.Calendar;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import ua.com.slalex.smcenter.BLE.BleDevice;
-import ua.com.slalex.smcenter.BLE.BlePacket;
+import ua.com.slalex.smcenter.BLE.BleThread;
 import ua.com.slalex.smcenter.BLE.BleTransferTask;
-import ua.com.slalex.smcenter.data.SmTextEncoder;
+import ua.com.slalex.smcenter.MainActivity;
+import ua.com.slalex.smcenter.R;
+
+import ua.com.slalex.smcenter.Constants;
 
 public class SmWatchService extends Service {
 
-    public static final String SERVICE_TAG = "SmWatchService";
+    public static final int NOTIFICATION_ID = 1;
 
-    BleDevice mBleDevice;
-    LinkedBlockingQueue<BleTransferTask> mTasks;
-    Thread mTasksThread;
+    private static final int RETURN_VALUE = START_STICKY;
 
-    SmTextEncoder mSmTextEncoder;
+    public static final boolean USE_ACTIONS = false;
 
-//    boolean isStarted;
-    AtomicBoolean isRunning;
+    BleThread mBleThread = null;
+
+    BleDevice mBleDevice = null;
 
     public SmWatchService() {
     }
@@ -46,20 +48,12 @@ public class SmWatchService extends Service {
         super.onCreate();
         mBleDevice = new BleDevice();
 
-        mSmTextEncoder = new SmTextEncoder(this);
-        if (!mSmTextEncoder.loadTable())
-        {
-            Log.d(SERVICE_TAG, "Could not load font");
-        }
-
-        isRunning = new AtomicBoolean();
-        isRunning.set(false);
+        showForegroundNotification("Service is created");
 
         // HMSoft module
         //mBleDevice.setBtAddress("74:DA:EA:B2:14:CF", this);
         // SmartWatch prototype
         mBleDevice.setBtAddress("74:DA:EA:B2:A2:2B", this);
-        mTasks = new LinkedBlockingQueue<>();
 
         Intent myIntent = new Intent(this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, myIntent,0);
@@ -70,192 +64,111 @@ public class SmWatchService extends Service {
 
     @Override
     public synchronized int onStartCommand(Intent intent, int flags, int startId) {
-        Bundle bundle = null;
-        String taskJson = null;
-
-        if (intent != null)
-            bundle = intent.getExtras();
-
-        if (bundle != null)
-            taskJson = bundle.getString(BleTransferTask.BUNDLE_TAG, null);
-
-        if (taskJson != null) {
-            BleTransferTask task = new Gson().fromJson(taskJson, BleTransferTask.class);
-
-            Log.d(SERVICE_TAG, "New task of type " + task.type);
-
-            addTask(task);
-        }
-
-        if ((mTasksThread != null) && (!mTasksThread.isAlive()))
+        if ((mBleThread == null) || (!mBleThread.isAlive()))
         {
-            mTasksThread.interrupt();
-            isRunning.set(false);
+            startThread();
+            Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Service (re)started");
         }
-
-        //BleTransferTask temp_task = new BleTransferTask();
-        //temp_task.type = BleTransferTask.TASK_SMS;
-        //temp_task.SmsSender = "Schätzchen";
-        //temp_task.SmsText = "Ich küsse dich ;)";
-        //addTask(temp_task);
-
-
-        if (!isRunning.compareAndSet(false,true)) {
-            return START_STICKY;
-        }
-
-        Log.d(SERVICE_TAG,"Service (re)started");
-
-        mTasksThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                BleTransferTask task;
-
-                while ((task = getTask()) != null)
-                {
-                    // We have at least one task
-                    mBleDevice.connect();
-                    do
-                    {
-                        switch (task.type)
-                        {
-                            case BleTransferTask.TASK_VERSION:
-                                getFwVersion();
-                                break;
-                            case BleTransferTask.TASK_TIMESYNC:
-                                setDateTime();
-                                break;
-                            case BleTransferTask.TASK_SMS:
-                                sendNotification(task.SmsSender, task.SmsText);
-                                break;
-                        }
-                    }
-                    while ((task = mTasks.poll()) != null);
-
-                    // No new tasks at the moment, can disconnect
-                    mBleDevice.disconnect();
-                }
-                isRunning.set(false);
-            }
-        });
-        mTasksThread.start();
-
-
-        BleTransferTask task = new BleTransferTask();
-        task.type = BleTransferTask.TASK_VERSION;
-        addTask(task);
-        task = new BleTransferTask();
-        task.type = BleTransferTask.TASK_TIMESYNC;
-        addTask(task);
-
-        return START_STICKY;
-    }
-
-    private String getFwVersion() {
-        String ret = null;
-
-        BlePacket txPacket = new BlePacket();
-        BlePacket rxPacket;
-        txPacket.setType(BlePacket.TYPE_VERSION);
-
-        rxPacket = new BlePacket(mBleDevice.transfer(txPacket.getRaw()));
-        if (rxPacket.getType() == BlePacket.TYPE_ACK) {
-            ret = rxPacket.getFwVersion();
-            Log.d(SERVICE_TAG, "Version is: " + ret);
-        }
-
-        return ret;
-    }
-
-    private boolean sendNotification(String header, String text) {
-        boolean ret = false;
-
-        BlePacket txPacket = new BlePacket();
-        BlePacket rxPacket;
-        txPacket.setType(BlePacket.TYPE_NOTIFICATION_HEADER);
-        // Text size in bytes will be two times bigger because of UCS-2LE
-        txPacket.setNotificationHeader(header.length(), text.length());
-
-        rxPacket = new BlePacket(mBleDevice.transfer(txPacket.getRaw()));
-        if (rxPacket.getType() != BlePacket.TYPE_ACK) {
-            Log.d(SERVICE_TAG, "Notification header NACK");
-            return false;
-        }
-
-        String sum_str = header + text;
-        int total_length = sum_str.length();
-
-        int begin = 0;
-        int end; // 7 symbols in a single packet
-        int seqNum = 0;
-        while(begin < total_length)
+        if ((mBleThread != null) && (!mBleThread.isAlive()))
         {
-            end = begin + 7;
-            if (end > sum_str.length())
-                end = sum_str.length();
-            String temp = sum_str.substring(begin,end);
-
-            txPacket.setType(BlePacket.TYPE_NOTIFICATION_DATA);
-            txPacket.setNotificationData(seqNum, temp, mSmTextEncoder);
-            rxPacket = new BlePacket(mBleDevice.transfer(txPacket.getRaw()));
-            if (rxPacket.getType() != BlePacket.TYPE_ACK) {
-                Log.d(SERVICE_TAG, "Notification data NACK");
-                return false;
-            }
-
-            seqNum++;
-            begin += 7;
+            mBleThread.interrupt();
+            mBleDevice.disconnect();
+            startThread();
+            Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Service (re)started abnormally");
         }
 
-        return ret;
+        if (intent == null)
+            return RETURN_VALUE;
+
+        Bundle bundle = intent.getExtras();
+        if (bundle == null)
+            return RETURN_VALUE;
+
+        String taskJson = bundle.getString(BleTransferTask.BUNDLE_TAG, null);
+        if (taskJson == null)
+            return RETURN_VALUE;
+
+        BleTransferTask task = new Gson().fromJson(taskJson, BleTransferTask.class);
+        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "New task of type " + task.type);
+        mBleThread.addTask(task);
+        return RETURN_VALUE;
     }
 
-    private boolean setDateTime() {
-        boolean ret = false;
-
-        BlePacket txPacket = new BlePacket();
-        BlePacket rxPacket;
-        txPacket.setType(BlePacket.TYPE_DATETIME);
-        txPacket.setDateTime(Calendar.getInstance());
-
-        rxPacket = new BlePacket(mBleDevice.transfer(txPacket.getRaw()));
-        if (rxPacket.getType() == BlePacket.TYPE_ACK) {
-            Log.d(SERVICE_TAG, "DateTime ACK");
-            ret = true;
-        }
-
-        return ret;
-    }
-
-    public void addTask(BleTransferTask task)
-    {
-        mTasks.add(task);
-        Log.d(SERVICE_TAG, "Task added");
-    }
-
-    public BleTransferTask getTask()
-    {
-        BleTransferTask ret;
-        try {
-            ret = mTasks.take();
-        } catch (InterruptedException e) {
-            return null;
-        }
-        return ret;
+    private void startThread() {
+        mBleThread = new BleThread(getApplicationContext(), mBleDevice);
+        mBleThread.start();
+//        Log.d(LOG_TAG, this.getClass().getSimpleName() + ": " + "Adding new SMS");
+//        BleTransferTask temp_task = new BleTransferTask();
+//        temp_task.type = BleTransferTask.TASK_SMS;
+//        temp_task.SmsSender = "Schätzchen";
+//        temp_task.SmsText = "Ich küsse dich ;)";
+//        mBleThread.addTask(temp_task);
+        showForegroundNotification("Service is running");
     }
 
     @Override
     public void onDestroy() {
-        Log.d(SERVICE_TAG, "onDestroy");
+        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "onDestroy");
         mBleDevice.disconnect();
         // Null task will stop mTasksThread
-        mTasks.add(null);
+        mBleThread.addTask(null);
         try {
-            mTasksThread.join(2000);
+            mBleThread.join(2000);
         } catch (InterruptedException e) {
-            mTasksThread.interrupt();
+            mBleThread.interrupt();
         }
+        mBleDevice.disconnect();
         super.onDestroy();
     }
 
+    private void showForegroundNotification(String contentText) {
+        // Create intent that will bring our app to the front, as if it was tapped in the app
+        // launcher
+        Context context = getApplicationContext();
+        Intent showTaskIntent = new Intent(context, MainActivity.class);
+        showTaskIntent.setAction(Intent.ACTION_MAIN);
+        showTaskIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        showTaskIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        PendingIntent contentIntent = PendingIntent.getActivity(
+                context,
+                0,
+                showTaskIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification.Builder builder = new Notification.Builder(context)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(contentText)
+                .setSmallIcon(R.drawable.ic_watch_black)
+                .setWhen(System.currentTimeMillis())
+                .setContentIntent(contentIntent);
+        if (USE_ACTIONS) {
+            Notification.Action addNewAction;
+            Notification.Action infoAction;
+            Notification.Action homeAction;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                addNewAction = new Notification.Action.Builder(
+                        Icon.createWithResource(context,R.drawable.ic_add_white),"Home", contentIntent)
+                        .build();
+                infoAction = new Notification.Action.Builder(
+                        Icon.createWithResource(context,R.drawable.ic_info_black),"Add", contentIntent)
+                        .build();
+                homeAction = new Notification.Action.Builder(
+                        Icon.createWithResource(context, R.drawable.ic_home_black),"Home", contentIntent)
+                        .build();
+            } else {
+                //noinspection deprecation
+                addNewAction = new Notification.Action(R.drawable.ic_add_white,"Home", contentIntent);
+                //noinspection deprecation
+                infoAction = new Notification.Action(R.drawable.ic_info_black,"Add", contentIntent);
+                //noinspection deprecation
+                homeAction = new Notification.Action(R.drawable.ic_home_black,"Home", contentIntent);
+            }
+            builder.addAction(addNewAction)
+                    .addAction(homeAction)
+                    .addAction(infoAction);
+        }
+        startForeground(NOTIFICATION_ID, builder.build());
+    }
 }

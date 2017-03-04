@@ -2,7 +2,6 @@ package ua.com.slalex.smcenter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.view.View;
 
 /**
  * Created by Sl-Alex on 14.12.2016.

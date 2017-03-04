@@ -1,16 +1,12 @@
 package ua.com.slalex.smcenter.services;
 
-import android.app.Notification;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
+import ua.com.slalex.smcenter.Constants;
 
 /**
  * Created by Sl-Alex on 25.12.2016.
@@ -41,10 +37,10 @@ public class NotificationService extends NotificationListenerService {
         //Bitmap id = sbn.getNotification().largeIcon;
 
 
-        Log.i("Package",pack);
-        Log.i("Ticker",ticker);
-        Log.i("Title",title);
-        Log.i("Text",text);
+        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Package " + pack);
+        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Ticker " + ticker);
+        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Title " + title);
+        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Text " + text);
 
 /*        Intent msgrcv = new Intent("Msg");
         msgrcv.putExtra("package", pack);

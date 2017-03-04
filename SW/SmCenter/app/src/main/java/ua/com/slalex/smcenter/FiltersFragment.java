@@ -17,8 +17,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 import ua.com.slalex.smcenter.data.FiltersDbHelper;
 import ua.com.slalex.smcenter.data.FilterRecord;
 

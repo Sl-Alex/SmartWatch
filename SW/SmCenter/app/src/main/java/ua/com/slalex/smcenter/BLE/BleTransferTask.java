@@ -6,7 +6,6 @@ package ua.com.slalex.smcenter.BLE;
 
 public class BleTransferTask {
     public static final String BUNDLE_TAG = "transferTask";
-    @SuppressWarnings("unused")
     public static final int TASK_INVALID = 0;
     public static final int TASK_TIMESYNC = 1;
     public static final int TASK_SMS = 2;

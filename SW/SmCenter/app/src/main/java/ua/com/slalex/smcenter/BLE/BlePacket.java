@@ -9,18 +9,18 @@ import ua.com.slalex.smcenter.data.SmTextEncoder;
  * BLE packet class
  */
 
-public class BlePacket {
+class BlePacket {
 
-    public static final byte TYPE_INVALID             = 0;  ///< Acknowledge to any packet except of SM_HW_BT_PACKET_VERSION
-    public static final byte TYPE_ACK                 = 1;  ///< Acknowledge to any packet except of SM_HW_BT_PACKET_VERSION
-    public static final byte TYPE_VERSION             = 2;  ///< Version request and response
-    public static final byte TYPE_NOTIFICATION_HEADER = 3;  ///< Text notification header, containing the length of the notification
-    public static final byte TYPE_NOTIFICATION_DATA   = 4;  ///< Text notification data
-    public static final byte TYPE_UPDATE_HEADER       = 5;  ///< Firmware update header, contains the size of the update
-    public static final byte TYPE_UPDATE_DATA         = 6;  ///< Firmware update data.
-    public static final byte TYPE_DATETIME            = 7;  ///< Set date/time request, contains both date and time
+    static final byte TYPE_INVALID             = 0;  ///< Acknowledge to any packet except of SM_HW_BT_PACKET_VERSION
+    static final byte TYPE_ACK                 = 1;  ///< Acknowledge to any packet except of SM_HW_BT_PACKET_VERSION
+    static final byte TYPE_VERSION             = 2;  ///< Version request and response
+    static final byte TYPE_NOTIFICATION_HEADER = 3;  ///< Text notification header, containing the length of the notification
+    static final byte TYPE_NOTIFICATION_DATA   = 4;  ///< Text notification data
+    static final byte TYPE_UPDATE_HEADER       = 5;  ///< Firmware update header, contains the size of the update
+    static final byte TYPE_UPDATE_DATA         = 6;  ///< Firmware update data.
+    static final byte TYPE_DATETIME            = 7;  ///< Set date/time request, contains both date and time
 
-    public static final int PACKET_SIZE = 20;
+    private static final int PACKET_SIZE = 20;
 
     private static final int[] mCrc32Table = {
             0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA,
@@ -91,11 +91,11 @@ public class BlePacket {
 
     private byte[] mRaw;
 
-    public BlePacket() {
+    BlePacket() {
         mRaw = new byte[PACKET_SIZE];
     }
 
-    public BlePacket(byte[] data) {
+    BlePacket(byte[] data) {
         if ((data != null) && (data.length == PACKET_SIZE))
             mRaw = data;
         else
@@ -124,7 +124,7 @@ public class BlePacket {
         return mRaw[4];
     }
 
-    public byte[] getRaw() {
+    byte[] getRaw() {
         // Calculate and update CRC32
         int crc32 = calcCrc32(0xFFFFFFFF, mRaw, 5, 15);
         mRaw[0] = (byte)(crc32 & 0xFF); crc32 >>>= 8;
@@ -135,13 +135,13 @@ public class BlePacket {
         return mRaw;
     }
 
-    public String getFwVersion() {
+    String getFwVersion() {
         int i = 5;
         while (i < mRaw.length && mRaw[i] != 0) { i++; }
         return new String(mRaw, 5, i - 5, StandardCharsets.US_ASCII);
     }
 
-    public void setDateTime(Calendar calendar) {
+    void setDateTime(Calendar calendar) {
         int temp = calendar.get(Calendar.YEAR);
         mRaw[ 5] = (byte)(temp & 0xFF); temp >>>= 8;
         mRaw[ 6] = (byte)(temp & 0xFF);
@@ -152,7 +152,7 @@ public class BlePacket {
         mRaw[11] = (byte)(calendar.get(Calendar.SECOND));
     }
 
-    public void setNotificationHeader(int header_size, int text_size) {
+    void setNotificationHeader(int header_size, int text_size) {
         mRaw[ 5] = (byte)(header_size & 0xFF); header_size >>>= 8;
         mRaw[ 6] = (byte)(header_size & 0xFF); header_size >>>=8;
         mRaw[ 7] = (byte)(header_size & 0xFF); header_size >>>=8;
@@ -163,7 +163,7 @@ public class BlePacket {
         mRaw[12] = (byte)(text_size & 0xFF);
     }
 
-    public void setNotificationData(int seqNum, String textPart, SmTextEncoder encoder) {
+    void setNotificationData(int seqNum, String textPart, SmTextEncoder encoder) {
         for (int i = 0; i < textPart.length(); i++)
         {
             long encoded = encoder.getEncoded(textPart.charAt(i));

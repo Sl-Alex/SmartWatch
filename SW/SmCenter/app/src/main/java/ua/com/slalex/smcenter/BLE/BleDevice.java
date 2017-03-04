@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import ua.com.slalex.smcenter.Constants;
+
 /**
  * A simple wrapper to the HM-10 BLE-to-UART module
  * Created by Sl-Alex on 31.01.2017.
@@ -92,6 +94,8 @@ public class BleDevice {
                     mConnState = newState;
                     if (mDisconnectLatch != null)
                         mDisconnectLatch.countDown();
+                    if (mConnectLatch != null)
+                        mConnectLatch.countDown();
                 }
             }
 
@@ -133,7 +137,7 @@ public class BleDevice {
         mBtDevice = adapter.getRemoteDevice(mBtAddress);
     }
 
-    public boolean connect() {
+    boolean connect() {
         if (mBtDevice == null)
             init();
 
@@ -143,23 +147,39 @@ public class BleDevice {
         if (mConnState == BluetoothProfile.STATE_CONNECTED)
             return true;
 
-        mConnectLatch = new CountDownLatch(1);
-
-        mBtGatt = mBtDevice.connectGatt(mContext,false,mBtGattCallback);
-
         // Wait for the result with a timeout
         boolean ret = false;
 
-        try {
-            ret = mConnectLatch.await(DEVICE_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            disconnect();
+        int retries = DEVICE_RETRIES_MAX;
+        while (retries > 0)
+        {
+            mConnectLatch = new CountDownLatch(1);
+
+            mBtGatt = mBtDevice.connectGatt(mContext,false,mBtGattCallback);
+
+            try {
+                ret = mConnectLatch.await(DEVICE_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+            }
+
+            // Didn't connect, disconnecting anyway
+            if (mConnState != BluetoothProfile.STATE_CONNECTED)
+            {
+                ret = false;
+                disconnect();
+            }
+
+            if (ret) {
+                Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "connected");
+                break;
+            } else {
+                Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "not connected");
+                retries--;
+            }
         }
 
-        // Didn't connect, disconnecting anyway
         if (!ret) {
-            Log.d("BLE", "Connect timeout");
-            disconnect();
+            Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Connect timeout");
         }
 
         // Invalidate mConnectLatch
@@ -186,11 +206,11 @@ public class BleDevice {
         try {
             ret = mDisconnectLatch.await(DEVICE_DISCONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            Log.d("BLE", "InterruptedException");
+            Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "InterruptedException");
         }
 
         if (!ret)
-            Log.d("BLE", "Disconnect timeout");
+            Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Disconnect timeout");
 
         mBtGatt.close();
 
@@ -200,7 +220,7 @@ public class BleDevice {
         return ret;
     }
 
-    public byte[] transfer(byte[] data) {
+    byte[] transfer(byte[] data) {
         if (mConnState != BluetoothProfile.STATE_CONNECTED)
             return null;
 
@@ -226,10 +246,10 @@ public class BleDevice {
                 break;
             }
             if (ret) {
-                Log.d("BLE", "ret = true");
+                Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "ret = true");
                 break;
             } else {
-                Log.d("BLE", "ret = false");
+                Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "ret = false");
                 retries--;
             }
         }

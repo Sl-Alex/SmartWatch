@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity
 {
 
     private static final int REQUEST_ENABLE_LOCATION_AND_SMS = 1;
-    private static final String MAIN_TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +82,7 @@ public class MainActivity extends AppCompatActivity
                 (receiveSms == PackageManager.PERMISSION_DENIED))
             required = 2;
 
-        Log.d(MAIN_TAG, required + " permission(s) are requested");
+        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + required + " permission(s) are requested");
         String[] permissions = new String[required];
         int cnt = 0;
         if ((coarseLocation == PackageManager.PERMISSION_DENIED)){

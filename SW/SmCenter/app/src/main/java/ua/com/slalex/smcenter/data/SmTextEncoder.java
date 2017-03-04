@@ -5,23 +5,20 @@ import android.util.SparseIntArray;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * Created by Sl-Alex on 02.03.2017.
+ * Text encoder (from UCS2-LE to the SmWatch format)
  */
 
 public class SmTextEncoder {
-    Context mContext;
-    //
-    SparseIntArray mLutTable;
+    private Context mContext;
+    private SparseIntArray mLutTable;
 
-    static final int IDX_FW_FONT_SMALL = 2;
-    static final int FONT_PARAMS_OFFSET = 4 + IDX_FW_FONT_SMALL * 8;
+    private static final int IDX_FW_FONT_SMALL = 2;
+    private static final int FONT_PARAMS_OFFSET = 4 + IDX_FW_FONT_SMALL * 8;
 
     // Location of the first symbol offset
-    static final int FIRST_SYMBOL_OFFSET = 0x10;
+    private static final int FIRST_SYMBOL_OFFSET = 0x10;
 
     public SmTextEncoder(Context context)
     {
@@ -32,14 +29,9 @@ public class SmTextEncoder {
         return mLutTable.get(symbol);
     }
 
-    long getUnsignedByte(byte[] arr, int idx)
+    private long getUnsignedShort(byte[] arr, int idx)
     {
-        return ((int)arr[idx]) & 0xFF;
-    }
-
-    long getUnsignedShort(byte[] arr, int idx)
-    {
-        long ret = 0;
+        long ret;
         ret  = ((int)arr[idx + 1]) & 0xFF;
         ret <<= 8;
         ret += ((int)arr[idx]) & 0xFF;
@@ -47,9 +39,9 @@ public class SmTextEncoder {
         return ret;
     }
 
-    long getUnsignedInt(byte[] arr, int idx)
+    private long getUnsignedInt(byte[] arr, int idx)
     {
-        long ret = 0;
+        long ret;
         ret  = ((int)arr[idx + 3]) & 0xFF;
         ret <<= 8;
         ret += ((int)arr[idx + 2]) & 0xFF;
@@ -63,7 +55,7 @@ public class SmTextEncoder {
 
     public boolean loadTable()
     {
-        InputStream is = null;
+        InputStream is;
         byte[] data;
         try {
             is = mContext.getAssets().open("update.bin");
