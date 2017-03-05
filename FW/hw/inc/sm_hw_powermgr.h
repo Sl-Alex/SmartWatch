@@ -36,7 +36,8 @@ public:
     enum SleepTimeout {
         SM_HW_SLEEP_NONE  = 0,
         SM_HW_SLEEP_SHORT = 2000,
-        SM_HW_SLEEP_LONG  = 5000
+        SM_HW_SLEEP_LONG  = 5000,
+        SM_HW_SLEEP_EXTRA_LONG = 15000
     };
     enum SleepBlocker {
         SM_HW_SLEEPBLOCKER_DISPLAY      = 0x00000001,

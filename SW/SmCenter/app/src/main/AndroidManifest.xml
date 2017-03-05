@@ -2,12 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ua.com.slalex.smcenter">
 
-    <!-- to be activated service on boot is completed -->
+    <!-- Starts a service when boot is completed -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Receives SMS -->
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <!-- BLE access -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <!-- BLE scan -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!-- BLE scan -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- SMS sender name -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -51,6 +57,7 @@
             android:name=".services.SmsReceiver"
             android:enabled="true"
             android:exported="true">
+            <!-- TODO: change or remove this priority -->
             <intent-filter android:priority="2147483647">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>

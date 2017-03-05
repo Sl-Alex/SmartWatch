@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
+
 import ua.com.slalex.smcenter.services.SmWatchService;
 
 public class MainActivity extends AppCompatActivity
@@ -33,7 +36,7 @@ public class MainActivity extends AppCompatActivity
         ScanFragment.OnFragmentInteractionListener
 {
 
-    private static final int REQUEST_ENABLE_LOCATION_AND_SMS = 1;
+    private static final int REQUEST_ENABLE_PERMISSIONS = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,40 +69,47 @@ public class MainActivity extends AppCompatActivity
      * Check if we have all permissions, request if not all are granted
      */
     private void checkPermissions() {
-        int coarseLocation = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION);
-        int receiveSms = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.RECEIVE_SMS);
+        ArrayList<String> requiredPerms = new ArrayList<>();
+        ArrayList<Integer> checkResults = new ArrayList<>();
+        requiredPerms.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        requiredPerms.add(Manifest.permission.RECEIVE_SMS);
+        requiredPerms.add(Manifest.permission.READ_CONTACTS);
 
-        // Check if all permissions are granted
-        if ((coarseLocation == PackageManager.PERMISSION_GRANTED) &&
-                (receiveSms == PackageManager.PERMISSION_GRANTED))
-            return;
-
-        // Check how many permissions do we need
-        int required = 1;
-        if ((coarseLocation == PackageManager.PERMISSION_DENIED) &&
-                (receiveSms == PackageManager.PERMISSION_DENIED))
-            required = 2;
-
-        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + required + " permission(s) are requested");
-        String[] permissions = new String[required];
-        int cnt = 0;
-        if ((coarseLocation == PackageManager.PERMISSION_DENIED)){
-            permissions[cnt] = Manifest.permission.ACCESS_COARSE_LOCATION;
-            cnt++;
+        int deniedCount = 0;
+        for (String required: requiredPerms)
+        {
+            int result = ContextCompat.checkSelfPermission(this,required);
+            checkResults.add(result);
+            if (result != PackageManager.PERMISSION_GRANTED)
+                deniedCount++;
         }
-        if ((receiveSms == PackageManager.PERMISSION_DENIED)){
-            permissions[cnt] = Manifest.permission.RECEIVE_SMS;
+
+        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + deniedCount + " permission(s) are requested");
+        String[] permissions = new String[deniedCount];
+        int cnt = 0;
+        for (int i = 0; i < requiredPerms.size(); i++)
+        {
+            if (checkResults.get(i) == PackageManager.PERMISSION_DENIED)
+            {
+                permissions[cnt] = requiredPerms.get(i);
+            }
         }
 
         // Request for permissions
-        ActivityCompat.requestPermissions(this, permissions, REQUEST_ENABLE_LOCATION_AND_SMS);
+        if (deniedCount != 0)
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_ENABLE_PERMISSIONS);
+
+        if (!Settings.Secure.getString(getContentResolver(),
+                "enabled_notification_listeners").contains(getPackageName()))
+        {
+            String action = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
+            startActivity(new Intent(action));
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode != REQUEST_ENABLE_LOCATION_AND_SMS)
+        if (requestCode != REQUEST_ENABLE_PERMISSIONS)
             //noinspection UnnecessaryReturnStatement
             return;
         // TODO or not to do: Here we can parse the result

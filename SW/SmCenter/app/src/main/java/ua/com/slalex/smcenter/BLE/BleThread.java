@@ -34,6 +34,7 @@ public class BleThread extends Thread {
     public void run() {
         BleTransferTask task;
 
+        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Service is running");
         while ((task = getTask()) != null)
         {
             // We have at least one task
@@ -58,13 +59,14 @@ public class BleThread extends Thread {
             // No new tasks at the moment, can disconnect
             mBleDevice.disconnect();
         }
+        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Service is stopped");
     }
 
     public void addTask(BleTransferTask task) {
         mTasks.add(task);
     }
 
-    private synchronized BleTransferTask getTask() {
+    private BleTransferTask getTask() {
         BleTransferTask ret;
         try {
             ret = mTasks.take();

@@ -33,27 +33,10 @@ public class NotificationService extends NotificationListenerService {
         Bundle extras = sbn.getNotification().extras;
         String title = extras.getString("android.title");
         String text = extras.getCharSequence("android.text").toString();
-        //int id1 = extras.getInt(Notification.EXTRA_SMALL_ICON);
-        //Bitmap id = sbn.getNotification().largeIcon;
 
-
-        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Package " + pack);
-        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Ticker " + ticker);
-        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Title " + title);
-        Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Text " + text);
-
-/*        Intent msgrcv = new Intent("Msg");
-        msgrcv.putExtra("package", pack);
-        msgrcv.putExtra("ticker", ticker);
-        msgrcv.putExtra("title", title);
-        msgrcv.putExtra("text", text);
-        if(id != null) {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            id.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] byteArray = stream.toByteArray();
-            msgrcv.putExtra("icon",byteArray);
-        }
-        LocalBroadcastManager.getInstance(context).sendBroadcast(msgrcv);
-        */
+        //Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Package = " + pack);
+        //Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Ticker = " + ticker);
+        //Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Title = " + title);
+        //Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Text = " + text);
     }
 }

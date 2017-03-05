@@ -16,12 +16,16 @@ SmNotification::SmNotification(SmHwKeyboardIface * parent, SmText header, SmText
     SmHwKeyboard::getInstance()->subscribe(this);
 #ifndef PC_SOFTWARE
     SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU,
-                                            SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_LONG);
+                                            SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_EXTRA_LONG);
 #endif
 }
 
 SmNotification::~SmNotification()
 {
+#ifndef PC_SOFTWARE
+    SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU,
+                                            SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_NONE);
+#endif
     SmHwKeyboard::getInstance()->unsubscribe(this);
 }
 
@@ -88,6 +92,10 @@ void SmNotification::onKeyDown(SmHwButtons key)
         if (mHeader.size() > 0)
         {
             drawItem();
+#ifndef PC_SOFTWARE
+            SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU,
+                                                    SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_EXTRA_LONG);
+#endif
         }
         else
         {
