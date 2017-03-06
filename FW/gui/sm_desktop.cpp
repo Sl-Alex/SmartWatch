@@ -7,8 +7,6 @@
 #include "sm_hw_keyboard.h"
 #include <cstdio>
 
-const char FwVersion[10] = "FW v0.4";
-
 #define DIGITS_ANIMATION_SPEED  2
 #define DIGITS_SPACE            3
 
@@ -37,6 +35,7 @@ void SmDesktop::init(void)
     pFontSmall->init(IDX_FW_FONT_SMALL);
     pMainMenu = nullptr;
     pNotification = nullptr;
+    pVersionString = nullptr;
 #ifndef PC_SOFTWARE
     SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_DISPLAY,
                                             SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_LONG);
@@ -149,6 +148,13 @@ void SmDesktop::onWake(uint32_t WakeSource)
     if (pNotification == nullptr)
     {
         drawTime();
+    }
+    else
+    {
+#ifndef PC_SOFTWARE
+        SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_BT,
+                                                SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_EXTRA_LONG);
+#endif
     }
 }
 
@@ -387,7 +393,17 @@ void SmDesktop::showNotification(SmText header, SmText text)
     }
 }
 
-const char * SmDesktop::getVersion(void)
+char * SmDesktop::getVersion(void)
 {
-    return FwVersion;
+    if (pVersionString)
+        return pVersionString;
+
+    SmHwStorageElementInfo info;
+    if (!SmHwStorage::getInstance()->getElementInfo(IDX_FW_VERSION, &info))
+        return nullptr;
+
+    pVersionString = new char[info.size+1];
+    SmHwStorage::getInstance()->readData(info.offset, (uint8_t *)pVersionString, info.size);
+    pVersionString[info.size] = 0;
+    return pVersionString;
 }

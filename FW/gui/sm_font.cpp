@@ -93,7 +93,7 @@ int SmFont::drawText(SmCanvas * canvas, int x, int y, char * text)
 void SmFont::drawTextBox(SmCanvas * canvas, int x1, int y1, int x2, int y2, SmText text)
 {
     // Check input parameters
-    if ((x2 < x1) || ((y2 - y1) < mFontHeight))
+    if ((x2 < x1) || ((y2 - y1) < (int)mFontHeight))
         return;
 
     // Calculate parameters
@@ -110,7 +110,7 @@ void SmFont::drawTextBox(SmCanvas * canvas, int x1, int y1, int x2, int y2, SmTe
         if (fitted == 0)
             break;
         // Calculate line width (useful for single-line output)
-        if (width > line_width)
+        if ((int)width > line_width)
             line_width = width;
         cnt += fitted;
         lines++;
@@ -169,7 +169,7 @@ uint32_t SmFont::getStringWidth(SmText text, int stopAt, uint32_t * fitted)
     {
         new_res = res + getSymbolWidth(*text.pText);
 
-        if ((stopAt > 0) && (new_res >= stopAt))
+        if ((stopAt > 0) && ((int)new_res >= stopAt))
             break;
 
         res = new_res + mSpacing;
@@ -191,7 +191,7 @@ uint32_t SmFont::getStringWidth(char * text, int stopAt)
     {
         new_res = res + getSymbolWidth(*text - 0x20);
 
-        if ((stopAt > 0) && (new_res >= stopAt))
+        if ((stopAt > 0) && ((int)new_res >= stopAt))
             break;
 
         res = new_res + mSpacing;

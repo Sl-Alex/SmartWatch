@@ -16,50 +16,88 @@ import ua.com.slalex.smcenter.Constants;
 
 public class BleThread extends Thread {
 
+    private static final int TASK_REPEATS_MAX = 10;
+
     private BleDevice mBleDevice;
     private LinkedBlockingQueue<BleTransferTask> mTasks;
     private SmTextEncoder mSmTextEncoder;
 
-    public BleThread(Context context, BleDevice device) {
+    public BleThread(Context context, BleDevice device, BleThreadIface callback) {
         mBleDevice = device;
         mTasks = new LinkedBlockingQueue<>();
         mSmTextEncoder = new SmTextEncoder(context);
+        mCallback = callback;
         if (!mSmTextEncoder.loadTable())
         {
             Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Could not load font");
         }
     }
 
+    public interface BleThreadIface {
+        void onTransferDone(BleTransferTask result);
+        void onThreadStarted();
+        void onThreadStopped();
+    }
+
+    private BleThreadIface mCallback;
+
     @Override
     public void run() {
         BleTransferTask task;
 
         Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Service is running");
+        mCallback.onThreadStarted();
         while ((task = getTask()) != null)
         {
-            // We have at least one task
-            mBleDevice.connect();
-            do
+            int retries = TASK_REPEATS_MAX;
+            // True by default, will be changed to false in case of a failure
+            BleTransferTask result = null;
+            while (retries != 0)
             {
-                switch (task.type)
+                retries--;
+                // We have at least one task
+                mBleDevice.connect();
+                do
                 {
-                    case BleTransferTask.TASK_VERSION:
-                        getFwVersion();
+                    result = new BleTransferTask();
+                    if (task == null)
                         break;
-                    case BleTransferTask.TASK_TIMESYNC:
-                        setDateTime();
+                    result.type = task.type;
+                    switch (task.type)
+                    {
+                        case BleTransferTask.TASK_VERSION:
+                            result.version = getFwVersion();
+                            result.status = (result.version != null);
+                            break;
+                        case BleTransferTask.TASK_TIMESYNC:
+                            result.status = setDateTime();
+                            break;
+                        case BleTransferTask.TASK_SMS:
+                            result.status = sendNotification(task.SmsSender, task.SmsText);
+                            break;
+                    }
+                    if (result.status) {
+                        mCallback.onTransferDone(result);
+                    } else {
                         break;
-                    case BleTransferTask.TASK_SMS:
-                        sendNotification(task.SmsSender, task.SmsText);
-                        break;
+                    }
                 }
-            }
-            while ((task = mTasks.poll()) != null);
+                while ((task = mTasks.poll()) != null);
+                // No new tasks at the moment, can disconnect
+                mBleDevice.disconnect();
+                if (result.status) {
+                    break;
+                }
 
-            // No new tasks at the moment, can disconnect
-            mBleDevice.disconnect();
+                Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Task failed, tries left: " + retries);
+            }
+            if (!result.status) {
+                Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Task failed, removed");
+                mCallback.onTransferDone(result);
+            }
         }
         Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Service is stopped");
+        mCallback.onThreadStopped();
     }
 
     public void addTask(BleTransferTask task) {

@@ -253,7 +253,7 @@ void SmHwBt::update(void)
                     mSeqNumber = newSeqNumber;
                     uint16_t * pText = mRxPacket.content.notification.text;
                     /// @TODO Add additional checks
-                    for (int i = 0; i < sizeof(mRxPacket.content.notification.text)/2; ++i)
+                    for (uint32_t i = 0; i < sizeof(mRxPacket.content.notification.text)/2; ++i)
                     {
                         // First part: header
                         if (mCounter < mHeaderSize)

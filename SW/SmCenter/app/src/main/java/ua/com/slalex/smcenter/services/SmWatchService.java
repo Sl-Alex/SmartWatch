@@ -22,7 +22,7 @@ import ua.com.slalex.smcenter.R;
 
 import ua.com.slalex.smcenter.Constants;
 
-public class SmWatchService extends Service {
+public class SmWatchService extends Service implements BleThread.BleThreadIface {
 
     public static final int NOTIFICATION_ID = 1;
 
@@ -95,9 +95,8 @@ public class SmWatchService extends Service {
     }
 
     private void startThread() {
-        mBleThread = new BleThread(getApplicationContext(), mBleDevice);
+        mBleThread = new BleThread(getApplicationContext(), mBleDevice, this);
         mBleThread.start();
-        showForegroundNotification("Service is running");
     }
 
     @Override
@@ -164,5 +163,23 @@ public class SmWatchService extends Service {
                     .addAction(infoAction);
         }
         startForeground(NOTIFICATION_ID, builder.build());
+    }
+
+    @Override
+    public synchronized void onTransferDone(BleTransferTask result) {
+        if (result.status)
+            showForegroundNotification("Transfer of type \"" + BleTransferTask.toString(result.type) + "\" succeeded" );
+        else
+            showForegroundNotification("Transfer of type \"" + BleTransferTask.toString(result.type) + "\" failed" );
+    }
+
+    @Override
+    public void onThreadStarted() {
+        showForegroundNotification("BLE service started" );
+    }
+
+    @Override
+    public void onThreadStopped() {
+        showForegroundNotification("BLE service stopped" );
     }
 }

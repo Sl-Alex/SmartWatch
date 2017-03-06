@@ -28,7 +28,7 @@ public:
     void operator=(SmDesktop const&) = delete;
     ~SmDesktop();
 
-    const char * getVersion(void);
+    char * getVersion(void);
 
     /// @brief Get a singleton instance
     static SmDesktop* getInstance()
@@ -96,6 +96,8 @@ private:
     uint8_t mDigitsOffsetY[DIGITS_COUNT];
 
     uint8_t mDigits[DIGITS_COUNT];
+
+    char * pVersionString;
 };
 
 #endif // SM_DESKTOP_H
