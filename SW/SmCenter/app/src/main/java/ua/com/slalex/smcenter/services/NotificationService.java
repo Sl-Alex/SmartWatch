@@ -32,7 +32,13 @@ public class NotificationService extends NotificationListenerService {
         }
         Bundle extras = sbn.getNotification().extras;
         String title = extras.getString("android.title");
-        String text = extras.getCharSequence("android.text").toString();
+        CharSequence chS = extras.getCharSequence("android.text");
+        String text;
+        if (chS == null) {
+            text = "";
+        } else {
+            text = chS.toString();
+        }
 
         //Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Package = " + pack);
         //Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Ticker = " + ticker);
