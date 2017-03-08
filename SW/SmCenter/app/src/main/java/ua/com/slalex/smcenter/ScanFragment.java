@@ -91,6 +91,7 @@ public class ScanFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        getActivity().setTitle(getString(R.string.title_scan));
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_scan, container, false);
     }

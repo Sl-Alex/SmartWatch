@@ -10,6 +10,38 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="n_a">n.a.</string>
     <string name="filter_actions">Filter actions</string>
+    <string name="about_application"><![CDATA[<h1>General description</h1>
+        <p>This software is a part of the SmartWatch project.</p>
+<p>This project aims to create an open-source and open-hardware smartwatch with the following functionality:</p>
+<ul>
+<li>1.3" OLED display (bright enough to work in outdoor conditions)</li>
+<li>BLE module (HM-10), pin-to-pin compatibility with well-known HC-06</li>
+<li>small vibration motor (for any kind of notifications)</li>
+<li>STM32F103CBT6 microcontroller.</li>
+<li>Big external SPI flash memory (M25P40), SW OTA update and a lot of images can be stored there.</li>
+<li>BMC150 accelerometer/compass (can recognize double tap on the screen).</li>
+<li>BMP180 barometer/thermometer (just because there is a plenty of space).</li>
+<li>320mAh battery allowing up to 3 weeks standby time (with BLE active).</li>
+</ul>
+<p>All source code and other documents are available on a <a href="https://github.com/Sl-Alex/KiCAD_libs" target="_blank">GitHub repository</a>, so the whole project can be easily reproduced.</p>
+<h1>Hardware</h1>
+<p>Both schematic and PCB were created with KiCAD.</p>
+<p><b>Status:</b> Finished. PCB is assembled, all HW features are tested and work as expected. Standby time seems to be about 3 weeks (with BLE active).</p>
+<h1>Software</h1>
+<p>Project is created in <a href="https://www.embitz.org/" target="_blank">EmBitz</a></p>
+<p><b>Status</b>: Can be used on a daily basis with some basic functionality (automatic date/time synchronization, SMS reception). Feel free to submit patches, create or discuss issues.</p>
+<h1>Licensing</h1>
+<p>The whole project is available under GPL v3 license, except of files, which clearly mention other license type in the file header.</p>
+<h1>Special notes</h1>
+<p>I would like to say "thank you" to the following resource, which gave me a lot of wonderful "material" icons for this application:</p>
+<p><a href="https://google.github.io/material-design-icons/" target="_blank">https://google.github.io/material-design-icons/"</a></p>
+]]></string>
+    <string name="title_about">About</string>
+    <string name="title_filters">Filters</string>
+    <string name="title_log">Log</string>
+    <string name="title_settings">General settings</string>
+    <string name="title_scan">Device selection</string>
+    <string name="title_home">Home</string>
     <string-array name="filter_types">
         <item>Don\'t filter</item>
         <item>Black list</item>

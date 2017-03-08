@@ -86,6 +86,7 @@ public class SettingsFragment extends Fragment {
                 mSettings.setSendDateTime(b);
             }
         });
+        getActivity().setTitle(getString(R.string.title_settings));
         return  v;
     }
 

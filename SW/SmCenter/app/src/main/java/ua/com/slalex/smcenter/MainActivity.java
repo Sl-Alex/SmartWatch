@@ -29,7 +29,6 @@ import ua.com.slalex.smcenter.services.SmWatchService;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         SettingsFragment.OnFragmentInteractionListener,
-        AboutFragment.OnFragmentInteractionListener,
         FiltersFragment.OnFragmentInteractionListener,
         LogFragment.OnFragmentInteractionListener,
         MainFragment.OnFragmentInteractionListener,
@@ -182,11 +181,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSettingsFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onAboutFragmentInteraction(Uri uri) {
 
     }
 

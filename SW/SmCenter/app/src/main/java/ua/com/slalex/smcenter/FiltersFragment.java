@@ -125,6 +125,7 @@ public class FiltersFragment extends Fragment
                 toast.show();
             }
         });
+        getActivity().setTitle(getString(R.string.title_filters));
     }
 
     // TODO: Rename method, update argument and hook method into UI event
