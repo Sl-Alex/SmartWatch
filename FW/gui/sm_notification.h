@@ -27,6 +27,10 @@ public:
         mHeader.push_back(header);
         mText.push_back(text);
         drawItem();
+#ifndef PC_SOFTWARE
+        SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU,
+                                                SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_EXTRA_LONG);
+#endif
     }
 private:
 

@@ -104,6 +104,13 @@ void SmNotification::onKeyDown(SmHwButtons key)
             pParent->onKeyDown(SM_HW_BUTTON_VIRT_EXIT);
         }
     }
+    else // Any other key except of exit
+    {
+#ifndef PC_SOFTWARE
+            SmHwPowerMgr::getInstance()->allowSleep(SmHwPowerMgr::SleepBlocker::SM_HW_SLEEPBLOCKER_MENU,
+                                                    SmHwPowerMgr::SleepTimeout::SM_HW_SLEEP_EXTRA_LONG);
+#endif
+    }
 }
 
 void SmNotification::onKeyUp(SmHwButtons)
