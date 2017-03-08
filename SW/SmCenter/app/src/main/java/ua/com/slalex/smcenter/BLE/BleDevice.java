@@ -127,6 +127,7 @@ public class BleDevice {
                             }
                             else {
                                 gatt.disconnect();
+                                gatt.close();
                             }
                             break;
                         }
@@ -189,9 +190,6 @@ public class BleDevice {
     }
 
     public boolean disconnect() {
-        if (mConnState == BluetoothProfile.STATE_DISCONNECTED)
-            return true;
-
         if (mBtDevice == null)
             return true;
 
