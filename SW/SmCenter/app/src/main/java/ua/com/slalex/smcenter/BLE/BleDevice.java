@@ -30,6 +30,7 @@ public class BleDevice {
     private static final int DEVICE_TRANSFER_TIMEOUT = 500;
     private static final int DEVICE_DISCONNECT_TIMEOUT = 500;
     private static final int DEVICE_RETRIES_MAX = 5;
+    private static final int INVALID_RSSI = -255;
 
     public BleDevice(){
     }
@@ -42,6 +43,7 @@ public class BleDevice {
     private BluetoothGattCallback mBtGattCallback = null;
     private BluetoothGattCharacteristic mRwCharacteristic = null;
     private byte[] mDataIn;
+    private int mRssi;
 
     private CountDownLatch mConnectLatch = null;
     private CountDownLatch mTransferLatch = null;
@@ -88,6 +90,9 @@ public class BleDevice {
                 if (newState == BluetoothProfile.STATE_CONNECTED)
                 {
                     gatt.discoverServices();
+                    /// TODO: Replace with constant
+                    mRssi = INVALID_RSSI;
+                    gatt.readRemoteRssi();
                 }
                 if (newState == BluetoothProfile.STATE_DISCONNECTED)
                 {
@@ -97,6 +102,13 @@ public class BleDevice {
                     if (mConnectLatch != null)
                         mConnectLatch.countDown();
                 }
+            }
+
+            @Override
+            public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
+                super.onReadRemoteRssi(gatt, rssi, status);
+                mRssi = rssi;
+                Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": mRssi = " + mRssi);
             }
 
             @Override
@@ -260,5 +272,9 @@ public class BleDevice {
         mTransferLatch = null;
 
         return mDataIn;
+    }
+
+    int getRssi() {
+        return mRssi;
     }
 }

@@ -7,12 +7,15 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Icon;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
 
 import ua.com.slalex.smcenter.BLE.BleDevice;
 import ua.com.slalex.smcenter.BLE.BleThread;
@@ -24,29 +27,52 @@ import ua.com.slalex.smcenter.Constants;
 
 public class SmWatchService extends Service implements BleThread.BleThreadIface {
 
-    public static final int NOTIFICATION_ID = 1;
-
+    private static final int NOTIFICATION_ID = 1;
     private static final int RETURN_VALUE = START_STICKY;
-
-    public static final boolean USE_ACTIONS = false;
+    private static final boolean USE_ACTIONS = false;
+    private static final int LOG_SIZE = 20;
 
     BleThread mBleThread = null;
-
     BleDevice mBleDevice = null;
+    private SmWatchServiceIface mCallbackIface = null;
+
+    SmWatchBinder mBinder = new SmWatchBinder();
+    public class SmWatchBinder extends Binder {
+        public SmWatchService getService() {
+            return SmWatchService.this;
+        }
+    }
+
+    public interface SmWatchServiceIface {
+        void onLogUpdated(ArrayList<BleTransferTask> results);
+    }
+
+    ArrayList<BleTransferTask> mLastResults = null;
 
     public SmWatchService() {
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return mBinder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        mCallbackIface = null;
+        return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onRebind(Intent intent) {
+        super.onRebind(intent);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         mBleDevice = new BleDevice();
+        mLastResults = new ArrayList<>();
 
         showForegroundNotification("Service is created");
 
@@ -60,6 +86,10 @@ public class SmWatchService extends Service implements BleThread.BleThreadIface 
 
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_HOUR, pendingIntent);
+    }
+
+    public void setCallbackIface(SmWatchServiceIface iface) {
+        mCallbackIface = iface;
     }
 
     @Override
@@ -165,12 +195,23 @@ public class SmWatchService extends Service implements BleThread.BleThreadIface 
         startForeground(NOTIFICATION_ID, builder.build());
     }
 
+    public synchronized ArrayList<BleTransferTask> getLastResults() {
+        return mLastResults;
+    }
+
     @Override
     public synchronized void onTransferDone(BleTransferTask result) {
+        if (mLastResults.size() > LOG_SIZE)
+        {
+            mLastResults.remove(0);
+        }
+        mLastResults.add(result);
         if (result.status)
-            showForegroundNotification("Transfer of type \"" + BleTransferTask.toString(result.type) + "\" succeeded" );
+            showForegroundNotification(BleTransferTask.toString(result.type) + " succeeded, RSSI = " + result.rssi);
         else
-            showForegroundNotification("Transfer of type \"" + BleTransferTask.toString(result.type) + "\" failed" );
+            showForegroundNotification(BleTransferTask.toString(result.type) + " failed" );
+        if (mCallbackIface != null)
+            mCallbackIface.onLogUpdated(mLastResults);
     }
 
     @Override

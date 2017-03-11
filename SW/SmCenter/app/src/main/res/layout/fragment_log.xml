@@ -4,10 +4,8 @@
     android:layout_height="match_parent"
     tools:context="ua.com.slalex.smcenter.LogFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ListView
+        android:id="@+id/logListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Program log" />
-
+        android:layout_height="match_parent" />
 </FrameLayout>

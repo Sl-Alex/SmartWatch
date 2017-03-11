@@ -72,6 +72,7 @@ public class LogFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle(getString(R.string.title_log));
+        ((MainActivity)getActivity()).onLogUpdated(null);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
