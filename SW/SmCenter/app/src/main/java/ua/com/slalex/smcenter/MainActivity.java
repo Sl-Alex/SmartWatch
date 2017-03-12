@@ -28,8 +28,6 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +54,7 @@ public class MainActivity extends AppCompatActivity
 
     private Fragment mSelectedFragment = null;
     private int mSelectedFragmentId = -1;
-    SimpleDateFormat mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd; k:mm");
+    SimpleDateFormat mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd; H:mm");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -285,10 +283,11 @@ public class MainActivity extends AppCompatActivity
                     if (lv == null)
                         return;
 
-                    HashMap<String, String> map = new HashMap<>();
+                    HashMap<String, String> map;
                     ArrayList<HashMap<String, String>> myArrList = new ArrayList<>();
                     for (int i = loc_results.size() - 1; i >= 0; i--) {
                         BleTransferTask result = loc_results.get(i);
+                        map = new HashMap<>();
                         map.put("Header", result.toString(result.type) + " (" + mDateTimeFormat.format(result.datetime.getTime()) + ")");
                         if (result.status) {
                             map.put("Text", "succeeded, RSSI = " + result.rssi);
