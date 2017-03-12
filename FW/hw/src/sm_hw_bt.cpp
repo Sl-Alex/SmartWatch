@@ -198,6 +198,8 @@ void SmHwBt::update(void)
         mTxPacket.header.type = SM_HW_BT_PACKET_ACK;
         mTxPacket.content.ack.seqNumber = 0;
         mTxPacket.content.ack.type = mRxPacket.header.type;
+        mTxPacket.content.ack.batStatus = SmHwBattery::getInstance()->getStatus();
+        mTxPacket.content.ack.batLevel = SmHwBattery::getInstance()->getCharge();
 
 #ifndef BOOTLOADER
         SmHalRtc::SmHalRtcTime datetime;

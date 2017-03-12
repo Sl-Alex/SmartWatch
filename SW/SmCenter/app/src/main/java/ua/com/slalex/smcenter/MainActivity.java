@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity
                         map = new HashMap<>();
                         map.put("Header", result.toString(result.type) + " (" + mDateTimeFormat.format(result.datetime.getTime()) + ")");
                         if (result.status) {
-                            map.put("Text", "succeeded, RSSI = " + result.rssi);
+                            map.put("Text", "succeeded, RSSI = " + result.rssi + ", bat = " + result.batLevel + "%");
                         }
                         else {
                             map.put("Text", "failed");
@@ -325,6 +325,10 @@ public class MainActivity extends AppCompatActivity
                     if (tv == null)
                         return;
                     tv.setText(Integer.toString(loc_results.get(loc_results.size() - 1).rssi));
+                    tv = (TextView) findViewById(R.id.lastBatteryText);
+                    if (tv == null)
+                        return;
+                    tv.setText(Integer.toString(loc_results.get(loc_results.size() - 1).batLevel) + "%");
                 }
             });
         }

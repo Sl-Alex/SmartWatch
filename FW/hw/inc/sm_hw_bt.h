@@ -124,7 +124,9 @@ struct _packed_ SmHwBtPacket
         struct _packed_
         {
             uint8_t type;       ///< Which packet type is acknowledged
-            uint8_t seqNumber; ///< Which seqNumber is acknowledged (if applicable)
+            uint8_t seqNumber;  ///< Which seqNumber is acknowledged (if applicable)
+            uint8_t batStatus;  ///< Battery status (!0 if charging)
+            uint8_t batLevel;   ///< Battery status (0-100)
         } ack;
 
         /// Only for a SM_HW_BT_PACKET_VERSION response

@@ -162,6 +162,8 @@ public class BleThread extends Thread {
             return task;
         }
         task.rssi = mBleDevice.getRssi();
+        task.batStatus = rxPacket.getBatStatus();
+        task.batLevel = rxPacket.getBatLevel();
 
         String sum_str = header + text;
         int total_length = sum_str.length();
@@ -212,6 +214,8 @@ public class BleThread extends Thread {
         }
         task.rssi = mBleDevice.getRssi();
         task.status = true;
+        task.batStatus = rxPacket.getBatStatus();
+        task.batLevel = rxPacket.getBatLevel();
 
         Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "DateTime ACK");
         return task;

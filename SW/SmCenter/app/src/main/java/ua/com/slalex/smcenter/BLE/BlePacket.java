@@ -123,6 +123,12 @@ class BlePacket {
     public byte getType() {
         return mRaw[4];
     }
+    public byte getBatStatus() {
+        return mRaw[7];
+    }
+    public byte getBatLevel() {
+        return mRaw[8];
+    }
 
     byte[] getRaw() {
         // Calculate and update CRC32

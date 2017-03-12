@@ -42,4 +42,6 @@ public class BleTransferTask {
     public boolean status;
     public int rssi;
     public Calendar datetime;
+    public byte batStatus;
+    public byte batLevel;
 }
