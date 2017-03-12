@@ -208,6 +208,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        int mOldId = mSelectedFragmentId;
 
         switch (id)
         {
@@ -232,9 +233,11 @@ public class MainActivity extends AppCompatActivity
                 mSelectedFragmentId = id;
         }
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.content_main, mSelectedFragment);
-        ft.commit();
+        if (mSelectedFragmentId != mOldId) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.content_main, mSelectedFragment);
+            ft.commit();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,9 +40,17 @@ public class AboutFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         String about_html = getString(R.string.about_application);
-        WebView about_webview = (WebView) view.findViewById(R.id.about_webview);
-        about_webview.loadData(about_html, "text/html", null);
-        about_webview.setBackgroundColor(Color.TRANSPARENT);
+        TextView about_textview = (TextView) view.findViewById(R.id.about_textview);
+        Spanned result;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            result = Html.fromHtml(about_html,Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            //noinspection deprecation
+            result = Html.fromHtml(about_html);
+        }
+        about_textview.setText(result);
+        about_textview.setClickable(true);
+        about_textview.setMovementMethod (LinkMovementMethod.getInstance());
         getActivity().setTitle(getString(R.string.title_about));
     }
 

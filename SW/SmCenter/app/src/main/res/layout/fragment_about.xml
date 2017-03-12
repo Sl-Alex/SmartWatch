@@ -5,8 +5,8 @@
     tools:context="ua.com.slalex.smcenter.AboutFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <WebView
-        android:id="@+id/about_webview"
+    <TextView
+        android:id="@+id/about_textview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
