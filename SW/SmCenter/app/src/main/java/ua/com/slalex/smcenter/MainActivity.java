@@ -69,10 +69,31 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        checkPermissions();
+
+        mServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                mServiceConnected = true;
+                Log.d(Constants.LOG_TAG, mThis.getClass().getSimpleName() + ": Service is connected");
+                mService = ((SmWatchService.SmWatchBinder)iBinder).getService();
+                mService.setCallbackIface(mThis);
+                mThis.onLogUpdated(null);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                mServiceConnected = false;
+                Log.d(Constants.LOG_TAG, mThis.getClass().getSimpleName() + ": Service is disconnected");
+                mService = null;
+            }
+        };
+        bindService(mServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
+        mSelectedFragmentId = R.id.nav_main;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.content_main, new MainFragment());
         ft.commit();
-        mSelectedFragmentId = R.id.nav_main;
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -84,25 +105,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        checkPermissions();
-
-        mServiceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                mServiceConnected = true;
-                Log.d(Constants.LOG_TAG, mThis.getClass().getSimpleName() + ": Service is connected");
-                mService = ((SmWatchService.SmWatchBinder)iBinder).getService();
-                mService.setCallbackIface(mThis);
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-                mServiceConnected = false;
-                Log.d(Constants.LOG_TAG, mThis.getClass().getSimpleName() + ": Service is disconnected");
-                mService = null;
-            }
-        };
-        bindService(mServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
 
     public ArrayList<BleTransferTask> getLastResults()
