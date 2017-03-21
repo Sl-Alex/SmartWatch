@@ -207,7 +207,9 @@ public class BleDevice {
 
         mDisconnectLatch = new CountDownLatch(1);
 
-        mBtGatt.disconnect();
+        if (mBtGatt != null)
+            mBtGatt.disconnect();
+
         mConnState = BluetoothProfile.STATE_DISCONNECTED;
 
         // Wait for the result with a timeout
@@ -222,7 +224,8 @@ public class BleDevice {
         if (!ret)
             Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + ": " + "Disconnect timeout");
 
-        mBtGatt.close();
+        if (mBtGatt != null)
+            mBtGatt.close();
 
         // Invalidate mDisconnectLatch
         mDisconnectLatch = null;
